@@ -11,7 +11,9 @@ Mục tiêu: xây dựng ứng dụng web quản lý tài khoản người dùng
 - [Java JDK ](https://drive.google.com/file/d/1Gntuz-lXuNfwLisU9i2pcN7-tbwYRR_b/view?usp=sharing)  
 - [Apache Tomcat](https://drive.google.com/file/d/18DlgRlL4-omAmzwKnGzizPwFU66URk6m/view?usp=drive_link)  
 - [MySQL](https://drive.google.com/file/d/1_fspqp59TXhcAYi1tLozx0X4fXbf08Wz/view?usp=drive_link)
-- IDE: [**NetBeans**](https://drive.google.com/file/d/1298reglUyK7-IL_qOz6FVIBoKONlveNY/view?usp=drive_link) 
-- [Git](https://git-scm.com/downloads)(để clone/push project) 
+- [**NetBeans**](https://drive.google.com/file/d/1298reglUyK7-IL_qOz6FVIBoKONlveNY/view?usp=drive_link) 
+- [Git](https://git-scm.com/downloads) (để clone/push project) 
 - [Cách setup](https://drive.google.com/file/d/16ZwXYzJL6GFS6hdxfOegy3jMIeAs9ptw/view?usp=drive_link)
 ---
+
+
