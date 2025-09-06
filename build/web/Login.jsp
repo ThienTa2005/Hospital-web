@@ -13,5 +13,11 @@
     </head>
     <body>
         <h1>Hello World!</h1>
+        <%
+            int x = 10;
+            int y = 5;
+            int z = x+y;
+        %>
+        <<h1><%=z%></h1>
     </body>
 </html>
