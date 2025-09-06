@@ -1,4 +1,3 @@
-import java.sql.Connection;
 import Utils.DBUtils;
 public class DB {
     public static void main(String[] args) {
