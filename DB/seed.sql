@@ -68,7 +68,6 @@ CREATE TABLE IF NOT EXISTS Shift_Doctor
 -- Cuộc hẹn
 CREATE TABLE IF NOT EXISTS Appointment
 (
-
 -- TRUY XUAT DEN SHIFT-DOCTOR DE BIET LICH HEN GAN BS NAO THAY VI SHIFT 
     appointment_id INT PRIMARY KEY AUTO_INCREMENT,
     patient_id INT NOT NULL,
@@ -85,24 +84,16 @@ CREATE TABLE IF NOT EXISTS Test
 -- THAM CHIEU DEN BANG SHIFT_DOCTOR VI CHI BAC SI TRONG CA TRUC MOI LAM VIEC
 
     test_id INT PRIMARY KEY AUTO_INCREMENT,
+    test_name VARCHAR(255) NOT NULL,
     test_time DATETIME NOT NULL,
-    appointment_id INT NOT NULL,
-	shift_doctor_id INT NOT NULL,
-    FOREIGN KEY (appointment_id) REFERENCES Appointment(appointment_id) ON DELETE CASCADE,
-    FOREIGN KEY (shift_doctor_id) REFERENCES Shift_Doctor(shift_doctor_id) ON DELETE CASCADE
-);
-
--- Kết quả xét nghiệm
-CREATE TABLE IF NOT EXISTS TestResult
-(
-    result_id INT PRIMARY KEY AUTO_INCREMENT,
-	test_name VARCHAR(255) NOT NULL, 
     parameter VARCHAR(100) NOT NULL,
     parameter_value VARCHAR(100) NOT NULL, 
     unit VARCHAR(100) NOT NULL, 
     reference_range VARCHAR(100) NOT NULL, 
-    test_id INT NOT NULL,
-    FOREIGN KEY (test_id) REFERENCES Test(test_id) ON DELETE CASCADE
+    appointment_id INT NOT NULL,
+	shift_doctor_id INT NOT NULL,
+    FOREIGN KEY (appointment_id) REFERENCES Appointment(appointment_id) ON DELETE CASCADE,
+    FOREIGN KEY (shift_doctor_id) REFERENCES Shift_Doctor(shift_doctor_id) ON DELETE CASCADE
 );
 
 -- Hồ sơ khám bệnh
@@ -111,18 +102,11 @@ CREATE TABLE IF NOT EXISTS MedicalRecord
     record_id INT PRIMARY KEY AUTO_INCREMENT,
     diagnosis VARCHAR(255) NOT NULL,
     notes VARCHAR(255),
+    prescription VARCHAR(255),
     appointment_id INT NOT NULL, 
     FOREIGN KEY (appointment_id) REFERENCES Appointment(appointment_id) ON DELETE CASCADE
 );
 
--- Đơn thuốc
-CREATE TABLE IF NOT EXISTS Prescription
-(
-    prescription_id INT PRIMARY KEY AUTO_INCREMENT,
-    appointment_id INT NOT NULL,
-    prescription VARCHAR(255),
-    FOREIGN KEY (appointment_id) REFERENCES Appointment(appointment_id) ON DELETE CASCADE
-);
 
 -- INSERT DL MAU
 
@@ -166,24 +150,16 @@ INSERT INTO Appointment (patient_id, shift_doctor_id, appointment_date, status) 
 (4, 1, NOW(), 'pending'), -- bn01 hẹn với bs01 sáng nay
 (5, 2, NOW(), 'pending'); -- bn02 hẹn với bs02 chiều nay
 
--- 8. Test
-INSERT INTO Test (test_time, appointment_id, shift_doctor_id) VALUES
-(NOW(), 1, 1); -- xét nghiệm cho bn01 trong cuộc hẹn 1
+-- 8. Test (ví dụ xét nghiệm máu với 2 chỉ số Hb và WBC)
+INSERT INTO Test (test_name, test_time, appointment_id, shift_doctor_id, parameter, parameter_value, unit, reference_range) VALUES
+('Xét nghiệm máu', NOW(), 1, 1, 'Hb', '13.5', 'g/dL', '12-16'),
+('Xét nghiệm máu', NOW(), 1, 1, 'WBC', '7.2', '10^9/L', '4-10');
 
--- 9. TestResult
-INSERT INTO TestResult (test_name, parameter, parameter_value, unit, reference_range, test_id) VALUES
-('Xét nghiệm máu', 'Hb', '13.5', 'g/dL', '12-16', 1),
-('Xét nghiệm máu', 'WBC', '7.2', '10^9/L', '4-10', 1);
+-- 9. MedicalRecord
+INSERT INTO MedicalRecord (diagnosis, notes, prescription, appointment_id) VALUES
+('Viêm họng cấp', 'Nghỉ ngơi, uống nhiều nước', 'Paracetamol 500mg, ngày 3 lần sau ăn', 1),
+('Đau dạ dày', 'Tránh đồ cay nóng', 'Omeprazole 20mg, ngày 2 lần trước bữa ăn', 2);
 
--- 10. MedicalRecord
-INSERT INTO MedicalRecord (diagnosis, notes, appointment_id) VALUES
-('Viêm họng cấp', 'Nghỉ ngơi, uống nhiều nước', 1),
-('Đau dạ dày', 'Tránh đồ cay nóng', 2);
-
--- 11. Prescription
-INSERT INTO Prescription (appointment_id, prescription) VALUES
-(1, 'Paracetamol 500mg, ngày 3 lần sau ăn'),
-(2, 'Omeprazole 20mg, ngày 2 lần trước bữa ăn');
 
 
 
