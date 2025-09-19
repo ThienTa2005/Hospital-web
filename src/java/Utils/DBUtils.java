@@ -40,47 +40,4 @@ public class DBUtils {
             }
         }
     }
-
-    // Hàm in toàn bộ user
-    public static void printUsers() {
-        String query = "SELECT * FROM users";
-        try (Connection conn = getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
-
-            System.out.println("=== USERS ===");
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                String username = rs.getString("username");
-                String password = rs.getString("password");
-                String role = rs.getString("role");
-                System.out.printf("%d | %s | %s | %s%n", id, username, password, role);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // Hàm in toàn bộ bệnh nhân
-    public static void printPatients() {
-        String query = "SELECT * FROM patients";
-        try (Connection conn = getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
-
-            System.out.println("=== PATIENTS ===");
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                String name = rs.getString("name");
-                String dob = rs.getString("dob");
-                String gender = rs.getString("gender");
-                String address = rs.getString("address");
-                String phone = rs.getString("phone");
-                System.out.printf("%d | %s | %s | %s | %s | %s%n",
-                        id, name, dob, gender, address, phone);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 }
