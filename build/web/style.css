@@ -73,6 +73,48 @@ button.normal {
   top: 0;
 }
 
+#menubar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center; 
+  margin: 93px 0 0 0;
+  border-top: 0px solid #757070;
+  border-bottom: 2px solid #757070;
+  padding: 10px;
+  background-color: #b6dfc8;
+  
+/*  position: fixed;   👈 cố định trên màn hình 
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;       👈 tràn hết ngang 
+  z-index: 1000; */
+}
+
+#menubar li {
+  list-style: none;
+  margin: 0 20px;
+}
+
+#menubar a {
+    color: #323232;        /* đổi màu chữ */
+    text-decoration: none; /* bỏ gạch chân */
+    font-weight: bold;     /* chữ đậm hơn */
+    padding: 8px 15px 8px 0px; /* tạo khoảng cách cho dễ bấm */
+    font-size: 15px;
+}
+
+#menubar li:not(:last-child)::after {
+  content: "|";
+  color: #333;
+  margin-left: 21px;       /* thêm khoảng cách bên trái dấu | */
+}
+
+#menubar a:hover {
+    color: #778f82; /* màu xanh đậm hơn khi hover (hoặc chọn màu khác) */
+}
+
+
 /* Navbar */
 #navbar {
   display: flex;
@@ -366,3 +408,5 @@ html, body {
   min-width: 320px;
   max-width: 400px;
 }
+
+

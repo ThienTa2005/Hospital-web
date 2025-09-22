@@ -3,13 +3,12 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/hocmo/Hospital-web/web/WEB-INF/web.xml</file>
-            <file>file:/C:/Users/hocmo/Hospital-web/web/login.jsp</file>
-            <file>file:/C:/Users/hocmo/Hospital-web/web/register.jsp</file>
-            <file>file:/C:/Users/hocmo/Hospital-web/web/index.jsp</file>
-            <file>file:/C:/Users/hocmo/Hospital-web/web/footer.jsp</file>
-            <file>file:/C:/Users/hocmo/Hospital-web/web/header.jsp</file>
-            <file>file:/C:/Users/hocmo/Hospital-web/web/style.css</file>
+            <file>file:/D:/Hospital-web/web/index.jsp</file>
+            <file>file:/D:/Hospital-web/web/header.jsp</file>
+            <file>file:/D:/Hospital-web/web/patient_dashboard.jsp</file>
+            <file>file:/D:/Hospital-web/web/doctor_dashboard.jsp</file>
+            <file>file:/D:/Hospital-web/web/style.css</file>
+            <file>file:/D:/Hospital-web/web/admin_dashboard.jsp</file>
         </group>
     </open-files>
 </project-private>
