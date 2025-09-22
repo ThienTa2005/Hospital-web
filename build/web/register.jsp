@@ -10,22 +10,25 @@
 </head>
 <body>
 <%
-    request.setAttribute("currentPage", "login");
+    request.setAttribute("currentPage", "register");
 %>
 <%@ include file="header.jsp" %>
 
 <div id="wrapper">
     <div id="content">
-        <div id="bg-login">
-            <form id="form-login">
-                <h1 class="form-heading">Đăng nhập</h1>
+        <div id="bg-register">
+            <form id="form-register">
+                <h1 class="form-heading">Đăng kí</h1>
                 <div class="form-group">
                     <input type="text" class="form-input" placeholder="Tên đăng nhập">
                 </div>
                 <div class="form-group">
                     <input type="password" class="form-input" placeholder="Mật khẩu">
                 </div>
-                <input type="submit" value="Đăng nhập" class="form-submit">
+                <div class="form-group">
+                    <input type="password" class="form-input" placeholder="Nhập lại mật khẩu">
+                </div>
+                <input type="submit" value="Đăng kí" class="form-submit">
             </form>
         </div>
     </div>

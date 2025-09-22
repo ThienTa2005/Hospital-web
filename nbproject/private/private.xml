@@ -3,9 +3,13 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Admin/Downloads/OOP-Java/code_ptit/du_an1/web/index.html</file>
-            <file>file:/C:/Users/Admin/Downloads/OOP-Java/code_ptit/du_an1/web/META-INF/context.xml</file>
-            <file>file:/C:/Users/Admin/Downloads/OOP-Java/code_ptit/du_an1/src/java/Hello_Servlet.java</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/WEB-INF/web.xml</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/login.jsp</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/register.jsp</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/index.jsp</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/footer.jsp</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/header.jsp</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/style.css</file>
         </group>
     </open-files>
 </project-private>
