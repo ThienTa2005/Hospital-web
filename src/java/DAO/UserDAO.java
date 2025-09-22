@@ -94,7 +94,7 @@ public class UserDAO {
                      ps.setString(1,user.getUsername());
                      ps.setString(2,user.getPassword());
                      ps.setString(3,user.getFullname());
-                     ps.setString(4,user.getDob());
+                     ps.setDate(4, user.getDob());
                      ps.setString(5,user.getGender());
                      ps.setString(6,user.getPhonenum());
                      ps.setString(7,user.getAddress());
@@ -134,7 +134,7 @@ public class UserDAO {
              
              ps.setString(1,user.getPassword());
              ps.setString(2,user.getFullname());
-             ps.setString(3,user.getDob());
+             ps.setDate(4, user.getDob());
              ps.setString(4,user.getGender());
              ps.setString(5,user.getPhonenum());
              ps.setString(6,user.getAddress());
@@ -149,4 +149,5 @@ public class UserDAO {
     }
     
 }
+
 
