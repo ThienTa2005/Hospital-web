@@ -17,13 +17,13 @@
 <div id="wrapper">
     <div id="content">
         <div id="bg-login">
-            <form id="form-login">
+            <form id="form-login" action="login" method="post">
                 <h1 class="form-heading">Đăng nhập</h1>
                 <div class="form-group">
-                    <input type="text" class="form-input" placeholder="Tên đăng nhập">
+                    <input type="text" name="username" class="form-input" placeholder="Tên đăng nhập" required>
                 </div>
                 <div class="form-group">
-                    <input type="password" class="form-input" placeholder="Mật khẩu">
+                    <input type="password" name="password" class="form-input" placeholder="Mật khẩu" required>
                 </div>
                 <input type="submit" value="Đăng nhập" class="form-submit">
             </form>
