@@ -15,7 +15,7 @@
             <p class="error">${error}</p>
         </c:if>
 
-        <form action="LoginServlet" method="post">
+        <form action="login" method="post">
             <input type="text" name="username" placeholder="Tên đăng nhập" required>
             <input type="password" name="password" placeholder="Mật khẩu" required>
             <button type="submit">Đăng nhập</button>
@@ -23,3 +23,4 @@
     </div>
 </body>
 </html>
+
