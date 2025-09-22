@@ -48,10 +48,10 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
                 response.sendRedirect("views/admin/Admin_dashboard.jsp");
                 break;
             case "doctor":
-                response.sendRedirect("views/admin/Doctor_dashboard.jsp");
+                response.sendRedirect("views/doctor/Doctor_dashboard.jsp");
                 break;
             case "patient":
-                response.sendRedirect("views/admin/Patient_dashboard.jsp");
+                response.sendRedirect("views/patient/Patient_dashboard.jsp");
                 break;
             default:
                 response.sendRedirect("index.jsp");
@@ -62,3 +62,4 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
     }
 }
 }
+
