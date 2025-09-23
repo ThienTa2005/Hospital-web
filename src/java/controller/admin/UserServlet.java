@@ -32,7 +32,9 @@ public class UserServlet extends HttpServlet
         if(action == null) action = "list";
         
         switch(action) {
-            
+            case "add":
+                addUser(request, response);
+                break;
             case "delete":
                 deleteUser(request, response);
                 break;
@@ -54,6 +56,13 @@ public class UserServlet extends HttpServlet
         request.setAttribute("username", username);
         request.setAttribute("users", users);
         request.getRequestDispatcher("/views/admin/users.jsp").forward(request, response);
+    }
+    
+    //Them
+    public void addUser(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+IOException
+    {
+        
     }
     
     //Xoa
