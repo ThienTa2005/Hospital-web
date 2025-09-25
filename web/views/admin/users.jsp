@@ -84,15 +84,23 @@
                     %>
                 </td>
                 <td> 
-                    <button class="edit"> Chỉnh sửa </button>
+<!--                    <button class="edit"> Chỉnh sửa </button>-->
+                    <a href="#" class="edit" data-bs-toggle="modal" >Chỉnh sửa</a>
+
 <!--                    <a href="${pageContext.request.contextPath}/admin/user?action=delete&id=<%=u.getUserId()%>" 
                     onclick="return confirm('Bạn có chắc muốn xóa user này không?')" 
                     class="btn btn-danger btn-sm">Xóa</a>-->
                     
-                    <a href="${pageContext.request.contextPath}/admin/user?action=delete&id=<%=u.getUserId()%>" 
-                  class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">Xóa</a>
-
+<!--                    <a href="${pageContext.request.contextPath}/admin/user?action=delete&id=<%=u.getUserId()%>" 
+                  class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">Xóa</a>-->
                     
+                    <a href="#" 
+                        class="btn btn-danger btn-sm" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#confirmDeleteModal"
+                        data-id="<%= u.getUserId() %>">
+                        Xóa
+                    </a>
                 </td>
             </tr>
         <%  
@@ -118,14 +126,39 @@
           <div class="modal-body">
             Bạn có chắc chắn muốn xóa người dùng này không?
           </div>
+<!--        <div class="modal-footer"> 
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button> 
+                <a href="deleteUser?id=1" class="btn btn-danger" style="padding: 8px 12px;">Xóa</a>
+            </div>-->
+            
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-            <a href="deleteUser?id=1" class="btn btn-danger" style="padding: 8px 12px;">Xóa</a>
+            <a id="confirmDeleteBtn" href="#" class="btn btn-danger" style="padding: 8px 12px;">Xóa</a>
           </div>
         </div>
       </div>
     </div>
     
+    
+    
+    <script>
+        const contextPath = "${pageContext.request.contextPath}";
+        const deleteModal = document.getElementById('confirmDeleteModal');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+
+        deleteModal.addEventListener('show.bs.modal', function (event) {
+          const button = event.relatedTarget;
+          const userId = button.getAttribute('data-id');
+
+          if (userId && userId.trim() !== "") {
+             confirmDeleteBtn.href = contextPath + "/admin/user?action=delete&id=" + userId;
+          } else {
+            console.error("⚠ ID người dùng bị rỗng!");
+            confirmDeleteBtn.href = "#";
+          }
+        });
+    </script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </body>
 </html>

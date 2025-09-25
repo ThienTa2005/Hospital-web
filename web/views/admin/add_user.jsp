@@ -19,6 +19,10 @@
         .card {
             border-radius: 10px;
         }
+        
+        .card-header {
+            background: -webkit-linear-gradient(20deg, #5FBF76, #1E5631);
+        }
 
         .card-header h4 {
             font-weight: bold;
@@ -40,32 +44,40 @@
         .container mt-5 {
             font-size: 1rem;
         }
+        
+        body.custom-page #header {
+            margin-bottom: 10px !important;
+        }
     </style>
 </head>
 
-<body>
+<body class="custom-page">
     <jsp:include page="/views/shared/user_header.jsp" />
   
 <!--    <div class="user"><h1> THÊM NGƯỜI DÙNG </h1></div>-->
     
-    <body class="bg-light">
 
-<div class="container mt-5">
+
+<div class="container mt-5" style="padding-top: 0px">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <!-- Card -->
             <div class="card shadow-lg border-0 rounded-4">
-                <div class="card-header text-white text-center rounded-top-4" style="background-color: #40855E;">
+                <div class="card-header text-white text-center rounded-top-4">
                     <h4>Thêm người dùng</h4>
                 </div>
                 <div class="card-body">
-                    <form action="${pageContext.request.contextPath}/UserServlet?action=add" method="post" style="margin-top:10px;">
+                    <form id="addForm" action="${pageContext.request.contextPath}/admin/user?action=add" method="post" accept-charset="UTF-8">
                         
                         <!-- Tên đăng nhập -->
                         <div class="row mb-3 align-items-center">
                             <label for="username" class="col-sm-3 col-form-label">Tên đăng nhập</label>
                             <div class="col-sm-9">
                                 <input type="text" id="username" name="username" class="form-control" placeholder="Nhập tên đăng nhập" required>
+                                <% if (request.getAttribute("errorMessage") != null) { %>
+                                 <small id="usernameError" class="text-danger"><%= request.getAttribute("errorMessage") %></small>
+                                 <% } %>
+
                             </div>
                         </div>
 
@@ -82,9 +94,18 @@
                             <label for="confirmPassword" class="col-sm-3 col-form-label">Nhập lại mật khẩu</label>
                             <div class="col-sm-9">
                                 <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="Nhập lại mật khẩu" required>
+                                <small id="passwordError" class="text-danger"></small>
                             </div>
                         </div>
 
+                        <!-- Ho va ten -->
+                        <div class="row mb-3 align-items-center">
+                            <label for="fullname" class="col-sm-3 col-form-label">Họ và tên</label>
+                            <div class="col-sm-9">
+                                <input type="text" id="fullname" name="fullname" class="form-control" placeholder="Nhập họ và tên" required>
+                            </div>
+                        </div>
+                        
                         <!-- Ngày sinh -->
                         <div class="row mb-3 align-items-center">
                             <label for="dob" class="col-sm-3 col-form-label">Ngày sinh</label>
@@ -116,6 +137,14 @@
                                 <div class="form-text">Nhập đúng định dạng 10 chữ số</div>
                             </div>
                         </div>
+                        
+                        <!-- Dia chi -->
+                         <div class="row mb-3 align-items-center">
+                            <label for="address" class="col-sm-3 col-form-label">Địa chỉ</label>
+                            <div class="col-sm-9">
+                                <input type="text" id="address" name="address" class="form-control" placeholder="Nhập địa chỉ" required>
+                            </div>
+                        </div>
 
                         <!-- Vai trò -->
                         <div class="row mb-3 align-items-center">
@@ -131,9 +160,10 @@
                         </div>
 
                         <!-- Buttons -->
-                        <div class="d-flex justify-content-between">
-                            <button type="submit" class="btn text-white" style="background-color: #40855E;">Lưu</button>
-                            <a href="${pageContext.request.contextPath}/admin/user?action=list" class="btn btn-secondary">Hủy</a>
+                        <div class="d-flex justify-content-between" style="margin-top: 10px;">
+                            <a href="${pageContext.request.contextPath}/admin/user?action=list" class="btn btn-secondary cancel-btn">Hủy</a>
+                            <button type="submit" class="btn text-white save-btn" style="background-color: #40855E;">Lưu</button>
+                            
                         </div>
 
                     </form>
@@ -144,21 +174,52 @@
 </div>
 
 <!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 
 <!-- Kiểm tra mật khẩu -->
 <script>
-    document.querySelector("form").addEventListener("submit", function(e) {
-        const password = document.getElementById("password").value;
-        const confirmPassword = document.getElementById("confirmPassword").value;
-        if (password !== confirmPassword) {
-            e.preventDefault();
-            alert("Mật khẩu nhập lại không khớp!");
-        }
-    });
+  const form = document.getElementById("addForm");
+  const password = document.getElementById("password");
+  const confirmPassword = document.getElementById("confirmPassword");
+  const errorMsg = document.getElementById("passwordError");
+
+  // Kiểm tra khi submit
+  form.addEventListener("submit", function (e) {
+    if (password.value.trim() !== confirmPassword.value.trim()) {
+      e.preventDefault(); // Chặn submit
+      errorMsg.textContent = "⚠️ Mật khẩu nhập lại không khớp!";
+      confirmPassword.classList.add("is-invalid"); // Thêm border đỏ Bootstrap
+    } else {
+      errorMsg.textContent = "";
+      confirmPassword.classList.remove("is-invalid");
+    }
+  });
+
+  // Xóa lỗi khi người dùng gõ lại
+  confirmPassword.addEventListener("input", function () {
+    if (password.value.trim() === confirmPassword.value.trim()) {
+      errorMsg.textContent = "";
+      confirmPassword.classList.remove("is-invalid");
+    }
+  });
+</script>
+
+<script>
+  const usernameInput = document.getElementById("username");
+  const usernameError = document.getElementById("usernameError");
+
+  // Khi người dùng gõ vào ô username
+  usernameInput.addEventListener("input", function () {
+    if (usernameError.textContent.trim() !== "") {
+      usernameError.textContent = "";           // Xóa thông báo lỗi
+      usernameInput.classList.remove("is-invalid"); // Bỏ viền đỏ Bootstrap (nếu có)
+    }
+  });
 </script>
 
 
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

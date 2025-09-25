@@ -80,32 +80,25 @@ public class UserDAO {
     }
 
     //thêm user
-    public boolean createUser(User user) throws SQLException
+    public void createUser(User user) throws SQLException
     {
-         if(!(isUsernameExist(user.getUsername())))
-        {
-                String sql="insert into users(username, password, fullname, dob, gender, phonenum, address, role) values (?,?,?,?,?,?,?,?)";
-                
-        
-                 try(
-                    Connection connection=DBUtils.getConnection();
-                    PreparedStatement ps=connection.prepareStatement(sql)){
-            
-                     ps.setString(1,user.getUsername());
-                     ps.setString(2,user.getPassword());
-                     ps.setString(3,user.getFullname());
-                     ps.setDate(4,user.getDob());
-                     ps.setString(5,user.getGender());
-                     ps.setString(6,user.getPhonenum());
-                     ps.setString(7,user.getAddress());
-                     ps.setString(8,user.getRole());
-                     
-                 
-                     return ps.executeUpdate()>0;
-                }
-        }
-        System.out.println("USERNAME DA TON TAI");
-        return false;
+        String sql="insert into users(username, password, fullname, dob, gender, phonenum, address, role) values (?,?,?,?,?,?,?,?)";
+
+        try(
+           Connection connection=DBUtils.getConnection();
+           PreparedStatement ps=connection.prepareStatement(sql)){
+
+            ps.setString(1,user.getUsername());
+            ps.setString(2,user.getPassword());
+            ps.setString(3,user.getFullname());
+            ps.setDate(4, new java.sql.Date(user.getDob().getTime()));
+            ps.setString(5,user.getGender());
+            ps.setString(6,user.getPhonenum());
+            ps.setString(7,user.getAddress());
+            ps.setString(8,user.getRole());
+
+            ps.executeUpdate();
+        }       
     }
 
     //xóa user
