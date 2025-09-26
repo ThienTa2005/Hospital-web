@@ -49,10 +49,10 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
                 response.sendRedirect(request.getContextPath() + "/admin/user");
                 break;
             case "doctor":
-                response.sendRedirect("views/doctor/doctor_dashboard.jsp");
+                response.sendRedirect(request.getContextPath() + "/views/doctor/doctor_dashboard.jsp");
                 break;
             case "patient":
-                response.sendRedirect("views/patient/patient_dashboard.jsp");
+                response.sendRedirect(request.getContextPath() + "/views/patient/patient_dashboard");
                 break;
             default:
                 response.sendRedirect("index.jsp");

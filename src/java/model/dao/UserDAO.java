@@ -101,7 +101,9 @@ public class UserDAO {
                      ps.setString(8,user.getRole());
                      
                  
-                     return ps.executeUpdate()>0;
+                     int rows = ps.executeUpdate();
+                    System.out.println("Rows affected = " + rows);
+                    return rows > 0;
                 }
         }
         System.out.println("USERNAME DA TON TAI");
@@ -186,5 +188,24 @@ public class UserDAO {
         return list;
     }
     
+    public boolean updateUserById(User user) throws SQLException {
+    String sql = "UPDATE users SET username=?, password=?, fullname=?, dob=?, gender=?, phonenum=?, address=?, role=? WHERE user_id=?";
+    try (Connection conn = DBUtils.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setString(1, user.getUsername());
+        ps.setString(2, user.getPassword());
+        ps.setString(3, user.getFullname());
+        ps.setDate(4, user.getDob());
+        ps.setString(5, user.getGender());
+        ps.setString(6, user.getPhonenum());
+        ps.setString(7, user.getAddress());
+        ps.setString(8, user.getRole());
+        ps.setInt(9, user.getUserId());
+        int rows = ps.executeUpdate();
+        System.out.println("Rows affected = " + rows);
+        return rows > 0;
+    }
+}
+
     
 }

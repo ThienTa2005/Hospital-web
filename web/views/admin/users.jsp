@@ -281,6 +281,16 @@
         .btn-danger:hover {
             background: #c9302c;
         }
+        .add-button {
+            background: #40855E;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            padding: 6px 10px;
+            display: inline-block;   /*  giữ nút vừa nội dung */
+            width: auto;             /*  không chiếm full */
+        }
     </style>
 </head>
 
@@ -337,7 +347,75 @@
             </form>
             </div>
             <div class="col-3"></div>
-            <div class="col-3 text-end"><button class="add-button"> Thêm người dùng </button> </div>
+<!--            <div class="col-3 text-end"><button class="add-button"> Thêm người dùng </button> </div>-->
+
+<!-- Nút mở modal ------------------->
+<button class="add-button" data-bs-toggle="modal" data-bs-target="#userModal" 
+        onclick="openAddForm()">Thêm người dùng</button>
+
+<!-- Modal Form -->
+<div class="modal fade" id="userModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form action="${pageContext.request.contextPath}/admin/user" method="post">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalTitle">Thêm người dùng</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" name="action" id="formAction" value="create">
+            <input type="hidden" name="userId" id="userId">
+
+            <div class="mb-3">
+              <label>Username</label>
+              <input type="text" class="form-control" name="username" id="username" required>
+            </div>
+            <div class="mb-3">
+              <label>Password</label>
+              <input type="password" class="form-control" name="password" id="password" required>
+            </div>
+            <div class="mb-3">
+              <label>Họ tên</label>
+              <input type="text" class="form-control" name="fullname" id="fullname" required>
+            </div>
+            <div class="mb-3">
+              <label>Ngày sinh</label>
+              <input type="date" class="form-control" name="dob" id="dob">
+            </div>
+            <div class="mb-3">
+              <label>Giới tính</label>
+              <select class="form-control" name="gender" id="gender">
+                <option value="M">Nam</option>
+                <option value="F">Nữ</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label>Số điện thoại</label>
+              <input type="text" class="form-control" name="phonenum" id="phonenum">
+            </div>
+            <div class="mb-3">
+              <label>Địa chỉ</label>
+              <input type="text" class="form-control" name="address" id="address">
+            </div>
+            <div class="mb-3">
+              <label>Vai trò</label>
+              <select class="form-control" name="role" id="role">
+                <option value="admin">Admin</option>
+                <option value="doctor">Bác sĩ</option>
+                <option value="patient">Bệnh nhân</option>
+              </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success">Lưu</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!------------------------------------>
+
         </div>
     </div>
 
@@ -370,7 +448,7 @@
                 <td><%= u.getPassword() %></td>
                 <td class="fullname"><%= u.getFullname() %></td>
                 <td><%= sdf.format(u.getDob()) %></td>
-                <td><%= u.getGender() %></td>
+                <td><%= u.getGender().equals("M") ? "Nam" : "Nữ" %></td>
                 <td><%= u.getPhonenum() %></td>
                 <td><%= u.getAddress() %></td>
                 <td>
@@ -382,7 +460,17 @@
                     %>
                 </td>
                 <td> 
-                    <button class="edit"> Chỉnh sửa </button>
+<!--                    <button class="edit"> Chỉnh sửa </button>-->
+
+<button class="edit" 
+  data-bs-toggle="modal" data-bs-target="#userModal"
+  onclick="openEditForm(<%=u.getUserId()%>, '<%=u.getUsername()%>', '<%=u.getPassword()%>', 
+                        '<%=u.getFullname()%>', '<%=sdf.format(u.getDob())%>', 
+                        '<%=u.getGender()%>', '<%=u.getPhonenum()%>', 
+                        '<%=u.getAddress()%>', '<%=u.getRole()%>')">Chỉnh sửa</button>
+
+<!------------------------------------------------------->             
+
                     <a href="${pageContext.request.contextPath}/admin/user?action=delete&id=<%=u.getUserId()%>" 
                     onclick="return confirm('Bạn có chắc muốn xóa user này không?')" 
                     class="btn btn-danger btn-sm">Xóa</a>
@@ -399,5 +487,36 @@
             }
         %>
     </table>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+function openAddForm() {
+    document.getElementById("modalTitle").innerText = "Thêm người dùng";
+    document.getElementById("formAction").value = "create";
+    document.getElementById("userId").value = "";
+    document.getElementById("username").value = "";
+    document.getElementById("password").value = "";
+    document.getElementById("fullname").value = "";
+    document.getElementById("dob").value = "";
+    document.getElementById("gender").value = "Nam";
+    document.getElementById("phonenum").value = "";
+    document.getElementById("address").value = "";
+    document.getElementById("role").value = "patient";
+}
+
+function openEditForm(id, username, password, fullname, dob, gender, phonenum, address, role) {
+    document.getElementById("modalTitle").innerText = "Chỉnh sửa người dùng";
+    document.getElementById("formAction").value = "update";
+    document.getElementById("userId").value = id;
+    document.getElementById("username").value = username;
+    document.getElementById("password").value = password;
+    document.getElementById("fullname").value = fullname;
+    document.getElementById("dob").value = dob.split('/').reverse().join('-'); // dd/MM/yyyy -> yyyy-MM-dd
+    document.getElementById("gender").value = gender;
+    document.getElementById("phonenum").value = phonenum;
+    document.getElementById("address").value = address;
+    document.getElementById("role").value = role;
+} 
+</script>
 </body>
 </html>

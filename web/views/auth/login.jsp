@@ -26,6 +26,13 @@
                     <input type="password" name="password" class="form-input" placeholder="Mật khẩu" required>
                 </div>
                 <input type="submit" value="Đăng nhập" class="form-submit">
+                 <div>
+      <% String error = (String) request.getAttribute("error"); 
+         if(error != null){ %>
+         <p style="color:red"><%= error%></p>
+       <% } %>
+         
+    </div>
             </form>
         </div>
     </div>

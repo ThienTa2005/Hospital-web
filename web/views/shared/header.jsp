@@ -18,7 +18,7 @@
         <li><a href="<%= request.getContextPath() %>/login" class="<%= "login".equals(currentPage) ? "active" : "" %>">Đăng nhập</a></li>
         <li><a href="views/auth/register.jsp" class="<%= "register".equals(currentPage) ? "active" : "" %>">Đăng kí</a></li>
         <li><a href="about.jsp" class="<%= "about".equals(currentPage) ? "active" : "" %>">Về chúng tôi</a></li>
-        <li><a href="contact.jsp" class="<%= "contact".equals(currentPage) ? "active" : "" %>">Liên hệ</a></li>
+        <li><a href="#footer" class="<%= "contact".equals(currentPage) ? "active" : "" %>">Liên hệ</a></li>
         </ul>
     </div>
   </div>

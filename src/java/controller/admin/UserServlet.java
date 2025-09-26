@@ -24,7 +24,56 @@ public class UserServlet extends HttpServlet
     {
         userDAO = new UserDAO();
     }
-        
+    
+//----------------------------
+
+@Override
+protected void doPost(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+    String action = request.getParameter("action");
+    String dobStr = request.getParameter("dob");
+    java.sql.Date dob = null;
+    if (dobStr != null && !dobStr.isEmpty()) {
+        dob = java.sql.Date.valueOf(dobStr); // chỉ khi có giá trị yyyy-MM-dd hợp lệ
+    }
+
+    try {
+        if ("create".equals(action)) {
+            User u = new User(0,
+                request.getParameter("username"),
+                request.getParameter("password"),
+                request.getParameter("fullname"),
+                dob,
+                request.getParameter("gender"),
+                request.getParameter("phonenum"),
+                request.getParameter("address"),
+                request.getParameter("role")
+            );
+            userDAO.createUser(u);
+        } else if ("update".equals(action)) {
+            User u = new User(
+                Integer.parseInt(request.getParameter("userId")),
+                request.getParameter("username"),
+                request.getParameter("password"),
+                request.getParameter("fullname"),
+                dob,
+                request.getParameter("gender"),
+                request.getParameter("phonenum"),
+                request.getParameter("address"),
+                request.getParameter("role")
+            );
+            userDAO.updateUserById(u);
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    response.sendRedirect(request.getContextPath() + "/admin/user");
+}
+
+    
+//-----------------------------    
+    
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
