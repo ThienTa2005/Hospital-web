@@ -76,11 +76,31 @@ public class UserDAO {
             } 
            
         }
-        
+    }
+    
+    public boolean checkEditUsername(String username, int id) throws SQLException
+    {
+        String sql = "SELECT user_id FROM users WHERE username = ?";
+        try (Connection connection = DBUtils.getConnection();
+         PreparedStatement ps = connection.prepareStatement(sql)) {
+
+        ps.setString(1, username);
+
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                int userId = rs.getInt("user_id"); 
+                return userId != id; 
+            }
+        }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false; 
     }
 
     //thêm user
-    public void createUser(User user) throws SQLException
+    public boolean createUser(User user) throws SQLException
     {
         String sql="insert into users(username, password, fullname, dob, gender, phonenum, address, role) values (?,?,?,?,?,?,?,?)";
 
@@ -97,7 +117,7 @@ public class UserDAO {
             ps.setString(7,user.getAddress());
             ps.setString(8,user.getRole());
 
-            ps.executeUpdate();
+            return ps.executeUpdate() > 0;
         }       
     }
 
@@ -119,7 +139,8 @@ public class UserDAO {
     public void deleteUser(int id) {
         String sql = "DELETE FROM users WHERE user_id = ?;";
         try (Connection conn = DBUtils.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+            PreparedStatement ps = conn.prepareStatement(sql)) {
+            
             ps.setInt(1, id);
             int rows = ps.executeUpdate();
             System.out.println("Rows deleted: " + rows);
@@ -129,26 +150,24 @@ public class UserDAO {
     }
     
     //truyen thang user moi, dung username de xac dinh doi tuong update
-    public  boolean updateUser(User user) throws SQLException{
-     if(isUsernameExist(user.getUsername())){
-         String sql="update users set password=?,fullname=?,dob=?,gender=?,phonenum=?,address=?,role=? where username=?";
+    public  void updateUser(User user) throws SQLException{
+         String sql="update users set username=?, password=?,fullname=?,dob=?,gender=?,phonenum=?,address=?,role=? where user_id=?";
          try(
             Connection connection = DBUtils.getConnection();
             PreparedStatement ps=connection.prepareStatement(sql)){
              
-             ps.setString(1,user.getPassword());
-             ps.setString(2,user.getFullname());
-             ps.setDate(3,user.getDob());
-             ps.setString(4,user.getGender());
-             ps.setString(5,user.getPhonenum());
-             ps.setString(6,user.getAddress());
-             ps.setString(7,user.getRole());
-             ps.setString(8,user.getUsername());
+             ps.setString(1, user.getUsername());
+             ps.setString(2,user.getPassword());
+             ps.setString(3,user.getFullname());
+             ps.setDate(4,user.getDob());
+             ps.setString(5,user.getGender());
+             ps.setString(6,user.getPhonenum());
+             ps.setString(7,user.getAddress());
+             ps.setString(8,user.getRole());
+             ps.setInt(9,user.getUserId());
              
-             return ps.executeUpdate()>0;
+             ps.executeUpdate();
          }
-     }
-     return false;     
     }
     
     //Tim kiem theo ten

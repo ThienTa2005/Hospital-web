@@ -13,12 +13,46 @@
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha512-DxV+EoADOkOygM4IR9yXP8Sb2qwgidEmeqAEmDKIOfPRQZOWbXCzLC6vjbZyy0vPisbH2SyW27+ddLVCN+OMzQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/user_style.css">
+    
+    <style>
+        .toast-container {
+            top: 65px !important;    
+            z-index: 1055;           
+        }
+    </style>
 </head>
 
 <body>
     <jsp:include page="/views/shared/user_header.jsp" />
+    
+    <!-- Thanh cong -->   
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div id="successToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                     Chỉnh sửa thành công!
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- That bai  -->
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div id="errorToast" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    Chỉnh sửa thất bại! <br>
+                    Tên đăng nhập đã tồn tại, vui lòng chọn tên khác.
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
   
     <div class="user"><h1> DANH SÁCH NGƯỜI DÙNG </h1></div>
     
@@ -33,7 +67,7 @@
             </div>
             <div class="col-3"></div>
             <div class="col-3 text-end"><a href="${pageContext.request.contextPath}/views/admin/add_user.jsp" class="add-button">
-                Thêm người dùng
+              <i class="fa-solid fa-user-plus" style="margin-right: 5px;"></i>  Thêm người dùng
                 </a> 
             </div>
         </div>
@@ -85,7 +119,21 @@
                 </td>
                 <td> 
 <!--                    <button class="edit"> Chỉnh sửa </button>-->
-                    <a href="#" class="edit" data-bs-toggle="modal" >Chỉnh sửa</a>
+<!--                    <a href="#" class="edit" data-bs-toggle="modal" >Chỉnh sửa</a>-->
+
+                        <button class="edit" 
+                            data-bs-toggle="modal" data-bs-target="#editModal"
+                            data-id="<%=u.getUserId()%>"
+                            data-username="<%=u.getUsername()%>"
+                            data-password="<%=u.getPassword()%>"
+                            data-fullname="<%=u.getFullname()%>"
+                            data-dob="<%=sdf.format(u.getDob())%>"
+                            data-gender="<%=u.getGender()%>"
+                            data-phonenum="<%=u.getPhonenum()%>"
+                            data-address="<%=u.getAddress()%>"
+                            data-role="<%=u.getRole()%>">
+                            Chỉnh sửa
+                        </button>
 
 <!--                    <a href="${pageContext.request.contextPath}/admin/user?action=delete&id=<%=u.getUserId()%>" 
                     onclick="return confirm('Bạn có chắc muốn xóa user này không?')" 
@@ -139,8 +187,6 @@
       </div>
     </div>
     
-    
-    
     <script>
         const contextPath = "${pageContext.request.contextPath}";
         const deleteModal = document.getElementById('confirmDeleteModal');
@@ -158,6 +204,132 @@
           }
         });
     </script>
+    
+    <!-- Modal chinh sua -->
+    <div class="modal fade" id="editModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <form action="${pageContext.request.contextPath}/admin/user?action=edit" method="post">
+            <div class="modal-header" style="background: #569571;">
+              <h5 class="modal-title text-center w-100" id="modalTitle" style="font-weight: 500; color: white;">Chỉnh sửa người dùng</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name="action" id="formAction" value="create">
+                <input type="hidden" name="userId" id="userId">
+
+                <div class="mb-3">
+                  <label>Tên đăng nhập</label>
+                  <input type="text" class="form-control" name="username" id="username" required>
+                </div>
+                <div class="mb-3">
+                  <label>Mật khẩu</label>
+                  <input type="text" class="form-control" name="password" id="password" required>
+                </div>
+                <div class="mb-3">
+                  <label>Họ tên</label>
+                  <input type="text" class="form-control" name="fullname" id="fullname" required>
+                </div>
+                <div class="mb-3">
+                  <label>Ngày sinh</label>
+                  <input type="date" class="form-control" name="dob" id="dob">
+                </div>
+                <div class="mb-3">
+                  <label>Giới tính</label>
+                  <select class="form-control" name="gender" id="gender">
+                    <option value="M">Nam</option>
+                    <option value="F">Nữ</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label>Số điện thoại</label>
+                  <input type="text" class="form-control" name="phonenum" id="phonenum">
+                </div>
+                <div class="mb-3">
+                  <label>Địa chỉ</label>
+                  <input type="text" class="form-control" name="address" id="address">
+                </div>
+                <div class="mb-3">
+                  <label>Vai trò</label>
+                  <select class="form-control" name="role" id="role">
+                    <option value="admin">Admin</option>
+                    <option value="doctor">Bác sĩ</option>
+                    <option value="patient">Bệnh nhân</option>
+                  </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="window.location.href='${pageContext.request.contextPath}/admin/user?action=list'">Đóng</button>
+              <button type="submit" class="btn btn-success">Lưu</button>            
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Chinh sua -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const editButtons = document.querySelectorAll('.edit');
+
+        editButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                // Lay du lieu
+                const userId = this.dataset.id;
+                const username = this.dataset.username;
+                const password = this.dataset.password;
+                const fullname = this.dataset.fullname;
+                const dob = this.dataset.dob;          
+                const gender = this.dataset.gender;
+                const phonenum = this.dataset.phonenum;
+                const address = this.dataset.address;
+                const role = this.dataset.role;
+
+                // Gan vao o input
+                document.getElementById('userId').value = userId;
+                document.getElementById('username').value = username;
+                document.getElementById('password').value = password;
+                document.getElementById('fullname').value = fullname;
+                document.getElementById('dob').value = dob.split('/').reverse().join('-'); // yyyy-MM-dd
+                document.getElementById('phonenum').value = phonenum;
+                document.getElementById('address').value = address;
+                document.getElementById('gender').value = gender;
+                document.getElementById('role').value = role;
+
+                // hidden action = "edit"
+                document.getElementById('formAction').value = "edit";
+            });
+        });
+    });
+    </script>
+    
+    <!-- toast -->  
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get("error") === "username-exist") {
+                const toastElement = document.getElementById('errorToast');
+                const toast = new bootstrap.Toast(toastElement, {
+                    delay: 3000 // 3 giay
+                });
+                toast.show();
+            }
+        });
+    </script>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get("success") === "true") {
+                const toastElement = document.getElementById('successToast');
+                const toast = new bootstrap.Toast(toastElement, {
+                    delay: 3000 // 3 giay
+                });
+                toast.show();
+            }
+        });
+    </script>
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </body>

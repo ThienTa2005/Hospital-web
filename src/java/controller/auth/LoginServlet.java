@@ -58,7 +58,7 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
                 response.sendRedirect("index.jsp");
         }
     } else {
-        request.setAttribute("error", "Sai tài khoản hoặc mật khẩu!");
+        request.setAttribute("error", "Tên đăng nhập hoặc mật khẩu không chính xác!");
         request.getRequestDispatcher("views/auth/login.jsp").forward(request, response);
     }
 }

@@ -33,17 +33,17 @@ h6 {
 
 p {
   font-size: 12px;
-  color: #465b52;
+  color: black;
 }
 
-/* Section spacing */
+/* Section spacing 
 .section-p1 {
   padding: 40px 80px;
 }
 
 .section-m1 {
   margin: 40px 0;
-}
+}*/
 
 /* Button */
 button.normal {
@@ -60,6 +60,7 @@ button.normal {
 
 /* Header */
 #header {
+  height: 90px;
   position: fixed;
   display: flex;
   align-items: center;
@@ -227,6 +228,7 @@ button.normal {
   width: 100%;
   left: 0;
   bottom: 0;
+  margin-top: auto;
 }
 
 .follow {
@@ -266,12 +268,14 @@ html, body {
     height: 100%;
     margin: 0;
     padding: 0;
+    scroll-behavior: smooth;
 }
 
 #wrapper {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    padding-top: 60px;
 }
 
 #content {
@@ -291,7 +295,11 @@ html, body {
     background-image: url("homepage.jpg");
     background-size: cover;
     background-position: center;
-    padding: 60px 0;
+    padding: 180px 0;
+}
+
+#bg-login button{
+    border: none;
 }
 
 #form-login {
@@ -327,20 +335,41 @@ html, body {
 }
 
 .form-submit {
-  width: 100%;
+  width: 50%;
   padding: 12px;
   font-size: 18px;
-  border: none;
   border-radius: 8px;
-  background-color: #1b5e3a;
-  color: white;
+  background-color: #f4f5f7;
+  color: #1b5e3a;
   cursor: pointer;
   transition: 0.3s ease;
+  border: 1px solid #000;
 }
 
 .form-submit:hover {
   background-color: #14502c;
+  color: white;
 }
+
+.form-register p {
+  font-size: 16px;
+  color: #333;
+  text-align: center;
+  padding-top: 20px;
+}
+
+.form-register a {
+  color: #1b5e3a;         /* đồng bộ màu xanh với heading */
+  font-weight: 600;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.form-register a:hover {
+  text-decoration: underline;
+  color: #14502c;
+}
+
 
 /* Register */
 #bg-register {
@@ -352,17 +381,88 @@ html, body {
     background-image: url("homepage.jpg");
     background-size: cover;
     background-position: center;
-    padding: 28px 0;
+    padding: 60px 0;
 }
 
 #form-register {
   display: flex;
-  flex-direction: column;
+  flex-direction: column; /* vẫn column để heading và sections xếp theo chiều dọc */
   align-items: center;
   padding: 40px;
-  background-color: rgba(255, 255, 255, 0.85);
+  background-color: rgba(255, 255, 255, 0.9);
   border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
   min-width: 320px;
-  max-width: 400px;
+  max-width: 1080px; /* tăng rộng để 2 section nằm cạnh nhau */
+  margin: 0 auto;
+}
+
+/* Container 2 section */
+.form-sections {
+    display: flex;
+    gap: 20px;            /* Khoảng cách giữa 2 section */
+    width: auto;
+    flex-wrap: wrap;       /* Cho phép xuống dòng trên màn hình nhỏ */
+    justify-content: space-between;
+}
+
+/* Mỗi section */
+.form-section {
+    flex: 2;               /* 2 section chia đều chiều rộng */
+    min-width: 280px;      /* Không quá nhỏ trên mobile */
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+.section-heading {
+    padding-bottom: 10px;
+}
+/* Responsive: khi màn hình < 600px, 2 section xếp dọc */
+@media screen and (max-width: 600px) {
+    .form-sections {
+        flex-direction: column;
+    }
+}
+
+.about-section {
+  width: 100%;        /* chiếm hết chiều ngang */
+  margin: 0;
+  padding-top: 5px; /* giảm khoảng trống phía trên */
+  padding-right: 20px;
+  padding-bottom: 20px;
+  padding-left: 20px;
+  height: auto;       /* co theo nội dung */
+  min-height: unset;  /* không ép chiều cao tối thiểu */
+  overflow: visible;  /* không cắt bớt nội dung */
+}
+
+.about-section h3 {
+  font-size: 28px;
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.about-row {
+  display: flex;
+  flex-direction: column;   /* xếp p theo chiều dọc */
+  align-items: flex-start;  /* căn về bên trái */
+}
+
+.about-row p {
+  font-size: 20px;
+  margin: 0 0 12px 0;  /* mỗi đoạn cách nhau 12px */
+  padding: 0;
+  text-align: left;
+}
+
+.about-image {
+    margin-top: 12px;        /* khoảng cách với đoạn văn */
+    width: 100%;             /* chiếm toàn chiều ngang của container */
+    max-width: 500px;        /* giới hạn chiều rộng tối đa */
+    height: 280px;           /* cố định chiều cao để tất cả bằng nhau */
+    object-fit: cover;       /* cắt hình nếu tỉ lệ khác, vẫn đầy khung */
+    border-radius: 8px;      /* bo góc nếu muốn */
+    display: block;          /* tránh khoảng trắng thừa */
 }

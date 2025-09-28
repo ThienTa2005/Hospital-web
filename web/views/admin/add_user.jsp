@@ -1,6 +1,6 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8"%>
 <!doctype html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -48,6 +48,12 @@
         body.custom-page #header {
             margin-bottom: 10px !important;
         }
+        
+        .toast-container {
+            top: 65px !important;    
+            z-index: 1055;           
+        }
+
     </style>
 </head>
 
@@ -55,10 +61,19 @@
     <jsp:include page="/views/shared/user_header.jsp" />
   
 <!--    <div class="user"><h1> THÊM NGƯỜI DÙNG </h1></div>-->
-    
 
+<div class="toast-container position-fixed top-0 end-0 p-3">
+    <div id="successToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                 Thêm người dùng thành công!
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+</div>
 
-<div class="container mt-5" style="padding-top: 0px">
+<div class="container mt-5" style="padding-top: 0px;">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <!-- Card -->
@@ -176,14 +191,14 @@
 <!-- Bootstrap JS -->
 
 
-<!-- Kiểm tra mật khẩu -->
+<!-- Kiem tra mat khau -->
 <script>
   const form = document.getElementById("addForm");
   const password = document.getElementById("password");
   const confirmPassword = document.getElementById("confirmPassword");
   const errorMsg = document.getElementById("passwordError");
 
-  // Kiểm tra khi submit
+  // Kiem tra khi submit
   form.addEventListener("submit", function (e) {
     if (password.value.trim() !== confirmPassword.value.trim()) {
       e.preventDefault(); // Chặn submit
@@ -195,7 +210,7 @@
     }
   });
 
-  // Xóa lỗi khi người dùng gõ lại
+  // Xoa loi khi go lai
   confirmPassword.addEventListener("input", function () {
     if (password.value.trim() === confirmPassword.value.trim()) {
       errorMsg.textContent = "";
@@ -204,22 +219,35 @@
   });
 </script>
 
+<!-- Kiem tra ten dang nhap -->
 <script>
   const usernameInput = document.getElementById("username");
   const usernameError = document.getElementById("usernameError");
 
-  // Khi người dùng gõ vào ô username
+  // Xoa loi khi go
   usernameInput.addEventListener("input", function () {
     if (usernameError.textContent.trim() !== "") {
-      usernameError.textContent = "";           // Xóa thông báo lỗi
-      usernameInput.classList.remove("is-invalid"); // Bỏ viền đỏ Bootstrap (nếu có)
+      usernameError.textContent = "";           
+      usernameInput.classList.remove("is-invalid"); 
     }
   });
 </script>
 
+<!-- Thong bao thanh cong -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get("success") === "true") {
+            const toastElement = document.getElementById('successToast');
+            const toast = new bootstrap.Toast(toastElement, {
+                delay: 3000 // 3 giay
+            });
+            toast.show();
+        }
+    });
+</script>
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 </html>

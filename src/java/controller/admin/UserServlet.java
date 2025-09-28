@@ -35,12 +35,20 @@ public class UserServlet extends HttpServlet
         if(action == null) action = "list";
         
         switch(action) {
+            case "add":
+                String successParam = request.getParameter("success");
+                request.setAttribute("success", successParam);
+                request.getRequestDispatcher("/views/admin/add_user.jsp").forward(request, response);
+                break;
+                
             case "delete":
                 deleteUser(request, response);
                 break;
+                
             case "search":
                 searchUser(request, response);
                 break;
+                
             default:
                 listUser(request, response);
                 break;
@@ -50,29 +58,34 @@ public class UserServlet extends HttpServlet
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-        String action = request.getParameter("action");
-        
+        String action = (String) request.getParameter("action");
+        System.out.println(action);
         switch(action) {
             case "add":
             {
                 try
                 {
                     addUser(request, response);
-                } catch (SQLException ex)
-                {
-                    System.getLogger(UserServlet.class.getName()).
-                            log(System.Logger.Level.ERROR, (String) null, ex);
-                } catch (ParseException ex)
+                } catch (SQLException | ParseException ex)
                 {
                     System.getLogger(UserServlet.class.getName()).
                             log(System.Logger.Level.ERROR, (String) null, ex);
                 }
+                break;
             }
-                break;
-
+       
             case "edit":
-                editUser(request, response);
-                break;
+            {
+                try
+                {
+                    editUser(request, response);
+                } catch (SQLException | ParseException ex)
+                {
+                    System.getLogger(UserServlet.class.getName()).
+                            log(System.Logger.Level.ERROR, (String) null, ex);
+                }
+                break;   
+            }                          
         }
     }
     
@@ -104,6 +117,7 @@ IOException, SQLException, ParseException
         response.setContentType("text/html; charset=UTF-8");
  
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        
         String username = request.getParameter("username");
         if(userDAO.isUsernameExist(username))
         {
@@ -111,6 +125,7 @@ IOException, SQLException, ParseException
             request.getRequestDispatcher("/views/admin/add_user.jsp").forward(request, response);
             return; // Dừng xử lý
         }
+        
         String password = request.getParameter("password");
         String fullname = newString(request.getParameter("fullname"));
         String dob = request.getParameter("dob");
@@ -122,15 +137,49 @@ IOException, SQLException, ParseException
         java.util.Date utilDate = sdf.parse(dob);
         java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
         
-        userDAO.createUser(new User(0, username, password, fullname, sqlDate, gender, phone, address, role));
-        response.sendRedirect(request.getContextPath() + "/views/admin/add_user.jsp");
+        User u = new User(0, username, password, fullname, sqlDate, gender, phone, address, role);
+//        response.sendRedirect(request.getContextPath() + "/views/admin/add_user.jsp");
+        if (userDAO.createUser(u)) {
+            response.sendRedirect(request.getContextPath() + "/admin/user?action=add&success=true");
+        } else {
+             response.sendRedirect(request.getContextPath() + "/admin/user?action=add&success=false");
+        }    
     }
     
     //Chinh sua
     public void editUser(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-IOException
+IOException, SQLException, ParseException
     {
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("text/html; charset=UTF-8");
         
+        int id = Integer.parseInt(request.getParameter("userId"));
+        String username = request.getParameter("username");
+        if(userDAO.checkEditUsername(username, id))
+        {
+//            request.setAttribute("errorMessage", "⚠️ Tên đăng nhập đã tồn tại, vui lòng chọn tên khác.");
+//            request.getRequestDispatcher("/views/admin/users.jsp").forward(request, response);
+            response.sendRedirect(request.getContextPath() + "/admin/user?action=list&error=username-exist");
+            return; 
+        }
+        
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        
+        String password = request.getParameter("password");
+        String fullname = newString(request.getParameter("fullname"));
+        String dob = request.getParameter("dob");
+        String gender = request.getParameter("gender");
+        String phone = request.getParameter("phonenum");
+        String address = newString(request.getParameter("address"));
+        String role = request.getParameter("role");
+        
+        java.util.Date utilDate = sdf.parse(dob);
+        java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+        
+        User u = new User(id, username, password, fullname, sqlDate, gender, phone, address, role);
+        userDAO.updateUser(u);
+        response.sendRedirect(request.getContextPath() + "/admin/user?action=list&success=true");
     }
     
     //Xoa
