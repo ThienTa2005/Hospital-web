@@ -53,6 +53,29 @@
         </div>
     </div>
 
+    <!-- Xoa thanh cong -->   
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div id="deleteToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                     Xóa thành công!
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Xoa ban than  -->
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div id="selfDelete" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    Bạn không được xóa tài khoản của chính mình!
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
   
     <div class="user"><h1> DANH SÁCH NGƯỜI DÙNG </h1></div>
     
@@ -303,7 +326,7 @@
     });
     </script>
     
-    <!-- toast -->  
+    <!-- Ten dang nhap da ton tai -->  
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const urlParams = new URLSearchParams(window.location.search);
@@ -313,10 +336,16 @@
                     delay: 3000 // 3 giay
                 });
                 toast.show();
+                
+                // Xoa url
+                const url = new URL(window.location.href);
+                url.searchParams.delete("error");
+                window.history.replaceState({}, document.title, url.pathname + url.search);
             }
         });
     </script>
     
+    <!-- Chinh sua thanh cong -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const urlParams = new URLSearchParams(window.location.search);
@@ -326,11 +355,53 @@
                     delay: 3000 // 3 giay
                 });
                 toast.show();
+                
+                // Xoa url
+                const url = new URL(window.location.href);
+                url.searchParams.delete("success");
+                window.history.replaceState({}, document.title, url.pathname + url.search);
             }
         });
     </script>
 
-
+    <!-- Chinh sua that bai -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get("delete") === "true") {
+                const toastElement = document.getElementById('deleteToast');
+                const toast = new bootstrap.Toast(toastElement, {
+                    delay: 3000 // 3 giay
+                });
+                toast.show();
+                
+                // Xoa url
+                const url = new URL(window.location.href);
+                url.searchParams.delete("delete");
+                window.history.replaceState({}, document.title, url.pathname + url.search);
+            }
+        });
+    </script>
+    
+    <!-- Xoa tai khoan ban than -->  
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get("error") === "selfDelete") {
+                const toastElement = document.getElementById('selfDelete');
+                const toast = new bootstrap.Toast(toastElement, {
+                    delay: 3000 // 3 giay
+                });
+                toast.show();
+                
+                // Xoa url
+                const url = new URL(window.location.href);
+                url.searchParams.delete("error");
+                window.history.replaceState({}, document.title, url.pathname + url.search);
+            }
+        });
+    </script>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </body>
 </html>

@@ -186,9 +186,18 @@ IOException, SQLException, ParseException
     public void deleteUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {       
         int id = Integer.parseInt(request.getParameter("id"));
-        userDAO.deleteUser(id);
         
-        response.sendRedirect(request.getContextPath() + "/admin/user");
+        HttpSession session = request.getSession();
+        User currentUser = (User) session.getAttribute("user");
+        
+        if (currentUser != null && currentUser.getUserId() == id) {
+            // Khong xoa chinh minh
+            response.sendRedirect(request.getContextPath() + "/admin/user?action=list&error=selfDelete");
+            return;
+        }
+        
+        userDAO.deleteUser(id);
+        response.sendRedirect(request.getContextPath() + "/admin/user?action=list&delete=true");
     }
     
     //Tim kiem

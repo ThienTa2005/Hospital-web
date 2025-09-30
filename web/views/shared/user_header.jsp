@@ -2,10 +2,18 @@
 <section id="header">
     <div class="container d-flex justify-content-between align-items-center" >
         <!-- Logo + Tên phòng khám -->
-        <div class="header-logo">
-<!--            <img src="${pageContext.request.contextPath}/assets/logo.png" alt="Logo">-->
+<!--        <div class="header-logo">
+            <img src="${pageContext.request.contextPath}/assets/logo.png" alt="Logo">
             Quản lý phòng khám
+        </div>-->
+
+        <div class="header-logo">
+            <a href="${pageContext.request.contextPath}/admin/user?action=list" 
+               style="text-decoration: none; color: inherit;">
+                Quản lý phòng khám
+            </a>
         </div>
+
 
         <!-- Menu điều hướng -->
         <div class="nav-menu">

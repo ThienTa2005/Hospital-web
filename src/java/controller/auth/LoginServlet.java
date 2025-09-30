@@ -20,7 +20,7 @@ public class LoginServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         // Chuyển hướng đến trang login.jsp
-        request.getRequestDispatcher("views/auth/login.jsp").forward(request, response);
+        request.getRequestDispatcher("/views/auth/login.jsp").forward(request, response);
     }
     @Override
 protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -58,8 +58,9 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
                 response.sendRedirect("index.jsp");
         }
     } else {
-        request.setAttribute("error", "Tên đăng nhập hoặc mật khẩu không chính xác!");
-        request.getRequestDispatcher("views/auth/login.jsp").forward(request, response);
+        HttpSession session = request.getSession();
+        session.setAttribute("errorMessage", "Tên đăng nhập hoặc mật khẩu không chính xác!");
+        response.sendRedirect("views/auth/login.jsp");
     }
 }
 }

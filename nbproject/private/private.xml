@@ -7,9 +7,7 @@
             <file>file:/C:/Users/Dat/Documents/Study/Java/Hospital-web/src/java/model/dao/UserDAO.java</file>
             <file>file:/C:/Users/Dat/Documents/Study/Java/Hospital-web/src/java/controller/admin/UserServlet.java</file>
             <file>file:/C:/Users/Dat/Documents/Study/Java/Hospital-web/web/views/admin/users.jsp</file>
-            <file>file:/C:/Users/Dat/Documents/Study/Java/Hospital-web/web/views/auth/register.jsp</file>
-            <file>file:/C:/Users/Dat/Documents/Study/Java/Hospital-web/web/views/auth/login.jsp</file>
-            <file>file:/C:/Users/Dat/Documents/Study/Java/Hospital-web/web/views/admin/add_user.jsp</file>
+            <file>file:/C:/Users/Dat/Documents/Study/Java/Hospital-web/web/views/shared/user_header.jsp</file>
         </group>
     </open-files>
 </project-private>

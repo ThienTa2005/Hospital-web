@@ -39,6 +39,7 @@
 %>
 <jsp:include page="/views/shared/header.jsp" />
 
+
 <div class="toast-container position-fixed top-0 end-0 p-3">
     <div id="successToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="d-flex">
@@ -53,7 +54,7 @@
 <div id="wrapper">
     <div id="content">
         <div id="bg-login">
-            <form id="form-login" action="login" method="post">
+            <form id="form-login" action="${pageContext.request.contextPath}/login" method="post">
                 <h1 class="form-heading">Đăng nhập</h1>
                 
                 <% 
@@ -95,6 +96,11 @@
                 delay: 3000 // 3 giay
             });
             toast.show();
+            
+            // Xoa url
+            const url = new URL(window.location.href);
+            url.searchParams.delete("success");
+            window.history.replaceState({}, document.title, url.pathname + url.search);
         }
     });
 </script>
@@ -103,3 +109,4 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+</html>

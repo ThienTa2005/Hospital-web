@@ -243,6 +243,11 @@
                 delay: 3000 // 3 giay
             });
             toast.show();
+            
+            // Xoa url
+            const url = new URL(window.location.href);
+            url.searchParams.delete("success");
+            window.history.replaceState({}, document.title, url.pathname + url.search);
         }
     });
 </script>
