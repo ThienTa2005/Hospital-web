@@ -17,10 +17,25 @@
 
         <!-- Menu điều hướng -->
         <div class="nav-menu">
-            <a href="${pageContext.request.contextPath}/admin/user" class="active">Người dùng</a>
-            <a href="#">Ca trực</a>
-            <a href="#">Hồ sơ bác sĩ</a>
-            <a href="#">Hồ sơ bệnh nhân</a>
+            <a href="${pageContext.request.contextPath}/admin/user"
+                class="${currentPage eq 'user' ? 'active' : ''}">
+                Người dùng
+            </a>
+
+            <a href="${pageContext.request.contextPath}/admin/shift"
+                class="${currentPage eq 'shift' ? 'active' : ''}">
+                Ca trực
+            </a>
+
+            <a href="${pageContext.request.contextPath}/admin/doctor"
+                class="${currentPage eq 'doctor' ? 'active' : ''}">
+                Hồ sơ bác sĩ
+            </a>
+
+            <a href="${pageContext.request.contextPath}/admin/patient"
+                class="${currentPage eq 'patient' ? 'active' : ''}">
+                Hồ sơ bệnh nhân
+            </a>
         </div>
 
         <!-- Đăng xuất -->

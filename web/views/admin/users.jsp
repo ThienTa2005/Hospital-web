@@ -26,6 +26,9 @@
 </head>
 
 <body>
+    <%
+        request.setAttribute("currentPage", "user");
+    %>
     <jsp:include page="/views/shared/user_header.jsp" />
     
     <!-- Thanh cong -->   

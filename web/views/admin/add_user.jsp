@@ -58,6 +58,9 @@
 </head>
 
 <body class="custom-page">
+    <%
+        request.setAttribute("currentPage", "user");
+    %>
     <jsp:include page="/views/shared/user_header.jsp" />
   
 <!--    <div class="user"><h1> THÊM NGƯỜI DÙNG </h1></div>-->

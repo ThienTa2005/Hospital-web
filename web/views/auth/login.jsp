@@ -15,6 +15,14 @@
           margin-bottom: 10px;
       }
       
+      ul {
+          margin-top: 16.5px;
+      }
+      
+      .right-section::before {
+          right: 0px;
+      }
+      
       .error-message {
             color: #dc3545; 
             font-size: 14px;
@@ -85,9 +93,9 @@
         </div>
     </div>
 </div>
-              
+                
 <!-- Thong bao -->
-<script>
+<script> 
     document.addEventListener("DOMContentLoaded", () => {
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get("success") === "true") {
