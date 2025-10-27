@@ -9,7 +9,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Admin page</title>
+    <title>Người dùng</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -80,114 +80,116 @@
         </div>
     </div>
   
-    <div class="user"><h1> DANH SÁCH NGƯỜI DÙNG </h1></div>
-    
-    <div class="container" style="margin-top: -5px; margin-bottom: 5px;">
-        <div class="row">
-            <div class="col-5">
-            <form action="${pageContext.request.contextPath}/admin/user" method="get" class="d-flex">
-                <input type="hidden" name="action" value="search">
-                <input type="text" name="keyword" placeholder="Nhập họ tên" class="form-control me-2" style="width: 180px; height: 37px;">
-                <button class="search-button" >Tìm kiếm</button>
-            </form>
-            </div>
-            <div class="col-3"></div>
-            <div class="col-3 text-end"><a href="${pageContext.request.contextPath}/views/admin/add_user.jsp" class="add-button">
-              <i class="fa-solid fa-user-plus" style="margin-right: 5px;"></i>  Thêm người dùng
-                </a> 
+    <main class="main-content">
+        <div class="user"><h1> DANH SÁCH NGƯỜI DÙNG </h1></div>
+
+        <div class="container" style="margin-top: -5px; margin-bottom: 5px;">
+            <div class="row">
+                <div class="col-5">
+                <form action="${pageContext.request.contextPath}/admin/user" method="get" class="d-flex">
+                    <input type="hidden" name="action" value="search">
+                    <input type="text" name="keyword" placeholder="Nhập họ tên" class="form-control me-2" style="width: 180px; height: 37px;">
+                    <button class="search-button" >Tìm kiếm</button>
+                </form>
+                </div>
+                <div class="col-3"></div>
+                <div class="col-3 text-end"><a href="${pageContext.request.contextPath}/views/admin/add_user.jsp" class="add-button">
+                  <i class="fa-solid fa-user-plus" style="margin-right: 5px;"></i>  Thêm người dùng
+                    </a> 
+                </div>
             </div>
         </div>
-    </div>
 
-    <table class="table-1" border="1" cellpadding="5" cellspacing="0">
-        <tr>
-            <th>STT</th>
-            <th>Tên đăng nhập</th>
-            <th>Mật khẩu</th>
-            <th>Họ tên</th>
-            <th>Ngày sinh</th>
-            <th>Giới tính</th>
-            <th>Số điện thoại</th>
-            <th>Địa chỉ</th>
-            <th>Vai trò</th>
-            <th>Quản lý</th>
-
-        </tr>
-        <%
-        List<User> users = (List<User>) request.getAttribute("users");
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        if (users != null && !users.isEmpty()) {
-            int STT = 1;
-            for (User u : users) {
-        %>
-
+        <table class="table-1" border="1" cellpadding="5" cellspacing="0">
             <tr>
-     
-                <td><%= STT++ %></td>
-                <td><%= u.getUsername() %></td>
-                <td><%= u.getPassword() %></td>
-                <td class="fullname"><%= u.getFullname() %></td>
-                <td><%= sdf.format(u.getDob()) %></td>
-                <td><%= 
-                        u.getGender().equals("M") ? "Nam" :
-                        u.getGender().equals("F") ? "Nữ" :
-                        u.getGender()
-                %></td>
-                <td><%= u.getPhonenum() %></td>
-                <td><%= u.getAddress() %></td>
-                <td>
-                    <%=
-                        u.getRole().equals("doctor") ? "Bác sĩ" :
-                        u.getRole().equals("admin") ? "Admin" :
-                        u.getRole().equals("patient") ? "Bệnh nhân":
-                        u.getRole()
-                    %>
-                </td>
-                <td> 
-<!--                    <button class="edit"> Chỉnh sửa </button>-->
-<!--                    <a href="#" class="edit" data-bs-toggle="modal" >Chỉnh sửa</a>-->
+                <th>STT</th>
+                <th>Tên đăng nhập</th>
+                <th>Mật khẩu</th>
+                <th>Họ tên</th>
+                <th>Ngày sinh</th>
+                <th>Giới tính</th>
+                <th>Số điện thoại</th>
+                <th>Địa chỉ</th>
+                <th>Vai trò</th>
+                <th>Quản lý</th>
 
-                        <button class="edit" 
-                            data-bs-toggle="modal" data-bs-target="#editModal"
-                            data-id="<%=u.getUserId()%>"
-                            data-username="<%=u.getUsername()%>"
-                            data-password="<%=u.getPassword()%>"
-                            data-fullname="<%=u.getFullname()%>"
-                            data-dob="<%=sdf.format(u.getDob())%>"
-                            data-gender="<%=u.getGender()%>"
-                            data-phonenum="<%=u.getPhonenum()%>"
-                            data-address="<%=u.getAddress()%>"
-                            data-role="<%=u.getRole()%>">
-                            Chỉnh sửa
-                        </button>
+            </tr>
+            <%
+            List<User> users = (List<User>) request.getAttribute("users");
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            if (users != null && !users.isEmpty()) {
+                int STT = 1;
+                for (User u : users) {
+            %>
 
-<!--                    <a href="${pageContext.request.contextPath}/admin/user?action=delete&id=<%=u.getUserId()%>" 
-                    onclick="return confirm('Bạn có chắc muốn xóa user này không?')" 
-                    class="btn btn-danger btn-sm">Xóa</a>-->
-                    
-<!--                    <a href="${pageContext.request.contextPath}/admin/user?action=delete&id=<%=u.getUserId()%>" 
-                  class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">Xóa</a>-->
-                    
-                    <a href="#" 
-                        class="btn btn-danger btn-sm" 
-                        data-bs-toggle="modal" 
-                        data-bs-target="#confirmDeleteModal"
-                        data-id="<%= u.getUserId() %>">
-                        Xóa
-                    </a>
-                </td>
-            </tr>
-        <%  
-            }
-        } else {
-        %>
-            <tr>
-                <td colspan="10" style="text-align:center; font-size: 1rem;">Không có dữ liệu người dùng</td>
-            </tr>
-        <%
-            }
-        %>
-    </table>
+                <tr>
+
+                    <td><%= STT++ %></td>
+                    <td><%= u.getUsername() %></td>
+                    <td><%= u.getPassword() %></td>
+                    <td class="fullname"><%= u.getFullname() %></td>
+                    <td><%= sdf.format(u.getDob()) %></td>
+                    <td><%= 
+                            u.getGender().equals("M") ? "Nam" :
+                            u.getGender().equals("F") ? "Nữ" :
+                            u.getGender()
+                    %></td>
+                    <td><%= u.getPhonenum() %></td>
+                    <td><%= u.getAddress() %></td>
+                    <td>
+                        <%=
+                            u.getRole().equals("doctor") ? "Bác sĩ" :
+                            u.getRole().equals("admin") ? "Admin" :
+                            u.getRole().equals("patient") ? "Bệnh nhân":
+                            u.getRole()
+                        %>
+                    </td>
+                    <td> 
+    <!--                    <button class="edit"> Chỉnh sửa </button>-->
+    <!--                    <a href="#" class="edit" data-bs-toggle="modal" >Chỉnh sửa</a>-->
+
+                            <button class="edit" 
+                                data-bs-toggle="modal" data-bs-target="#editModal"
+                                data-id="<%=u.getUserId()%>"
+                                data-username="<%=u.getUsername()%>"
+                                data-password="<%=u.getPassword()%>"
+                                data-fullname="<%=u.getFullname()%>"
+                                data-dob="<%=sdf.format(u.getDob())%>"
+                                data-gender="<%=u.getGender()%>"
+                                data-phonenum="<%=u.getPhonenum()%>"
+                                data-address="<%=u.getAddress()%>"
+                                data-role="<%=u.getRole()%>">
+                                Chỉnh sửa
+                            </button>
+
+    <!--                    <a href="${pageContext.request.contextPath}/admin/user?action=delete&id=<%=u.getUserId()%>" 
+                        onclick="return confirm('Bạn có chắc muốn xóa user này không?')" 
+                        class="btn btn-danger btn-sm">Xóa</a>-->
+
+    <!--                    <a href="${pageContext.request.contextPath}/admin/user?action=delete&id=<%=u.getUserId()%>" 
+                      class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">Xóa</a>-->
+
+                        <a href="#" 
+                            class="btn btn-danger btn-sm" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#confirmDeleteModal"
+                            data-id="<%= u.getUserId() %>">
+                            Xóa
+                        </a>
+                    </td>
+                </tr>
+            <%  
+                }
+            } else {
+            %>
+                <tr>
+                    <td colspan="10" style="text-align:center; font-size: 1rem;">Không có dữ liệu người dùng</td>
+                </tr>
+            <%
+                }
+            %>
+        </table>
+    </main>
     
     <!-- Modal Xác Nhận Xóa -->
     <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
@@ -405,6 +407,7 @@
         });
     </script>
     
+    <jsp:include page="/views/shared/user_footer.jsp" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </body>
 </html>
