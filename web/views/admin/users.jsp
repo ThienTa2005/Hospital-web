@@ -22,6 +22,15 @@
             top: 65px !important;    
             z-index: 1055;           
         }
+        
+        .modal-backdrop {
+            z-index: 2500 !important;
+         }
+
+          .modal {
+            z-index: 2600 !important;
+        }
+
     </style>
 </head>
 
@@ -81,7 +90,7 @@
     </div>
   
     <main class="main-content">
-        <div class="user"><h1> DANH SÁCH NGƯỜI DÙNG </h1></div>
+        <div class="title-box"><h3> DANH SÁCH NGƯỜI DÙNG </h3></div>
 
         <div class="container" style="margin-top: -5px; margin-bottom: 5px;">
             <div class="row">

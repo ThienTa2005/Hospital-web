@@ -30,7 +30,7 @@
                 Ca trực
             </a>
 
-            <a href="${pageContext.request.contextPath}/admin/doctor"
+            <a href="${pageContext.request.contextPath}/admin/department"
                 class="${currentPage eq 'doctor' ? 'active' : ''}">
                 Hồ sơ bác sĩ
             </a>

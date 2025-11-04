@@ -15,7 +15,7 @@
         %>
         <jsp:include page="/views/shared/user_header.jsp" />
         
-        <h1>DANH SÁCH CA TRỰC</h1>
+        <div class="title-box"><h3>DANH SÁCH CA TRỰC</h3></div>
         
         <div class="container" style="margin-top: -5px; margin-bottom: 5px;">
             <div class="row">
