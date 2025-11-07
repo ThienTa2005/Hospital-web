@@ -108,6 +108,7 @@ public class UserServlet extends HttpServlet
         request.getRequestDispatcher("/views/admin/users.jsp").forward(request, response);
 //        request.getRequestDispatcher("/views/patient/patient.jsp").forward(request, response);
     }
+    
     //Them
     public void addUser(HttpServletRequest request, HttpServletResponse response) throws ServletException,
 IOException, SQLException, ParseException
@@ -217,3 +218,4 @@ IOException, SQLException, ParseException
         request.getRequestDispatcher("/views/admin/users.jsp").forward(request, response);
     }
 }
+

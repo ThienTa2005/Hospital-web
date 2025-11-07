@@ -195,26 +195,55 @@ public class DoctorDAO {
             return false;
         }
     }
-
-    // (KHÁC) Hàm helper để map ResultSet từ 3 bảng sang Doctor
     private Doctor mapResultSetToDoctor(ResultSet rs) throws SQLException {
-        Doctor doctor = new Doctor();
-        // Thông tin từ Users
-        doctor.setUserId(rs.getInt("user_id"));
-        doctor.setUsername(rs.getString("username"));
-        doctor.setFullname(rs.getString("fullname"));
-        doctor.setDob(rs.getDate("dob"));
-        doctor.setGender(rs.getString("gender"));
-        doctor.setPhonenum(rs.getString("phonenum"));
-        doctor.setAddress(rs.getString("address"));
-        doctor.setRole(rs.getString("role"));
-        
-        // Thông tin từ Doctor
-        doctor.setDegree(rs.getString("degree"));
-        doctor.setDepartmentId(rs.getInt("department_id"));
+    Doctor doctor = new Doctor();
+    doctor.setUserId(rs.getInt("user_id"));
+    doctor.setUsername(rs.getString("username"));
+    doctor.setPassword(rs.getString("password")); 
+    doctor.setFullname(rs.getString("fullname"));
+    doctor.setDob(rs.getDate("dob"));
+    doctor.setGender(rs.getString("gender"));
+    doctor.setPhonenum(rs.getString("phonenum"));
+    doctor.setAddress(rs.getString("address"));
+    doctor.setRole(rs.getString("role"));
+    doctor.setDegree(rs.getString("degree"));
+    doctor.setDepartmentId(rs.getInt("department_id"));
+    doctor.setDepartmentName(rs.getString("department_name"));
+    return doctor;
+}
+    public List<Doctor> searchDoctorsByName(String keyword) {
+        List<Doctor> doctors = new ArrayList<>();
+        String sql = "SELECT u.*, d.degree, d.department_id, dp.name as department_name " +
+                 "FROM Users u " +
+                 "JOIN Doctor d ON u.user_id = d.user_id " +
+                 "LEFT JOIN Department dp ON d.department_id = dp.department_id " +
+                 "WHERE u.role = 'doctor' AND (" +
+                 "   u.fullname LIKE ? OR " +    
+                 "   u.username LIKE ? OR " +   
+                 "   u.phonenum LIKE ? OR " +    
+                 "   u.address LIKE ? OR " + 
+                 "   d.degree LIKE ? OR " +    
+                 "   dp.name LIKE ? " +       
+                 ")";
 
-        // Thông tin từ Department (JOIN)
-        doctor.setDepartmentName(rs.getString("department_name"));
-        return doctor;
-    }
+        try (Connection conn = DBUtils.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            String searchKeyword = "%" + keyword + "%"; 
+            ps.setString(1, searchKeyword);
+            ps.setString(2, searchKeyword);
+            ps.setString(3, searchKeyword);
+            ps.setString(4, searchKeyword);
+            ps.setString(5, searchKeyword);     
+            ps.setString(6, searchKeyword);   
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    // Dùng lại hàm helper
+                    doctors.add(mapResultSetToDoctor(rs)); 
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return doctors;
+    }   
 }

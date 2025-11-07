@@ -95,9 +95,9 @@
         <div class="container" style="margin-top: -5px; margin-bottom: 5px;">
             <div class="row">
                 <div class="col-5">
-                <form action="${pageContext.request.contextPath}/admin/user" method="get" class="d-flex">
+                <form action="${pageContext.request.contextPath}/admin/doctor" method="get" class="d-flex">
                     <input type="hidden" name="action" value="search">
-                    <input type="text" name="keyword" placeholder="Nhập họ tên" class="form-control me-2" style="width: 180px; height: 37px;">
+                    <input type="text" name="keyword" placeholder="Nhập thông tin bác sĩ" class="form-control me-2" style="width: 180px; height: 37px;">
                     <button class="search-button" >Tìm kiếm</button>
                 </form>
                 </div>
@@ -125,7 +125,7 @@
 
             </tr>
             <%
-            List<Doctor> users = (List<Doctor>) request.getAttribute("doctors");
+            List<Doctor> users = (List<Doctor>) request.getAttribute("listDoctor");
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
             if (users != null && !users.isEmpty()) {
                 int STT = 1;

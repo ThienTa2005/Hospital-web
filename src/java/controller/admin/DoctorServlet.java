@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Date;
 import java.util.List;
+import javax.servlet.http.HttpSession;
 
 @WebServlet("/admin/doctor")
 public class DoctorServlet extends HttpServlet {
@@ -32,9 +33,11 @@ public class DoctorServlet extends HttpServlet {
             throws ServletException, IOException {
         String action = request.getParameter("action");
         if (action == null) {
-            action = "list";
+            action = "list"; 
         }
+
         try {
+            // (SỬA) Tách case "search" và "list"
             switch (action) {
                 case "create":
                     showNewForm(request, response);
@@ -45,7 +48,10 @@ public class DoctorServlet extends HttpServlet {
                 case "delete":
                     deleteDoctor(request, response);
                     break;
-                default:
+                case "search": 
+                    searchDoctors(request, response); 
+                    break;
+                default: 
                     listDoctors(request, response);
                     break;
             }
@@ -59,7 +65,6 @@ public class DoctorServlet extends HttpServlet {
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         String action = request.getParameter("action");
-
         try {
             switch (action) {
                 case "add":
@@ -74,11 +79,13 @@ public class DoctorServlet extends HttpServlet {
         }
     }
 
-    // [GET] Hiển thị danh sách bác sĩ (tới doctors.jsp)
     private void listDoctors(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+        throws ServletException, IOException {
         List<Doctor> listDoctor = doctorDAO.getAllDoctors();
-        request.setAttribute("doctors", listDoctor);
+        HttpSession session = request.getSession();
+        String username = (String) session.getAttribute("username");
+        request.setAttribute("username", username);
+        request.setAttribute("listDoctor", listDoctor); 
         RequestDispatcher dispatcher = request.getRequestDispatcher("/views/admin/doctor.jsp"); 
         dispatcher.forward(request, response);
     }
@@ -86,30 +93,20 @@ public class DoctorServlet extends HttpServlet {
     // [GET] Chuyển tiếp đến form tạo mới (doctor_form.jsp)
     private void showNewForm(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException,   SQLException {
-        
-        // (CẦN THIẾT) Lấy danh sách khoa để hiển thị trong <select>
         List<Department> listDepartment = departmentDAO.getAllDepartments();
         request.setAttribute("listDepartment", listDepartment);
-        
-        // (SỬA) Chuyển đến form của bác sĩ
         RequestDispatcher dispatcher = request.getRequestDispatcher("/doctor_form.jsp"); 
         dispatcher.forward(request, response);
     }
-
     // [GET] Chuyển tiếp đến form sửa (doctor_form.jsp)
     private void showEditForm(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, SQLException {
         
         int userId = Integer.parseInt(request.getParameter("id"));
         Doctor existingDoctor = doctorDAO.getDoctorById(userId);
-        
-        // (CẦN THIẾT) Lấy danh sách khoa để hiển thị trong <select>
         List<Department> listDepartment = departmentDAO.getAllDepartments();
-
         request.setAttribute("doctor", existingDoctor);
         request.setAttribute("listDepartment", listDepartment);
-        
-        // (SỬA) Chuyển đến form của bác sĩ
         RequestDispatcher dispatcher = request.getRequestDispatcher("/doctor_form.jsp"); 
         dispatcher.forward(request, response);
     }
@@ -117,22 +114,16 @@ public class DoctorServlet extends HttpServlet {
     // [POST] Xử lý thêm bác sĩ
     private void insertDoctor(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
-        
-        // Lấy thông tin từ bảng Users
         String username = request.getParameter("username");
-        String password = request.getParameter("password"); // (Cần mã hóa)
+        String password = request.getParameter("password"); 
         String fullname = request.getParameter("fullname");
         Date dob = Date.valueOf(request.getParameter("dob"));
         String gender = request.getParameter("gender");
         String phonenum = request.getParameter("phonenum");
         String address = request.getParameter("address");
-
-        // (CẦN THIẾT) Lấy thông tin riêng của Bác sĩ
         String degree = request.getParameter("degree");
         int departmentId = Integer.parseInt(request.getParameter("departmentId"));
-
         Doctor newDoctor = new Doctor();
-        // Set thuộc tính User
         newDoctor.setUsername(username);
         newDoctor.setPassword(password);
         newDoctor.setFullname(fullname);
@@ -140,12 +131,10 @@ public class DoctorServlet extends HttpServlet {
         newDoctor.setGender(gender);
         newDoctor.setPhonenum(phonenum);
         newDoctor.setAddress(address);
-        // (CẦN THIẾT) Set thuộc tính Doctor
         newDoctor.setDegree(degree);
         newDoctor.setDepartmentId(departmentId);
-        
-        doctorDAO.addDoctor(newDoctor); // Giả định DoctorDAO có hàm addDoctor
-        response.sendRedirect("doctors"); // Quay lại trang danh sách
+        doctorDAO.addDoctor(newDoctor); 
+        response.sendRedirect("doctor"); 
     }
 
     // [POST] Xử lý cập nhật bác sĩ
@@ -158,8 +147,6 @@ public class DoctorServlet extends HttpServlet {
         String gender = request.getParameter("gender");
         String phonenum = request.getParameter("phonenum");
         String address = request.getParameter("address");
-
-        // (CẦN THIẾT) Lấy thông tin riêng của Bác sĩ
         String degree = request.getParameter("degree");
         int departmentId = Integer.parseInt(request.getParameter("departmentId"));
         
@@ -170,19 +157,30 @@ public class DoctorServlet extends HttpServlet {
         doctor.setGender(gender);
         doctor.setPhonenum(phonenum);
         doctor.setAddress(address);
-        // (CẦN THIẾT) Set thuộc tính Doctor
         doctor.setDegree(degree);
         doctor.setDepartmentId(departmentId);
-
-        doctorDAO.updateDoctor(doctor); // Giả định DoctorDAO có hàm updateDoctor
-        response.sendRedirect("doctors"); // Quay lại trang danh sách
+        doctorDAO.updateDoctor(doctor); 
+        response.sendRedirect("doctor"); 
     }
-
     // [GET] Xử lý xóa bác sĩ
     private void deleteDoctor(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         int userId = Integer.parseInt(request.getParameter("id")); 
-        doctorDAO.deleteDoctor(userId); // Giả định DoctorDAO có hàm deleteDoctor
-        response.sendRedirect("doctors"); // Quay lại trang danh sách
+        doctorDAO.deleteDoctor(userId); 
+        response.sendRedirect("doctor"); 
+    }
+    private void searchDoctors(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String keyword = request.getParameter("keyword");
+        List<Doctor> listDoctor;
+        if (keyword == null || keyword.trim().isEmpty()) {
+            listDoctor = doctorDAO.getAllDoctors();
+        } else {
+            listDoctor = doctorDAO.searchDoctorsByName(keyword.trim());
+        }
+        request.setAttribute("listDoctor", listDoctor);
+        request.setAttribute("keyword", keyword); 
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/views/admin/doctor.jsp");
+        dispatcher.forward(request, response);
     }
 }
