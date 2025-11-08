@@ -23,6 +23,7 @@
           .modal {
             z-index: 2600 !important;
         }
+        
     </style>
 </head>
 <body>
@@ -75,7 +76,7 @@
                     <td><%= index++ %></td>
                     <td><%= dept.getDepartmentName() %></td>
                     <td class="text-center">
-                        <a href="<%= request.getContextPath() %>/views/admin/doctors.jsp?id=<%= dept.getDepartmentID() %>" class="btn btn-success btn-sm me-1">
+                        <a href="<%= request.getContextPath() %>/views/admin/doctors.jsp?deptId=<%= dept.getDepartmentID() %>" class="btn btn-success btn-sm me-1">
                             <i class="fa-solid fa-eye" style="border-radius: 5px"></i> Xem
                         </a>
                         <button class="btn btn-warning btn-sm me-1 edit-dept" style="border-radius: 5px" 

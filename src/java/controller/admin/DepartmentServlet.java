@@ -112,7 +112,7 @@ public class DepartmentServlet extends HttpServlet
     // Liet ke
     public void listDepartment(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException
     {
-        List<Department> departments = departmentDAO.getAllDepartment();
+        List<Department> departments = departmentDAO.getAllDepartments();
         request.setAttribute("departments", departments);
         request.getRequestDispatcher("/views/admin/department.jsp").forward(request, response);
     }
@@ -156,7 +156,7 @@ public class DepartmentServlet extends HttpServlet
         String keyword = request.getParameter("keyword");
         List<Department> departments;
         if (keyword == null || keyword.trim().isEmpty()) {           
-            departments = departmentDAO.getAllDepartment();
+            departments = departmentDAO.getAllDepartments();
         } else {         
             departments = departmentDAO.searchByName(keyword.trim());
         }
