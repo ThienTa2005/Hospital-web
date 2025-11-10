@@ -1,4 +1,8 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page import="model.dao.DepartmentDAO" %>
+<%@ page import="model.entity.Department" %>
+<%@ page import="java.util.List" %>
+
 <!doctype html>
 <html lang="vi">
 <head>
@@ -175,6 +179,44 @@
                                     <option value="patient">Bệnh nhân</option>
                                 </select>
                             </div>
+                            
+                            <!--BO SUNG THONG TIN BAC SI-->
+                            
+                            <div id="doctorFields" style="display: none; background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 15px; margin-bottom: 15px;">
+                                <h6 class="text-success mb-3 border-bottom pb-2">Thông tin bổ sung (Dành cho Bác sĩ)</h6>
+
+                                <div class="row mb-3 align-items-center">
+                                    <label for="degree" class="col-sm-3 col-form-label">Bằng cấp</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" id="degree" name="degree" class="form-control" placeholder="Vd: Thạc sĩ, Bác sĩ CKI">
+                                    </div>
+                                </div>
+
+                               <div class="row mb-3 align-items-center">
+                                    <label for="departmentId" class="col-sm-3 col-form-label">Chuyên khoa</label>
+                                    <div class="col-sm-9">
+                                        <select id="departmentId" name="departmentId" class="form-select">
+                                            <option value="">-- Chọn chuyên khoa --</option>
+                                            <% 
+                                                // Gọi DAO để lấy danh sách khoa ngay tại đây
+                                                DepartmentDAO deptDAO = new DepartmentDAO();
+                                                List<Department> departments = deptDAO.getAllDepartments();
+
+                                                if (departments != null) {
+                                                    for (Department d : departments) {
+                                            %>
+                                                <option value="<%= d.getDepartmentID() %>">
+                                                    <%= d.getDepartmentName() %>
+                                                </option>
+                                            <% 
+                                                    }
+                                                }
+                                            %>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
                         </div>
 
                         <!-- Buttons -->
@@ -205,7 +247,7 @@
   form.addEventListener("submit", function (e) {
     if (password.value.trim() !== confirmPassword.value.trim()) {
       e.preventDefault(); // Chặn submit
-      errorMsg.textContent = "⚠️ Mật khẩu nhập lại không khớp!";
+      errorMsg.textContent = " Mật khẩu nhập lại không khớp!";
       confirmPassword.classList.add("is-invalid"); // Thêm border đỏ Bootstrap
     } else {
       errorMsg.textContent = "";
@@ -251,6 +293,28 @@
             const url = new URL(window.location.href);
             url.searchParams.delete("success");
             window.history.replaceState({}, document.title, url.pathname + url.search);
+        }
+    });
+</script>
+
+<script>
+    // an/hiện thông tin bác sĩ
+    const roleSelect = document.getElementById("role");
+    const doctorFields = document.getElementById("doctorFields");
+    const degreeInput = document.getElementById("degree");
+    const deptInput = document.getElementById("departmentId");
+
+    roleSelect.addEventListener("change", function() {
+        if (this.value === "doctor") {
+            doctorFields.style.display = "block";
+            degreeInput.setAttribute("required", ""); // Bắt buộc nhập
+            deptInput.setAttribute("required", "");
+        } else {
+            doctorFields.style.display = "none";
+            degreeInput.removeAttribute("required");
+            deptInput.removeAttribute("required");
+            degreeInput.value = ""; // Xóa dữ liệu cũ nếu đổi ý
+            deptInput.value = "";
         }
     });
 </script>

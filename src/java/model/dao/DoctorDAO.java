@@ -12,8 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DoctorDAO {
-
-    // (KHÁC) JOIN 3 bảng: Users, Doctor, và Department
     private static final String SELECT_ALL_DOCTORS = "SELECT u.*, d.degree, d.department_id, dp.name as department_name " +
                                                     "FROM Users u " +
                                                     "JOIN Doctor d ON u.user_id = d.user_id " +
@@ -32,17 +30,15 @@ public class DoctorDAO {
     // (KHÁC) Thêm vào bảng Doctor
     private static final String INSERT_DOCTOR_SQL = "INSERT INTO Doctor (user_id, degree, department_id) VALUES (?, ?, ?)";
     
-    // (KHÁC) Cập nhật bảng Users
+
     private static final String UPDATE_USER_SQL = "UPDATE Users SET fullname = ?, dob = ?, gender = ?, phonenum = ?, address = ? WHERE user_id = ?";
     
-    // (KHÁC) Cập nhật bảng Doctor
     private static final String UPDATE_DOCTOR_SQL = "UPDATE Doctor SET degree = ?, department_id = ? WHERE user_id = ?";
 
-    // Xóa khỏi bảng Users (bảng Doctor sẽ tự động xóa theo ON DELETE CASCADE)
+ 
     private static final String DELETE_USER_SQL = "DELETE FROM Users WHERE user_id = ? AND role = 'doctor'";
 
     
-    // Lấy tất cả bác sĩ
     public List<Doctor> getAllDoctors() {
         List<Doctor> doctors = new ArrayList<>();
         try (Connection conn = DBUtils.getConnection();
@@ -58,7 +54,7 @@ public class DoctorDAO {
         return doctors;
     }
 
-    // Lấy bác sĩ theo ID (user_id)
+
     public Doctor getDoctorById(int userId) {
         Doctor doctor = null;
         try (Connection conn = DBUtils.getConnection();
@@ -76,7 +72,6 @@ public class DoctorDAO {
         return doctor;
     }
 
-    // Thêm bác sĩ mới (Transaction 2 bước)
     public boolean addDoctor(Doctor doctor) {
         Connection conn = null;
         PreparedStatement psUser = null;
@@ -135,7 +130,6 @@ public class DoctorDAO {
         return success;
     }
 
-    // (KHÁC) Cập nhật thông tin bác sĩ (Transaction 2 bước)
     public boolean updateDoctor(Doctor doctor) {
          Connection conn = null;
         PreparedStatement psUser = null;
@@ -146,31 +140,29 @@ public class DoctorDAO {
             conn = DBUtils.getConnection();
             conn.setAutoCommit(false); // Bắt đầu Transaction
 
-            // Bước 1: Cập nhật bảng Users
+       
             psUser = conn.prepareStatement(UPDATE_USER_SQL);
             psUser.setString(1, doctor.getFullname());
             psUser.setDate(2, doctor.getDob());
             psUser.setString(3, doctor.getGender());
             psUser.setString(4, doctor.getPhonenum());
             psUser.setString(5, doctor.getAddress());
-            psUser.setInt(6, doctor.getUserId()); // Where clause
+            psUser.setInt(6, doctor.getUserId()); 
             
             int userRows = psUser.executeUpdate();
-
-            // Bước 2: Cập nhật bảng Doctor
+            
             psDoctor = conn.prepareStatement(UPDATE_DOCTOR_SQL);
             psDoctor.setString(1, doctor.getDegree());
             psDoctor.setInt(2, doctor.getDepartmentId());
-            psDoctor.setInt(3, doctor.getUserId()); // Where clause
+            psDoctor.setInt(3, doctor.getUserId());
             
             int doctorRows = psDoctor.executeUpdate();
 
-            // Chỉ thành công nếu ít nhất 1 trong 2 bảng có thay đổi
             if (userRows > 0 || doctorRows > 0) { 
                 conn.commit();
                 success = true;
             } else {
-                conn.rollback(); // Không có gì thay đổi
+                conn.rollback();  //TIEN HANH ROLL BACK
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -183,7 +175,7 @@ public class DoctorDAO {
         return success;
     }
 
-    // Xóa bác sĩ (chỉ cần xóa ở bảng Users)
+  
     public boolean deleteDoctor(int userId) {
         try (Connection conn = DBUtils.getConnection();
              PreparedStatement ps = conn.prepareStatement(DELETE_USER_SQL)) { // (SỬA)
@@ -195,6 +187,21 @@ public class DoctorDAO {
             return false;
         }
     }
+    
+    
+    public void addDoctorSpecifics(int userId, String degree, int departmentId) throws SQLException {
+        String sql = "INSERT INTO Doctor (user_id, degree, department_id) VALUES (?, ?, ?)";
+        try (Connection conn = DBUtils.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, userId);
+            ps.setString(2, degree);
+            ps.setInt(3, departmentId);
+            ps.executeUpdate();
+        }
+    }
+    
+    
     private Doctor mapResultSetToDoctor(ResultSet rs) throws SQLException {
     Doctor doctor = new Doctor();
     doctor.setUserId(rs.getInt("user_id"));
@@ -211,6 +218,7 @@ public class DoctorDAO {
     doctor.setDepartmentName(rs.getString("department_name"));
     return doctor;
 }
+    
     public List<Doctor> searchDoctorsByName(String keyword) {
         List<Doctor> doctors = new ArrayList<>();
         String sql = "SELECT u.*, d.degree, d.department_id, dp.name as department_name " +
@@ -237,7 +245,6 @@ public class DoctorDAO {
             ps.setString(6, searchKeyword);   
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    // Dùng lại hàm helper
                     doctors.add(mapResultSetToDoctor(rs)); 
                 }
             }

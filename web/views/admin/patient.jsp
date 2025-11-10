@@ -112,9 +112,9 @@
 
         <table class="table-1" border="1" cellpadding="5" cellspacing="0">
             <tr>
+                <!--HỒ SƠ ĐIỆN TỬ KO CẦN HIỆN MK-->
                 <th>STT</th>
                 <th>Tên đăng nhập</th>
-                <th>Mật khẩu</th>
                 <th>Họ tên</th>
                 <th>Ngày sinh</th>
                 <th>Giới tính</th>
@@ -136,7 +136,6 @@
 
                     <td><%= STT++ %></td>
                     <td><%= u.getUsername() %></td>
-                    <td><%= u.getPassword() %></td>
                     <td class="fullname"><%= u.getFullname() %></td>
                     <td><%= sdf.format(u.getDob()) %></td>
                     <td><%= 
@@ -154,39 +153,21 @@
                             u.getRole()
                         %>
                     </td>
-                    <td> 
-    <!--                    <button class="edit"> Chỉnh sửa </button>-->
-    <!--                    <a href="#" class="edit" data-bs-toggle="modal" >Chỉnh sửa</a>-->
-
-                            <button class="edit" 
-                                data-bs-toggle="modal" data-bs-target="#editModal"
-                                data-id="<%=u.getUserId()%>"
-                                data-username="<%=u.getUsername()%>"
-                                data-password="<%=u.getPassword()%>"
-                                data-fullname="<%=u.getFullname()%>"
-                                data-dob="<%=sdf.format(u.getDob())%>"
-                                data-gender="<%=u.getGender()%>"
-                                data-phonenum="<%=u.getPhonenum()%>"
-                                data-address="<%=u.getAddress()%>"
-                                data-role="<%=u.getRole()%>">
-                                Chỉnh sửa
-                            </button>
-
-    <!--                    <a href="${pageContext.request.contextPath}/admin/user?action=delete&id=<%=u.getUserId()%>" 
-                        onclick="return confirm('Bạn có chắc muốn xóa user này không?')" 
-                        class="btn btn-danger btn-sm">Xóa</a>-->
-
-    <!--                    <a href="${pageContext.request.contextPath}/admin/user?action=delete&id=<%=u.getUserId()%>" 
-                      class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">Xóa</a>-->
-
-                        <a href="#" 
-                            class="btn btn-danger btn-sm" 
-                            data-bs-toggle="modal" 
-                            data-bs-target="#confirmDeleteModal"
-                            data-id="<%= u.getUserId() %>">
-                            Xóa
+                  
+                    <td style="white-space: nowrap; text-align: center;">
+                        <a href="${pageContext.request.contextPath}/admin/patient?action=edit&id=<%=u.getUserId()%>" 
+                           class="btn btn-success btn-sm" style="margin-right: 5px;">
+                           <i class="fa-solid fa-pen-to-square"></i> Sửa
                         </a>
+
+                        <button class="btn btn-danger btn-sm" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#confirmDeleteModal"
+                                data-id="<%= u.getUserId() %>">
+                            <i class="fa-solid fa-trash"></i> Xóa
+                        </button>
                     </td>
+
                 </tr>
             <%  
                 }

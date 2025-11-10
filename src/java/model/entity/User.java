@@ -11,9 +11,9 @@ public class User {
     private String gender;
     private String phonenum;
     private String address;
-    private String role;
+    private String  role;
 
-    // Constructor đầy đủ
+
     public User(int userId, String username, String password, String fullname, Date dob,
                 String gender, String phonenum, String address, String role) {
         this.userId = userId;
@@ -27,10 +27,8 @@ public class User {
         this.role = role;
     }
 
-    // Constructor rỗng (dùng khi cần khởi tạo rồi set sau)
     public User() {}
 
-    // Getter & Setter
     public int getUserId() {
         return userId;
     }
@@ -94,7 +92,6 @@ public class User {
         this.role = role;
     }
 
-    // toString để debug nhanh
     @Override
     public String toString() {
         return "User{" +

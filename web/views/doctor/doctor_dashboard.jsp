@@ -1,43 +1,22 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%--<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>--%>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
-  <title>Doctor</title>
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/style.css">
-  <section id="header">
-    <div class="container d-flex justify-content-between align-items-center" >
-        <!-- Logo + Tên phòng khám -->
-<!--        <div class="header-logo">
-            <img src="${pageContext.request.contextPath}/assets/logo.png" alt="Logo">
-            Quản lý phòng khám
-        </div>-->
-
-        <div class="header-logo">
-            <a href="${pageContext.request.contextPath}/admin/user?action=list" 
-               style="text-decoration: none; color: inherit;">
-                Quản lý phòng khám
-            </a>
-        </div>
-
-
-        <!-- Menu điều hướng -->
-        <div class="nav-menu">
-            <a href="${pageContext.request.contextPath}/admin/user" class="active">Người dùng</a>
-            <a href="#">Ca trực</a>
-            <a href="#">Hồ sơ bác sĩ</a>
-            <a href="#">Hồ sơ bệnh nhân</a>
-        </div>
-
-        <!-- Đăng xuất -->
-        <form action="${pageContext.request.contextPath}/logout" method="get" >
-            <button class="btn logout-btn">Đăng xuất</button>
-        </form>
-    </div>
-</section>
-    <body> 
-        
-    </body>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Người dùng</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha512-DxV+EoADOkOygM4IR9yXP8Sb2qwgidEmeqAEmDKIOfPRQZOWbXCzLC6vjbZyy0vPisbH2SyW27+ddLVCN+OMzQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/user_style.css">
 </head>
+    <body>
+        <jsp:include page="/views/shared/doctor_header.jsp" />
+        <h1>Hello World!</h1>
+        <jsp:include page="/views/shared/user_footer.jsp" />
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    </body>
+</html>

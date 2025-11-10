@@ -86,7 +86,7 @@ public class DoctorServlet extends HttpServlet {
         String username = (String) session.getAttribute("username");
         request.setAttribute("username", username);
         request.setAttribute("listDoctor", listDoctor); 
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/views/admin/doctor.jsp"); 
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/views/admin/doctors.jsp"); 
         dispatcher.forward(request, response);
     }
 
@@ -180,7 +180,7 @@ public class DoctorServlet extends HttpServlet {
         }
         request.setAttribute("listDoctor", listDoctor);
         request.setAttribute("keyword", keyword); 
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/views/admin/doctor.jsp");
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/views/admin/doctors.jsp");
         dispatcher.forward(request, response);
     }
 }

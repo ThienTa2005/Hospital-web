@@ -1,14 +1,14 @@
 package controller.admin;
 
-import java.sql.*;
-import Utils.DBUtils;
+import model.dao.DoctorDAO; 
+import model.dao.PatientDAO; 
 import model.dao.UserDAO;
 import model.entity.User;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -18,155 +18,155 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 @WebServlet("/admin/user")
-public class UserServlet extends HttpServlet
-{
+public class UserServlet extends HttpServlet {
     private UserDAO userDAO;
-        
+    private DoctorDAO doctorDAO;   
+    private PatientDAO patientDAO; 
+
     @Override
-    public void init()
-    {
+    public void init() {
         userDAO = new UserDAO();
+        doctorDAO = new DoctorDAO();   
+        patientDAO = new PatientDAO(); 
     }
-        
+
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-    {
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
-        if(action == null) action = "list";
-        
-        switch(action) {
+        if (action == null) action = "list";
+
+        switch (action) {
             case "add":
                 String successParam = request.getParameter("success");
                 request.setAttribute("success", successParam);
                 request.getRequestDispatcher("/views/admin/add_user.jsp").forward(request, response);
                 break;
-                
+
             case "delete":
                 deleteUser(request, response);
                 break;
-                
+
             case "search":
                 searchUser(request, response);
                 break;
-                
+
             default:
                 listUser(request, response);
                 break;
         }
     }
-    
+
     @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-    {
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = (String) request.getParameter("action");
         System.out.println(action);
-        switch(action) {
-            case "add":
-            {
-                try
-                {
+        switch (action) {
+            case "add": {
+                try {
                     addUser(request, response);
-                } catch (SQLException | ParseException ex)
-                {
-                    System.getLogger(UserServlet.class.getName()).
-                            log(System.Logger.Level.ERROR, (String) null, ex);
+                } catch (SQLException | ParseException ex) {
+                    System.getLogger(UserServlet.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
                 }
                 break;
             }
-       
-            case "edit":
-            {
-                try
-                {
+
+            case "edit": {
+                try {
                     editUser(request, response);
-                } catch (SQLException | ParseException ex)
-                {
-                    System.getLogger(UserServlet.class.getName()).
-                            log(System.Logger.Level.ERROR, (String) null, ex);
+                } catch (SQLException | ParseException ex) {
+                    System.getLogger(UserServlet.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
                 }
-                break;   
-            }                          
+                break;
+            }
         }
     }
-    
-    //Chuan hoa UTF-8
-    private static String newString(String item)
-    {
-        byte[] bytes = item.getBytes(StandardCharsets.ISO_8859_1); 
+
+    // Chuan hoa UTF-8
+    private static String newString(String item) {
+        byte[] bytes = item.getBytes(StandardCharsets.ISO_8859_1);
         item = new String(bytes, StandardCharsets.UTF_8);
         return item;
     }
-    
-    //Liet ke users
-    public void listUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-    {
+
+    // Liet ke users
+    public void listUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<User> users = userDAO.getAllUsers();
         HttpSession session = request.getSession();
         String username = (String) session.getAttribute("username");
         request.setAttribute("username", username);
         request.setAttribute("users", users);
         request.getRequestDispatcher("/views/admin/users.jsp").forward(request, response);
-//        request.getRequestDispatcher("/views/patient/patient.jsp").forward(request, response);
     }
-    
-    //Them
-    public void addUser(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-IOException, SQLException, ParseException
-    {
+
+  
+    public void addUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException, ParseException {
         request.setCharacterEncoding("UTF-8");
-        response.setCharacterEncoding("UTF-8");
-        response.setContentType("text/html; charset=UTF-8");
- 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        
+
+
         String username = request.getParameter("username");
-        if(userDAO.isUsernameExist(username))
-        {
-            request.setAttribute("errorMessage", "⚠️ Tên đăng nhập đã tồn tại, vui lòng chọn tên khác.");
-            request.getRequestDispatcher("/views/admin/add_user.jsp").forward(request, response);
-            return; // Dừng xử lý
-        }
         
+       
+        if(userDAO.isUsernameExist(username)) {
+             request.setAttribute("errorMessage", " Tên đăng nhập đã tồn tại.");
+             request.getRequestDispatcher("/views/admin/add_user.jsp").forward(request, response);
+             return;
+        }
+
         String password = request.getParameter("password");
-        String fullname = newString(request.getParameter("fullname"));
+        String fullname = request.getParameter("fullname"); // Đã set encoding UTF-8 ở trên nên ko cần newString
         String dob = request.getParameter("dob");
         String gender = request.getParameter("gender");
         String phone = request.getParameter("phone");
-        String address = newString(request.getParameter("address"));
+        String address = request.getParameter("address");
         String role = request.getParameter("role");
-        
+
+        // Lấy thêm dữ liệu riêng của BS
+        String degree = request.getParameter("degree");
+        String deptIdParam = request.getParameter("departmentId");
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         java.util.Date utilDate = sdf.parse(dob);
         java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+
+        try {
         
-        User u = new User(0, username, password, fullname, sqlDate, gender, phone, address, role);
-//        response.sendRedirect(request.getContextPath() + "/views/admin/add_user.jsp");
-        if (userDAO.createUser(u)) {
-            response.sendRedirect(request.getContextPath() + "/admin/user?action=add&success=true");
-        } else {
-             response.sendRedirect(request.getContextPath() + "/admin/user?action=add&success=false");
-        }    
+            User u = new User(0, username, password, fullname, sqlDate, gender, phone, address, role);
+            
+            int newUserId = userDAO.createUser(u);
+
+            
+            if ("doctor".equals(role)) {
+                int deptId = (deptIdParam != null && !deptIdParam.isEmpty()) ? Integer.parseInt(deptIdParam) : 0;
+                doctorDAO.addDoctorSpecifics(newUserId, degree, deptId);
+                
+            } else if ("patient".equals(role)) {
+                patientDAO.addPatientSpecifics(newUserId);
+            }
+
+            response.sendRedirect(request.getContextPath() + "/admin/user?action=list&success=true");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Báo lỗi
+            response.sendRedirect(request.getContextPath() + "/admin/user?action=add&success=false");
+        }
     }
-    
-    //Chinh sua
-    public void editUser(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-IOException, SQLException, ParseException
-    {
+
+    // Chinh sua
+    public void editUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException, ParseException {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
         response.setContentType("text/html; charset=UTF-8");
-        
+
         int id = Integer.parseInt(request.getParameter("userId"));
         String username = request.getParameter("username");
-        if(userDAO.checkEditUsername(username, id))
-        {
-//            request.setAttribute("errorMessage", "⚠️ Tên đăng nhập đã tồn tại, vui lòng chọn tên khác.");
-//            request.getRequestDispatcher("/views/admin/users.jsp").forward(request, response);
+        if (userDAO.checkEditUsername(username, id)) {
             response.sendRedirect(request.getContextPath() + "/admin/user?action=list&error=username-exist");
-            return; 
+            return;
         }
-        
+
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        
+
         String password = request.getParameter("password");
         String fullname = newString(request.getParameter("fullname"));
         String dob = request.getParameter("dob");
@@ -174,48 +174,45 @@ IOException, SQLException, ParseException
         String phone = request.getParameter("phonenum");
         String address = newString(request.getParameter("address"));
         String role = request.getParameter("role");
-        
+
         java.util.Date utilDate = sdf.parse(dob);
         java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
-        
+
         User u = new User(id, username, password, fullname, sqlDate, gender, phone, address, role);
         userDAO.updateUser(u);
         response.sendRedirect(request.getContextPath() + "/admin/user?action=list&success=true");
     }
-    
-    //Xoa
-    public void deleteUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-    {       
+
+    // Xoa
+    public void deleteUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int id = Integer.parseInt(request.getParameter("id"));
-        
+
         HttpSession session = request.getSession();
         User currentUser = (User) session.getAttribute("user");
-        
+
         if (currentUser != null && currentUser.getUserId() == id) {
             // Khong xoa chinh minh
             response.sendRedirect(request.getContextPath() + "/admin/user?action=list&error=selfDelete");
             return;
         }
-        
+
         userDAO.deleteUser(id);
         response.sendRedirect(request.getContextPath() + "/admin/user?action=list&delete=true");
     }
-    
-    //Tim kiem
-    public void searchUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-    {
+
+    // Tim kiem
+    public void searchUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String keyword = request.getParameter("keyword");
 
         List<User> users;
-        if (keyword == null || keyword.trim().isEmpty()) {           
+        if (keyword == null || keyword.trim().isEmpty()) {
             users = userDAO.getAllUsers();
-        } else {         
+        } else {
             users = userDAO.searchByName(keyword.trim());
         }
-       
+
         request.setAttribute("users", users);
-        request.setAttribute("keyword", keyword); 
+        request.setAttribute("keyword", keyword);
         request.getRequestDispatcher("/views/admin/users.jsp").forward(request, response);
     }
 }
-

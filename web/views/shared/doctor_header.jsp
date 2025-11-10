@@ -13,26 +13,21 @@
         <div class="header-logo">
             <a href="${pageContext.request.contextPath}/admin/user?action=list" 
                style="text-decoration: none; color: inherit;">
-                Quản lý phòng khám
+                Quản lý phòng khám
             </a>
         </div>
 
 
         <!-- Menu điều hướng -->
         <div class="nav-menu">
-            <a href="${pageContext.request.contextPath}/admin/user"
-                class="${currentPage eq 'user' ? 'active' : ''}">
-                Người dùng
+            <a href="<%= request.getContextPath() %>/views/department/departments.jsp"
+                class="<%= "department".equals(request.getAttribute("currentPage")) ? "active" : "" %>">
+                Phòng ban
             </a>
 
             <a href="${pageContext.request.contextPath}/admin/shift"
                 class="${currentPage eq 'shift' ? 'active' : ''}">
                 Ca trực
-            </a>               
-
-            <a href="${pageContext.request.contextPath}/admin/department"
-                class="${currentPage eq 'doctor' ? 'active' : ''}">
-                Phòng ban
             </a>
 
             <a href="${pageContext.request.contextPath}/admin/patient"
