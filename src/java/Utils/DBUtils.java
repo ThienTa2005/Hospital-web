@@ -10,7 +10,7 @@ public class DBUtils {
     // Thông tin kết nối
     private static final String URL = "jdbc:mysql://localhost:3306/clinic_db";
     private static final String USER = "root";
-    private static final String PASSWORD = "041299"; // sửa thành mật khẩu của bạn
+    private static final String PASSWORD = "batu2005";
 
     // Hàm mở kết nối
     public static Connection getConnection() {

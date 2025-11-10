@@ -97,7 +97,7 @@ public class UserServlet extends HttpServlet
         return item;
     }
     
-    //Liet ke
+    //Liet ke users
     public void listUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         List<User> users = userDAO.getAllUsers();
@@ -106,6 +106,7 @@ public class UserServlet extends HttpServlet
         request.setAttribute("username", username);
         request.setAttribute("users", users);
         request.getRequestDispatcher("/views/admin/users.jsp").forward(request, response);
+//        request.getRequestDispatcher("/views/patient/patient.jsp").forward(request, response);
     }
     
     //Them
@@ -217,3 +218,4 @@ IOException, SQLException, ParseException
         request.getRequestDispatcher("/views/admin/users.jsp").forward(request, response);
     }
 }
+

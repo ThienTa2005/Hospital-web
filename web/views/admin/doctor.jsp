@@ -1,7 +1,7 @@
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page import="model.entity.User"%>
 <%@page import="java.util.List"%>
-<%@page import="java.util.List"%>
+<%@page import="model.entity.Doctor"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%--<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>--%>
 <!doctype html>
@@ -9,7 +9,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Người dùng</title>
+    <title>Hồ sơ bác sĩ</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -36,7 +36,7 @@
 
 <body>
     <%
-        request.setAttribute("currentPage", "user");
+        request.setAttribute("currentPage", "doctor");
     %>
     <jsp:include page="/views/shared/user_header.jsp" />
     
@@ -90,14 +90,14 @@
     </div>
   
     <main class="main-content">
-        <div class="title-box"><h3> DANH SÁCH NGƯỜI DÙNG </h3></div>
+        <div class="title-box"><h3> DANH SÁCH BÁC SĨ</h3></div>
 
         <div class="container" style="margin-top: -5px; margin-bottom: 5px;">
             <div class="row">
                 <div class="col-5">
-                <form action="${pageContext.request.contextPath}/admin/user" method="get" class="d-flex">
+                <form action="${pageContext.request.contextPath}/admin/doctor" method="get" class="d-flex">
                     <input type="hidden" name="action" value="search">
-                    <input type="text" name="keyword" placeholder="Nhập họ tên" class="form-control me-2" style="width: 180px; height: 37px;">
+                    <input type="text" name="keyword" placeholder="Nhập thông tin bác sĩ" class="form-control me-2" style="width: 180px; height: 37px;">
                     <button class="search-button" >Tìm kiếm</button>
                 </form>
                 </div>
@@ -119,16 +119,17 @@
                 <th>Giới tính</th>
                 <th>Số điện thoại</th>
                 <th>Địa chỉ</th>
-                <th>Vai trò</th>
+                <th>Bằng cấp</th>
+                <th>Khoa</th>
                 <th>Quản lý</th>
 
             </tr>
             <%
-            List<User> users = (List<User>) request.getAttribute("users");
+            List<Doctor> users = (List<Doctor>) request.getAttribute("listDoctor");
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
             if (users != null && !users.isEmpty()) {
                 int STT = 1;
-                for (User u : users) {
+                for (Doctor u : users) {
             %>
 
                 <tr>
@@ -143,16 +144,11 @@
                             u.getGender().equals("F") ? "Nữ" :
                             u.getGender()
                     %></td>
+                    
                     <td><%= u.getPhonenum() %></td>
                     <td><%= u.getAddress() %></td>
-                    <td>
-                        <%=
-                            u.getRole().equals("doctor") ? "Bác sĩ" :
-                            u.getRole().equals("admin") ? "Admin" :
-                            u.getRole().equals("patient") ? "Bệnh nhân":
-                            u.getRole()
-                        %>
-                    </td>
+                    <td><%= u.getDegree() %></td>
+                    <td><%= u.getDepartmentName()%></td>
                     <td> 
     <!--                    <button class="edit"> Chỉnh sửa </button>-->
     <!--                    <a href="#" class="edit" data-bs-toggle="modal" >Chỉnh sửa</a>-->

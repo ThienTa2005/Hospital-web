@@ -22,7 +22,12 @@ public class RegisterServlet extends HttpServlet
     {
         userDAO = new UserDAO();
     }
-    
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // Chuyển hướng đến trang login.jsp
+        request.getRequestDispatcher("/views/auth/register.jsp").forward(request, response);
+    }
     //Chuan hoa UTF-8
     private static String newString(String item)
     {

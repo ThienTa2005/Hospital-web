@@ -2,6 +2,7 @@
 <%@page import="model.entity.User"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.List"%>
+<%@page import="model.entity.Patient"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%--<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>--%>
 <!doctype html>
@@ -9,7 +10,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Người dùng</title>
+    <title>Hồ sơ bệnh nhân</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -36,7 +37,7 @@
 
 <body>
     <%
-        request.setAttribute("currentPage", "user");
+        request.setAttribute("currentPage", "patient");
     %>
     <jsp:include page="/views/shared/user_header.jsp" />
     
@@ -90,7 +91,7 @@
     </div>
   
     <main class="main-content">
-        <div class="title-box"><h3> DANH SÁCH NGƯỜI DÙNG </h3></div>
+        <div class="title-box"><h3> DANH SÁCH BỆNH NHÂN </h3></div>
 
         <div class="container" style="margin-top: -5px; margin-bottom: 5px;">
             <div class="row">
@@ -124,11 +125,11 @@
 
             </tr>
             <%
-            List<User> users = (List<User>) request.getAttribute("users");
+            List<Patient> patients = (List<Patient>) request.getAttribute("patients");
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-            if (users != null && !users.isEmpty()) {
+            if (patients != null && !patients.isEmpty()){
                 int STT = 1;
-                for (User u : users) {
+                for (User u : patients) {
             %>
 
                 <tr>

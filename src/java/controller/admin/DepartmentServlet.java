@@ -17,19 +17,19 @@ import model.entity.Department;
 public class DepartmentServlet extends HttpServlet
 {
     private DepartmentDAO departmentDAO;
-    
+
     @Override
     public void init()
     {
         departmentDAO = new DepartmentDAO();
     }
-    
+
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         String action = request.getParameter("action");
         if(action == null) action = "list";
-        
+
         switch(action) {
             case "add":
             {
@@ -40,7 +40,7 @@ public class DepartmentServlet extends HttpServlet
                 {}
             }
                 break;
-                
+
             case "delete":
             {
                 try
@@ -50,7 +50,7 @@ public class DepartmentServlet extends HttpServlet
                 {}
                 break;
             }
-            
+
             case "search":
             {
                 try
@@ -70,7 +70,7 @@ public class DepartmentServlet extends HttpServlet
                 {}
                 break;
             }
-            
+
             default:
             {
                 try
@@ -82,7 +82,7 @@ public class DepartmentServlet extends HttpServlet
             }
         }
     }
-    
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -100,7 +100,7 @@ public class DepartmentServlet extends HttpServlet
         }
     }
 
-    
+
     //Chuan hoa UTF-8
     private static String newString(String item)
     {
@@ -108,15 +108,15 @@ public class DepartmentServlet extends HttpServlet
         item = new String(bytes, StandardCharsets.UTF_8);
         return item;
     }
-    
+
     // Liet ke
     public void listDepartment(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException
     {
-        List<Department> departments = departmentDAO.getAllDepartment();
+        List<Department> departments = departmentDAO.getAllDepartments();
         request.setAttribute("departments", departments);
         request.getRequestDispatcher("/views/admin/department.jsp").forward(request, response);
     }
-    
+
     // Them
     public void addDepartment(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException
     {
@@ -131,7 +131,7 @@ public class DepartmentServlet extends HttpServlet
         departmentDAO.addDepartment(department);
         response.sendRedirect(request.getContextPath() + "/admin/department?action=list&success=true");
     }
-    
+
     // Xoa
     public void deleteDepartment(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException
     {
@@ -139,7 +139,7 @@ public class DepartmentServlet extends HttpServlet
         departmentDAO.deleteDepartment(id);
         response.sendRedirect(request.getContextPath() + "/admin/department?action=list&delete=true");
     }
-    
+
     // Cap nhat
     public void updateDepartment(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException
     {
@@ -149,14 +149,14 @@ public class DepartmentServlet extends HttpServlet
         departmentDAO.updateDepartment(department);
         response.sendRedirect(request.getContextPath() + "/admin/department?action=list&success=true");
     }
-    
+
     // Tim kiem
     public void searchDepartment(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException 
     {
         String keyword = request.getParameter("keyword");
         List<Department> departments;
         if (keyword == null || keyword.trim().isEmpty()) {           
-            departments = departmentDAO.getAllDepartment();
+            departments = departmentDAO.getAllDepartments();
         } else {         
             departments = departmentDAO.searchByName(keyword.trim());
         }
