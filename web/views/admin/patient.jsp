@@ -157,7 +157,7 @@
                     <td style="white-space: nowrap; text-align: center;">
                         <a href="${pageContext.request.contextPath}/admin/patient?action=edit&id=<%=u.getUserId()%>" 
                            class="btn btn-success btn-sm" style="margin-right: 5px;">
-                           <i class="fa-solid fa-pen-to-square"></i> Sửa
+                           <i class="fa-solid fa-pen-to-square"></i> Xem
                         </a>
 
                         <button class="btn btn-danger btn-sm" 

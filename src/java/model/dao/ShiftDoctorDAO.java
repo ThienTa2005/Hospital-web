@@ -55,7 +55,6 @@ public class ShiftDoctorDAO {
         }
     }
 
-    // 3. Thêm bác sĩ vào ca trực
     public boolean addDoctorToShift(int shiftId, int doctorId) {
         if (isDoctorInShift(shiftId, doctorId)) {
             return false; // Đã tồn tại, không thêm nữa
