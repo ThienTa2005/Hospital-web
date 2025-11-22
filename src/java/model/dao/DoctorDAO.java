@@ -41,12 +41,23 @@ public class DoctorDAO {
     
     public List<Doctor> getAllDoctors() {
         List<Doctor> doctors = new ArrayList<>();
+        String sql = "SELECT d.user_id, d.department_id, d.degree, dp.name, u.fullname\n"
+                   + "FROM Doctor AS d\n"
+                   + "JOIN Users AS u ON u.user_id = d.user_id\n"
+                   + "JOIN Department AS dp ON dp.department_id = d.department_id";
+        
         try (Connection conn = DBUtils.getConnection();
-             PreparedStatement ps = conn.prepareStatement(SELECT_ALL_DOCTORS);
+             PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                doctors.add(mapResultSetToDoctor(rs));
+                Doctor doctor = new Doctor();
+                doctor.setUserId(rs.getInt("user_id"));
+                doctor.setDepartmentId(rs.getInt("department_id"));
+                doctor.setDegree(rs.getString("degree"));
+                doctor.setFullName(rs.getString("u.fullname"));
+                doctor.setDepartmentName(rs.getString("dp.name"));
+                doctors.add(doctor);
             }
         } catch (SQLException e) {
             e.printStackTrace();

@@ -1,6 +1,6 @@
 package model.entity;
 
-import java.util.*;
+import java.sql.Date;
 import java.sql.Time;
 
 public class Shift

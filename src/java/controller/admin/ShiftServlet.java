@@ -9,6 +9,12 @@ import javax.servlet.http.*;
 import javax.servlet.annotation.WebServlet;
 import model.dao.ShiftDAO;
 import model.entity.Shift;
+import java.util.Map;
+import java.util.ArrayList;
+import com.google.gson.Gson;
+import java.util.HashMap;
+import model.dao.DoctorDAO;
+import model.entity.Doctor;
 
 @WebServlet("/admin/shift")
 public class ShiftServlet extends HttpServlet 
@@ -23,8 +29,12 @@ public class ShiftServlet extends HttpServlet
         try {
             if (action == null || action.equals("list")) 
             {
-                req.setAttribute("shifts", dao.getAllShifts());
-                req.getRequestDispatcher("/views/admin/shift.jsp").forward(req, resp);
+//                req.setAttribute("shifts", dao.getAllShifts());
+//                req.getRequestDispatcher("/views/admin/shift.jsp").forward(req, resp);
+                
+                req.setAttribute("allDoctorsList", new Gson().toJson(new DoctorDAO().getAllDoctors())); 
+                
+                getAllShiftGrouped(req, resp);
             }
 
             else if (action.equals("delete")) 
@@ -38,6 +48,32 @@ public class ShiftServlet extends HttpServlet
             {
                 searchShift(req, resp);
             }
+            else if ("saveDoctors".equals(action)) {
+                int shiftId = Integer.parseInt(req.getParameter("shiftId"));
+                String doctorsJson = req.getParameter("doctors"); // JSON array [{userId:..., fullName:...}, ...]
+
+                Gson gson = new Gson();
+                Doctor[] doctors = gson.fromJson(doctorsJson, Doctor[].class);
+
+                dao.saveDoctorsInShift(shiftId, List.of(doctors));
+
+                resp.setContentType("application/json");
+                resp.getWriter().write("{\"status\":\"success\"}");
+                return;
+            }
+            else if("deleteShiftFromClient".equals(action)) {
+                int shiftId = Integer.parseInt(req.getParameter("shiftId"));
+
+                try {
+                    dao.deleteShiftAndDoctors(shiftId);
+                    resp.setContentType("application/json");
+                    resp.getWriter().write("{\"status\":\"success\"}");
+                } catch(Exception e) {
+                    resp.setContentType("application/json");
+                    resp.getWriter().write("{\"status\":\"error\", \"message\":\"" + e.getMessage() + "\"}");
+                }
+            }
+
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -98,6 +134,51 @@ public class ShiftServlet extends HttpServlet
         } 
         catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+    
+    public void getAllShiftGrouped(HttpServletRequest req, HttpServletResponse resp)
+        throws ServletException, IOException {
+
+        Map<String, Map<String, List<Doctor>>> result = new HashMap<>();
+
+        try {
+            List<Shift> allShifts = dao.getAllShifts();
+
+            for (Shift s : allShifts) {
+
+                String date = s.getShiftDate().toString();
+                String period = getPeriod(s.getStartTime()); 
+                List<Doctor> doctors = dao.getAllDoctorsInShift(s.getShiftId());
+
+                result
+                    .computeIfAbsent(date, d -> new HashMap<>())
+                    .computeIfAbsent(period, e -> doctors);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        Gson gson = new Gson();
+        String shiftMap = gson.toJson(result);
+        
+        System.out.println(shiftMap);
+
+        req.setAttribute("shiftMap", shiftMap);
+        req.getRequestDispatcher("/views/admin/shift.jsp").forward(req, resp);
+    }
+
+    
+    private String getPeriod(Time start) {
+        String t = start.toString();
+
+        switch (t) {
+            case "07:00:00": return "morning";
+            case "08:00:00": return "morning";
+            case "13:00:00": return "afternoon";
+            case "19:00:00": return "night";
+            default: return "unknown";
         }
     }
 }
