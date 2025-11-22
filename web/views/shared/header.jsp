@@ -3,7 +3,7 @@
     
   <div class="logo-container">
     <a href="#"><img src="<%= request.getContextPath() %>/views/shared/logo.png" class="logo"></a>
-    <span class="logo-text">Phòng khám bl</span>
+    <span class="logo-text">Phòng khám</span>
   </div>
     
   <div class="right-section">

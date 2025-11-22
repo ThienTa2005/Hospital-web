@@ -25,7 +25,7 @@ public class DepartmentDAO
         }
         return list;
     }
-
+    
     // Kiem tra chuyen khoa da ton tai
     public boolean isDepartmentExist(String keyword) throws SQLException
     {
@@ -37,7 +37,7 @@ public class DepartmentDAO
             return rs.next();
         }
     }
-
+    
     // Them chuyen khoa
     public void addDepartment(Department department) throws SQLException
     {
@@ -48,7 +48,7 @@ public class DepartmentDAO
             ps.executeUpdate();
         }
     }
-
+    
     // Xoa chuyen khoa 
     public void deleteDepartment(int id) throws SQLException
     {
@@ -59,7 +59,7 @@ public class DepartmentDAO
             int rows = ps.executeUpdate();
         }
     }
-
+    
     // Cap nhat chuyen khoa 
     public void updateDepartment(Department department) throws SQLException
     {
@@ -71,7 +71,7 @@ public class DepartmentDAO
             ps.executeUpdate();
         }
     }
-
+    
     // Tim kiem chuyen khoa theo ten
     public List<Department> searchByName(String keyword) throws SQLException
     {

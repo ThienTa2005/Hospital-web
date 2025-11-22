@@ -1,418 +1,328 @@
-<%@page import="java.text.SimpleDateFormat"%>
-<%@page import="model.entity.User"%>
 <%@page import="java.util.List"%>
 <%@page import="model.entity.Doctor"%>
+<%@page import="model.dao.DoctorDAO"%>
+<%@page import="model.dao.DepartmentDAO"%>
+<%@page import="model.entity.Department"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%--<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>--%>
-<!doctype html>
-<html lang="en">
+
+<%
+    String deptIdParam = request.getParameter("deptId");
+    int deptIdInt = (deptIdParam != null && !deptIdParam.isEmpty()) ? Integer.parseInt(deptIdParam) : -1;
+
+    DoctorDAO dao = new DoctorDAO();
+    List<Doctor> doctors = dao.getAllDoctors();
+    if (deptIdInt != -1) {
+        doctors = doctors.stream()
+                         .filter(d -> d.getDepartmentId() == deptIdInt)
+                         .collect(java.util.stream.Collectors.toList());
+    }
+%>
+
+<!DOCTYPE html>
+<html>
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Hồ sơ bác sĩ</title>
+<meta charset="UTF-8">
+<title>Danh sách bác sĩ</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha512-DxV+EoADOkOygM4IR9yXP8Sb2qwgidEmeqAEmDKIOfPRQZOWbXCzLC6vjbZyy0vPisbH2SyW27+ddLVCN+OMzQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha512-DxV+EoADOkOygM4IR9yXP8Sb2qwgidEmeqAEmDKIOfPRQZOWbXCzLC6vjbZyy0vPisbH2SyW27+ddLVCN+OMzQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/user_style.css">
-    
-    <style>
-        .toast-container {
-            top: 65px !important;    
-            z-index: 1055;           
-        }
-        
-        .modal-backdrop {
-            z-index: 2500 !important;
-         }
+<link rel="stylesheet" href="<%= request.getContextPath() %>/assets/user_style.css">
+<style>
 
-          .modal {
-            z-index: 2600 !important;
-        }
+html, body {
+    height: 100%;
+    margin: 0;
+}
+body {
+    display: flex;
+    flex-direction: column;
+}
 
-    </style>
+.container-main { 
+    flex: 1; 
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.row.doctors-row {
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+}
+
+
+.col-doctors {
+    flex: 1;
+    max-width: 50%;
+}
+
+#doctorFormContainer {
+    flex: 1;
+    max-width: 50%;
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    min-height: 400px;
+    max-height: 75vh; 
+    overflow-y: auto;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.table-1 {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.table-1 th {
+    background: #40855E;
+    color: white;
+    padding: 12px;
+    text-align: center;
+}
+.table-1 td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+.table-1 tr:nth-child(even) { background: #f8f8f8; }
+.table-1 tr:hover { background: #eaf6ea; }
+
+.viewDoctor {
+    background: #40855E;
+    color: white;
+    border: none;
+    padding: 5px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+.viewDoctor:hover { background: #2f6d4b; }
+
+#footer {
+    background-color: #569571;
+    color: white;
+    display: flex;                
+    justify-content: center;     
+    align-items: center;         
+    height: 40px;
+    text-align: center;
+    padding: 12px 0;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    font-size: 0.9rem;
+    box-shadow: 0 -2px 6px rgba(0,0,0,0.1);
+    width: 100%;
+}
+.title-box {
+  background-color: #f8fff9; 
+  border: 2px solid #3d7b47; 
+  border-radius: 12px;
+  padding: 10px 20px;
+  text-align: center;
+  margin: 20px auto 10px auto;
+  width: fit-content; /* chỉ vừa phần chữ */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin: 0;
+  color: #2d6a3e;
+  font-weight: 700;
+  font-size: 1.8rem;
+  letter-spacing: 1px;
+}
+
+</style>
 </head>
-
 <body>
-    <%
+<%
         request.setAttribute("currentPage", "doctor");
     %>
-    <jsp:include page="/views/shared/user_header.jsp" />
-    
-    <!-- Thanh cong -->   
-    <div class="toast-container position-fixed top-0 end-0 p-3">
-        <div id="successToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="d-flex">
-                <div class="toast-body">
-                     Chỉnh sửa thành công!
-                </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- That bai  -->
-    <div class="toast-container position-fixed top-0 end-0 p-3">
-        <div id="errorToast" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="d-flex">
-                <div class="toast-body">
-                    Chỉnh sửa thất bại! <br>
-                    Tên đăng nhập đã tồn tại, vui lòng chọn tên khác.
-                </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-            </div>
-        </div>
+<jsp:include page="/views/shared/user_header.jsp" />
+
+<div class="container-main">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="title-box">
+            Danh sách bác sĩ
+            <% if (deptIdInt != -1) { %>
+                của khoa: 
+                <%= new DepartmentDAO().getAllDepartments().stream()
+                    .filter(d -> d.getDepartmentID() == deptIdInt)
+                    .findFirst().map(d -> d.getDepartmentName()).orElse("") %>
+            <% } %>
+        </h2>
+
+        <button class="btn btn-success" id="addDoctorBtn">
+            <i class="fa-solid fa-plus"></i> Thêm bác sĩ
+        </button>
     </div>
 
-    <!-- Xoa thanh cong -->   
-    <div class="toast-container position-fixed top-0 end-0 p-3">
-        <div id="deleteToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="d-flex">
-                <div class="toast-body">
-                     Xóa thành công!
-                </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Xoa ban than  -->
-    <div class="toast-container position-fixed top-0 end-0 p-3">
-        <div id="selfDelete" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="d-flex">
-                <div class="toast-body">
-                    Bạn không được xóa tài khoản của chính mình!
-                </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-            </div>
-        </div>
-    </div>
-  
-    <main class="main-content">
-        <div class="title-box"><h3> DANH SÁCH BÁC SĨ</h3></div>
+    <div class="row doctors-row">
+        <!-- Bảng bên trái -->
+        <div class="col-doctors">
+            <table class="table-1">
+                <thead>
+                    <tr>
+                        <th>Tên đăng nhập</th>
+                        <th>Họ tên</th>
+                        <th>Trình độ</th>
+                        <th>Khoa</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
 
-        <div class="container" style="margin-top: -5px; margin-bottom: 5px;">
-            <div class="row">
-                <div class="col-5">
-                <form action="${pageContext.request.contextPath}/admin/doctor" method="get" class="d-flex">
-                    <input type="hidden" name="action" value="search">
-                    <input type="text" name="keyword" placeholder="Nhập thông tin bác sĩ" class="form-control me-2" style="width: 180px; height: 37px;">
-                    <button class="search-button" >Tìm kiếm</button>
-                </form>
-                </div>
-                <div class="col-3"></div>
-                <div class="col-3 text-end"><a href="${pageContext.request.contextPath}/views/admin/add_user.jsp" class="add-button">
-                  <i class="fa-solid fa-user-plus" style="margin-right: 5px;"></i>  Thêm người dùng
-                    </a> 
-                </div>
-            </div>
-        </div>
+                <tbody>
+                <% if (doctors != null && !doctors.isEmpty()) {
+                       for (Doctor doc : doctors) { %>
 
-        <table class="table-1" border="1" cellpadding="5" cellspacing="0">
-            <tr>
-                <th>STT</th>
-                <th>Tên đăng nhập</th>
-                <th>Mật khẩu</th>
-                <th>Họ tên</th>
-                <th>Ngày sinh</th>
-                <th>Giới tính</th>
-                <th>Số điện thoại</th>
-                <th>Địa chỉ</th>
-                <th>Bằng cấp</th>
-                <th>Khoa</th>
-                <th>Quản lý</th>
+                    <tr>
+                        <td><%= doc.getUsername() %></td>
+                        <td><%= doc.getFullname() %></td>
+                        <td><%= doc.getDegree() %></td>
+                        <td><%= doc.getDepartmentName() %></td>
 
-            </tr>
-            <%
-            List<Doctor> users = (List<Doctor>) request.getAttribute("listDoctor");
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-            if (users != null && !users.isEmpty()) {
-                int STT = 1;
-                for (Doctor u : users) {
-            %>
-
-                <tr>
-
-                    <td><%= STT++ %></td>
-                    <td><%= u.getUsername() %></td>
-                    <td><%= u.getPassword() %></td>
-                    <td class="fullname"><%= u.getFullname() %></td>
-                    <td><%= sdf.format(u.getDob()) %></td>
-                    <td><%= 
-                            u.getGender().equals("M") ? "Nam" :
-                            u.getGender().equals("F") ? "Nữ" :
-                            u.getGender()
-                    %></td>
-                    
-                    <td><%= u.getPhonenum() %></td>
-                    <td><%= u.getAddress() %></td>
-                    <td><%= u.getDegree() %></td>
-                    <td><%= u.getDepartmentName()%></td>
-                    <td> 
-    <!--                    <button class="edit"> Chỉnh sửa </button>-->
-    <!--                    <a href="#" class="edit" data-bs-toggle="modal" >Chỉnh sửa</a>-->
-
-                            <button class="edit" 
-                                data-bs-toggle="modal" data-bs-target="#editModal"
-                                data-id="<%=u.getUserId()%>"
-                                data-username="<%=u.getUsername()%>"
-                                data-password="<%=u.getPassword()%>"
-                                data-fullname="<%=u.getFullname()%>"
-                                data-dob="<%=sdf.format(u.getDob())%>"
-                                data-gender="<%=u.getGender()%>"
-                                data-phonenum="<%=u.getPhonenum()%>"
-                                data-address="<%=u.getAddress()%>"
-                                data-role="<%=u.getRole()%>">
-                                Chỉnh sửa
+                        <td>
+                            <!-- Xem chi tiết -->
+                            <button class="viewDoctor" 
+                                    data-id="<%= doc.getUserId() %>">
+                                Xem
                             </button>
+                        </td>
+                    </tr>
 
-    <!--                    <a href="${pageContext.request.contextPath}/admin/user?action=delete&id=<%=u.getUserId()%>" 
-                        onclick="return confirm('Bạn có chắc muốn xóa user này không?')" 
-                        class="btn btn-danger btn-sm">Xóa</a>-->
-
-    <!--                    <a href="${pageContext.request.contextPath}/admin/user?action=delete&id=<%=u.getUserId()%>" 
-                      class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">Xóa</a>-->
-
-                        <a href="#" 
-                            class="btn btn-danger btn-sm" 
-                            data-bs-toggle="modal" 
-                            data-bs-target="#confirmDeleteModal"
-                            data-id="<%= u.getUserId() %>">
-                            Xóa
-                        </a>
-                    </td>
-                </tr>
-            <%  
-                }
-            } else {
-            %>
-                <tr>
-                    <td colspan="10" style="text-align:center; font-size: 1rem;">Không có dữ liệu người dùng</td>
-                </tr>
-            <%
-                }
-            %>
-        </table>
-    </main>
-    
-    <!-- Modal Xác Nhận Xóa -->
-    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header bg-danger text-white">
-            <h5 class="modal-title">Xác nhận xóa</h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-          </div>
-          <div class="modal-body">
-            Bạn có chắc chắn muốn xóa người dùng này không?
-          </div>
-<!--        <div class="modal-footer"> 
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button> 
-                <a href="deleteUser?id=1" class="btn btn-danger" style="padding: 8px 12px;">Xóa</a>
-            </div>-->
-            
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-            <a id="confirmDeleteBtn" href="#" class="btn btn-danger" style="padding: 8px 12px;">Xóa</a>
-          </div>
+                <% } } else { %>
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">
+                            Chưa có bác sĩ nào.
+                        </td>
+                    </tr>
+                <% } %>
+                </tbody>
+            </table>
         </div>
-      </div>
-    </div>
-    
-    <script>
-        const contextPath = "${pageContext.request.contextPath}";
-        const deleteModal = document.getElementById('confirmDeleteModal');
-        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
 
-        deleteModal.addEventListener('show.bs.modal', function (event) {
-          const button = event.relatedTarget;
-          const userId = button.getAttribute('data-id');
-
-          if (userId && userId.trim() !== "") {
-             confirmDeleteBtn.href = contextPath + "/admin/user?action=delete&id=" + userId;
-          } else {
-            console.error("⚠ ID người dùng bị rỗng!");
-            confirmDeleteBtn.href = "#";
-          }
-        });
-    </script>
-    
-    <!-- Modal chinh sua -->
-    <div class="modal fade" id="editModal" tabindex="-1">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <form action="${pageContext.request.contextPath}/admin/user?action=edit" method="post">
-            <div class="modal-header" style="background: #569571;">
-              <h5 class="modal-title text-center w-100" id="modalTitle" style="font-weight: 500; color: white;">Chỉnh sửa người dùng</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" name="action" id="formAction" value="create">
-                <input type="hidden" name="userId" id="userId">
-
-                <div class="mb-3">
-                  <label>Tên đăng nhập</label>
-                  <input type="text" class="form-control" name="username" id="username" required>
-                </div>
-                <div class="mb-3">
-                  <label>Mật khẩu</label>
-                  <input type="text" class="form-control" name="password" id="password" required>
-                </div>
-                <div class="mb-3">
-                  <label>Họ tên</label>
-                  <input type="text" class="form-control" name="fullname" id="fullname" required>
-                </div>
-                <div class="mb-3">
-                  <label>Ngày sinh</label>
-                  <input type="date" class="form-control" name="dob" id="dob">
-                </div>
-                <div class="mb-3">
-                  <label>Giới tính</label>
-                  <select class="form-control" name="gender" id="gender">
-                    <option value="M">Nam</option>
-                    <option value="F">Nữ</option>
-                  </select>
-                </div>
-                <div class="mb-3">
-                  <label>Số điện thoại</label>
-                  <input type="text" class="form-control" name="phonenum" id="phonenum">
-                </div>
-                <div class="mb-3">
-                  <label>Địa chỉ</label>
-                  <input type="text" class="form-control" name="address" id="address">
-                </div>
-                <div class="mb-3">
-                  <label>Vai trò</label>
-                  <select class="form-control" name="role" id="role">
-                    <option value="admin">Admin</option>
-                    <option value="doctor">Bác sĩ</option>
-                    <option value="patient">Bệnh nhân</option>
-                  </select>
-                </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="window.location.href='${pageContext.request.contextPath}/admin/user?action=list'">Đóng</button>
-              <button type="submit" class="btn btn-success">Lưu</button>            
-            </div>
-          </form>
+        <!-- Panel hiện thông tin chi tiết -->
+        <div id="doctorFormContainer">
+            <p class="text-center text-muted mt-5">
+                Chọn một bác sĩ để xem chi tiết.
+            </p>
         </div>
-      </div>
     </div>
-    
-    <!-- Chinh sua -->
-    <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const editButtons = document.querySelectorAll('.edit');
+</div>
 
-        editButtons.forEach(button => {
-            button.addEventListener('click', function () {
-                // Lay du lieu
-                const userId = this.dataset.id;
-                const username = this.dataset.username;
-                const password = this.dataset.password;
-                const fullname = this.dataset.fullname;
-                const dob = this.dataset.dob;          
-                const gender = this.dataset.gender;
-                const phonenum = this.dataset.phonenum;
-                const address = this.dataset.address;
-                const role = this.dataset.role;
 
-                // Gan vao o input
-                document.getElementById('userId').value = userId;
-                document.getElementById('username').value = username;
-                document.getElementById('password').value = password;
-                document.getElementById('fullname').value = fullname;
-                document.getElementById('dob').value = dob.split('/').reverse().join('-'); // yyyy-MM-dd
-                document.getElementById('phonenum').value = phonenum;
-                document.getElementById('address').value = address;
-                document.getElementById('gender').value = gender;
-                document.getElementById('role').value = role;
+<!-- Modal Thêm bác sĩ -->
+<div class="modal fade" id="addDoctorModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form id="addDoctorForm" method="post" action="${pageContext.request.contextPath}/admin/doctor">
+        <input type="hidden" name="action" value="add">
 
-                // hidden action = "edit"
-                document.getElementById('formAction').value = "edit";
-            });
-        });
+        <div class="modal-header" style="background-color:#40855E;">
+          <h5 class="modal-title text-white">Thêm bác sĩ</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+            <div class="mb-3">
+              <label>Tên đăng nhập</label>
+              <input type="text" name="username" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+              <label>Mật khẩu</label>
+              <input type="text" name="password" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+              <label>Họ tên</label>
+              <input type="text" name="fullname" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+              <label>Ngày sinh</label>
+              <input type="date" name="dob" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+              <label>Giới tính</label>
+              <select name="gender" class="form-select">
+                  <option value="M">Nam</option>
+                  <option value="F">Nữ</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label>Số điện thoại</label>
+              <input type="text" name="phonenum" class="form-control">
+            </div>
+
+            <div class="mb-3">
+              <label>Địa chỉ</label>
+              <input type="text" name="address" class="form-control">
+            </div>
+
+            <div class="mb-3">
+              <label>Bằng cấp</label>
+              <input type="text" name="degree" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+              <label>Khoa</label>
+              <select name="departmentId" class="form-select">
+                  <option value="">-- Chọn khoa --</option>
+                  <%
+                      List<Department> departments =
+                          (List<Department>) request.getAttribute("departments");
+                      if (departments != null) {
+                          for (Department d : departments) {
+                  %>
+                      <option value="<%= d.getDepartmentID() %>">
+                          <%= d.getDepartmentName() %>
+                      </option>
+                  <%
+                          }
+                      }
+                  %>
+              </select>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+          <button type="submit" class="btn btn-success">Thêm</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+                
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+$(document).ready(function(){
+    $('.viewDoctor').click(function(){
+        const doctorId = $(this).data('id');
+        $('#doctorFormContainer')
+            .load('<%= request.getContextPath() %>/views/admin/doctor_form.jsp?id=' + doctorId);
     });
-    </script>
-    
-    <!-- Ten dang nhap da ton tai -->  
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get("error") === "username-exist") {
-                const toastElement = document.getElementById('errorToast');
-                const toast = new bootstrap.Toast(toastElement, {
-                    delay: 3000 // 3 giay
-                });
-                toast.show();
-                
-                // Xoa url
-                const url = new URL(window.location.href);
-                url.searchParams.delete("error");
-                window.history.replaceState({}, document.title, url.pathname + url.search);
-            }
-        });
-    </script>
-    
-    <!-- Chinh sua thanh cong -->
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get("success") === "true") {
-                const toastElement = document.getElementById('successToast');
-                const toast = new bootstrap.Toast(toastElement, {
-                    delay: 3000 // 3 giay
-                });
-                toast.show();
-                
-                // Xoa url
-                const url = new URL(window.location.href);
-                url.searchParams.delete("success");
-                window.history.replaceState({}, document.title, url.pathname + url.search);
-            }
-        });
-    </script>
+});
 
-    <!-- Chinh sua that bai -->
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get("delete") === "true") {
-                const toastElement = document.getElementById('deleteToast');
-                const toast = new bootstrap.Toast(toastElement, {
-                    delay: 3000 // 3 giay
-                });
-                toast.show();
-                
-                // Xoa url
-                const url = new URL(window.location.href);
-                url.searchParams.delete("delete");
-                window.history.replaceState({}, document.title, url.pathname + url.search);
-            }
-        });
-    </script>
-    
-    <!-- Xoa tai khoan ban than -->  
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get("error") === "selfDelete") {
-                const toastElement = document.getElementById('selfDelete');
-                const toast = new bootstrap.Toast(toastElement, {
-                    delay: 3000 // 3 giay
-                });
-                toast.show();
-                
-                // Xoa url
-                const url = new URL(window.location.href);
-                url.searchParams.delete("error");
-                window.history.replaceState({}, document.title, url.pathname + url.search);
-            }
-        });
-    </script>
-    
-    <jsp:include page="/views/shared/user_footer.jsp" />
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+document.addEventListener('DOMContentLoaded', function() {
+    const addDoctorBtn = document.getElementById('addDoctorBtn');
+    addDoctorBtn.addEventListener('click', function() {
+        const addModalEl = document.getElementById('addDoctorModal');
+        const addModal = new bootstrap.Modal(addModalEl);
+        addModal.show();
+    });
+});
+
+</script>
+
+<jsp:include page="/views/shared/user_footer.jsp" />
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
