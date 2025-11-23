@@ -91,25 +91,36 @@
 
 <div class="d-flex justify-content-center">
     <div class="calendar-wrapper">
-        <div class="d-flex justify-content-end mb-2" style="margin-bottom: 15px !important">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <!-- BÊN TRÁI -->
+            <div class="d-flex align-items-center">
+                <h5 class="m-0 fw-bold me-2">Chọn ngày: </h5>
+
+                <!-- Input chọn ngày -->
+                <input type="date" id="selectedDate" class="form-control form-control-sm" style="width: 180px;">
+            </div>
+
+            <!-- BÊN PHẢI -->
             <div class="d-flex align-items-center" style="gap: 10px;">
                 <button id="prevMonth" class="btn btn-outline-success btn-sm">&lt; Tháng trước</button>
                 <h5 id="monthTitle" class="m-0 fw-bold text-center" style="width: 150px;">Tháng</h5>
                 <button id="nextMonth" class="btn btn-outline-success btn-sm">Tháng sau &gt;</button>
             </div>
+
         </div>
+
 
         <div class="table-responsive">
             <table class="table calendar-table text-center align-middle">
                 <thead>
                     <tr>
-                        <th>T2</th>
-                        <th>T3</th>
-                        <th>T4</th>
-                        <th>T5</th>
-                        <th>T6</th>
-                        <th>T7</th>
-                        <th>CN</th>
+                        <th>Thứ 2</th>
+                        <th>Thứ 3</th>
+                        <th>Thứ 4</th>
+                        <th>Thứ 5</th>
+                        <th>Thứ 6</th>
+                        <th>Thứ 7</th>
+                        <th>Chủ nhật</th>
                     </tr>
                 </thead>
                 <tbody id="calendarBody"></tbody>
@@ -439,6 +450,22 @@ function renderCalendar(year, month) {
 
     attachShiftButtonEvents(); // gắn sự kiện sau khi render
 }
+
+document.getElementById("selectedDate").addEventListener("change", function()
+{
+    let selected = this.value;
+    
+    if (!selected) return;
+    let part = selected.split("-");
+    let year = parseInt(part[0]);
+    let month = parseInt(part[1]) - 1;
+    
+    currentMonth = month;
+    currentYear = year;
+    
+    renderCalendar(year, month);
+});
+    
 
 /* ========== NÚT CHUYỂN THÁNG ========== */
 document.getElementById("prevMonth").onclick = () => {
