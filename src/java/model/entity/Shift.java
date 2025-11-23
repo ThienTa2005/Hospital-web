@@ -65,6 +65,7 @@ public class Shift
         this.endTime = endTime;
     }
     
+    @Override
     public String toString()
     {
         return shiftId + " " + shiftDate + " " + startTime + " " + endTime;

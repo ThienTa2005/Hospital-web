@@ -170,7 +170,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-        <button type="button" class="btn btn-success" id="saveShiftBtn">Lưu</button>
+        <button type="button" class="btn btn-success" id="saveShiftBtn">Lưu Bác sĩ</button>
       </div>
     </div>
   </div>
@@ -269,26 +269,27 @@ function updateShiftButton() {
             if (!confirm("Bạn có chắc chắn muốn xóa ca trực này không?")) return;
 
             const dateStr = document.getElementById('shiftDate').value;
-            const shift = shiftSelect.value;
+            const shift = shiftSelect.value; // morning/afternoon/night
 
-            const shiftData = shiftMap[dateStr] ? shiftMap[dateStr][shift] : null;
-
-            if(shiftData == null) {
-                // Gọi API xóa shift
-                const shiftId = shiftMap[dateStr]?.shiftId; // cần map shiftId từ server
-                if(!shiftId) return;
-
-                fetch('<%=request.getContextPath()%>/admin/shift?action=deleteShiftFromClient&shiftId=' + shiftId)
-                    .then(res => res.json())
-                    .then(data => {
-                        if(data.status === "success") {
-                            delete shiftMap[dateStr][shift];
-                            updateShiftButton();
-                            renderCalendar(currentYear, currentMonth);
-                            console.log("Shift deleted from DB:", shiftId);
-                        }
-                    });
-            }
+            fetch('<%=request.getContextPath()%>/admin/shift?action=deleteShiftFromClient', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({
+                    shiftType: shift,
+                    shiftDate: dateStr
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === "success") {
+                    delete shiftMap[dateStr][shift];
+                    updateShiftButton();
+                    renderCalendar(currentYear, currentMonth);
+                } else {
+                    alert("Xóa ca trực thất bại: " + (data.message || ""));
+                }
+            })
+            .catch(err => console.error(err));
         };
 
     } else {
@@ -297,17 +298,43 @@ function updateShiftButton() {
         selectedDoctorsBox.innerHTML = "";
         doctorCount.innerText = 0;
 
+        // Kiểm tra nếu dateStr không còn shift nào → xóa key
+        if (shiftMap[dateStr] && Object.keys(shiftMap[dateStr]).length === 0) {
+            delete shiftMap[dateStr];
+        }
+
         shiftActionBtn.innerText = "Thêm ca trực";
         shiftActionBtn.className = "btn btn-sm btn-success";
         shiftActionBtn.onclick = () => {
-            if (!shiftMap[dateStr]) shiftMap[dateStr] = {};
-            shiftMap[dateStr][shift] = [];
+            const dateStr = document.getElementById('shiftDate').value;
+            const shift = shiftSelect.value;
 
-            doctorSection.style.display = "block"; // hiện section ngay khi thêm
-            updateDoctorList();
-            updateShiftButton();
-            renderCalendar(currentYear, currentMonth);
-            console.log("Thêm ca trực", dateStr, shift);
+            fetch('<%=request.getContextPath()%>/admin/shift?action=addShiftFromClient', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({
+                    shiftType: shift,
+                    shiftDate: dateStr
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === "success") {
+                    if(!shiftMap[dateStr]) shiftMap[dateStr] = {};
+                    shiftMap[dateStr][shift] = [];
+
+                    const doctorSection = document.querySelector('.doctor-section');
+                    doctorSection.style.display = "block";
+                    updateDoctorList();
+                    updateShiftButton();
+                    renderCalendar(currentYear, currentMonth);
+
+                    console.log("Thêm ca trực thành công:", dateStr, shift);
+                } else {
+                    alert("Thêm ca trực thất bại: " + (data.message || ""));
+                }
+            })
+            .catch(err => console.error(err));
         };
     }
 }
@@ -374,6 +401,10 @@ function renderCalendar(year, month) {
 
                 let shiftHTML = "";
                 let shiftClass = "";
+                if (shift && (shift.morning || shift.afternoon || shift.night)) {
+                    shiftClass = "has-shift";
+                }
+                
                 if (shift) {
                     shiftClass = "has-shift";
                     let info = "";
@@ -453,30 +484,37 @@ addDoctorBtn.addEventListener('click', () => {
 /* ========== LƯU CA TRỰC (tạm client-side) ========== */
 saveShiftBtn.addEventListener('click', () => {
     const dateStr = document.getElementById('shiftDate').value;
-    const shift = shiftSelect.value;
-    const doctorsList = (shiftMap[dateStr] && shiftMap[dateStr][shift]) ? shiftMap[dateStr][shift] : [];
+    const shiftType = shiftSelect.value;
+    const doctorsList = (shiftMap[dateStr] && shiftMap[dateStr][shiftType]) ? shiftMap[dateStr][shiftType] : [];
+   
+    if (doctorsList.length === 0) {
+        alert("Không có bác sĩ nào để lưu!");
+        return;
+    }
 
-    // Lấy shiftId từ shiftMap / hoặc truy vấn từ backend theo date + shift
-    let shiftId = shiftMap[dateStr][shift]?.shiftId;
 
-    fetch('<%=request.getContextPath()%>/admin/shift?action=saveDoctors', {
+    fetch('/du_an1/admin/shift?action=saveDoctors', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({
-            shiftId: shiftId,
+            shiftType: shiftType,
+            shiftDate: dateStr,
             doctors: JSON.stringify(doctorsList)
         })
     })
-    .then(res => res.json())
+    .then(res => res.json()) // trực tiếp parse JSON, không cần try/catch
     .then(data => {
-        if(data.status === "success") {
+        if (data.status === "success") {
             alert("Lưu bác sĩ ca trực thành công!");
             bootstrap.Modal.getInstance(document.getElementById('shiftModal')).hide();
             renderCalendar(currentYear, currentMonth);
+        } else {
+            alert("Lỗi: " + (data.message || "Không xác định"));
         }
     })
     .catch(err => console.error(err));
 });
+
 
 
 function renderSelectedDoctors() {
@@ -502,10 +540,25 @@ function renderSelectedDoctors() {
         (function(index){
             item.querySelector('button').addEventListener('click', function() {
                 if (confirm("Xóa bác sĩ này khỏi ca trực?")) {
-                    doctorsList.splice(index, 1);
-                    document.getElementById('doctorCount').innerText = doctorsList.length;
-                    renderSelectedDoctors();
+                    const idToRemove = doc.userId ?? doc.id;
+                    const dateStr = document.getElementById('shiftDate').value;
+                    const shift = shiftSelect.value;
+
+                    // Lọc trực tiếp
+                    shiftMap[dateStr][shift] = shiftMap[dateStr][shift].filter(d => (d.userId ?? d.id) != idToRemove);
+
+                    // Nếu shift rỗng → xóa luôn ca
+                    if (shiftMap[dateStr][shift].length === 0) {
+                        delete shiftMap[dateStr][shift];
+                    }
+                    // Nếu ngày rỗng → xóa luôn ngày
+                    if (shiftMap[dateStr] && Object.keys(shiftMap[dateStr]).length === 0) {
+                        delete shiftMap[dateStr];
+                    }
+
                     updateDoctorList();
+                    renderSelectedDoctors();
+                    renderCalendar(currentYear, currentMonth);
                 }
             });
         })(i);

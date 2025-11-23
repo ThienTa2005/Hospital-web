@@ -80,6 +80,8 @@ public class ShiftDAO
         }
     }
     
+    
+    
     // Lay ca truc qua ID
     public Shift getShiftById(int id) throws SQLException
     {
@@ -121,8 +123,29 @@ public class ShiftDAO
         return list;
     }
     
+    public boolean addShiftByDateAndPeriod(String shiftDate, String shiftType) throws SQLException 
+    {
+        Time start = null, end = null;
+
+        switch (shiftType) {
+            case "morning": start = Time.valueOf("07:00:00"); end = Time.valueOf("12:00:00"); break;
+            case "afternoon": start = Time.valueOf("13:00:00"); end = Time.valueOf("18:00:00"); break;
+            case "night": start = Time.valueOf("19:00:00"); end = Time.valueOf("7:00:00"); break;
+        }
+        
+        String sql = "INSERT INTO Shift (shift_date, start_time, end_time) VALUES (?, ?, ?)";
+        try(Connection conn = DBUtils.getConnection(); PreparedStatement ps = conn.prepareStatement(sql))
+        {
+            ps.setDate(1, Date.valueOf(shiftDate));
+            ps.setTime(2, start);
+            ps.setTime(3, end);
+            
+            return ps.executeUpdate() > 0;
+        }
+    }
+    
     // Hàm tìm theo ngày và ca (morning/afternoon/night)
-    public List<Shift> getShiftsByDateAndPeriod(Date date, String period) throws SQLException {
+    public Shift getShiftsByDateAndPeriod(Date date, String period) throws SQLException {
         List<Shift> list = new ArrayList<>();
 
         Time startTime;
@@ -165,7 +188,7 @@ public class ShiftDAO
             }
         }
 
-        return list;
+        return list.get(0);
     }
 
 
@@ -197,7 +220,9 @@ public class ShiftDAO
     }
     
     // Lưu danh sách bác sĩ cho 1 ca trực
-    public void saveDoctorsInShift(int shiftId, List<Doctor> doctors) throws SQLException {
+    public void saveDoctorsInShift(String shiftDate, String shiftType, List<Doctor> doctors) throws SQLException {
+        Shift shift = getShiftsByDateAndPeriod(Date.valueOf(shiftDate), shiftType);
+        
         String deleteSQL = "DELETE FROM Shift_Doctor WHERE shift_id = ?";
         String insertSQL = "INSERT INTO Shift_Doctor(shift_id, doctor_id) VALUES (?, ?)";
 
@@ -206,16 +231,36 @@ public class ShiftDAO
              PreparedStatement insertPS = conn.prepareStatement(insertSQL)) {
 
             // 1. Xóa ca trực cũ
-            deletePS.setInt(1, shiftId);
+            deletePS.setInt(1, shift.getShiftId());
             deletePS.executeUpdate();
 
             // 2. Thêm bác sĩ mới
             for (Doctor doc : doctors) {
-                insertPS.setInt(1, shiftId);
+                insertPS.setInt(1, shift.getShiftId());
                 insertPS.setInt(2, doc.getUserId());
                 insertPS.addBatch();
             }
             insertPS.executeBatch();
         }
     }
+    
+    // Xóa shift và tất cả bác sĩ liên quan
+    public boolean deleteShiftAndDoctors(String shiftDate, String shiftType) throws SQLException {
+        Shift shift = getShiftsByDateAndPeriod(Date.valueOf(shiftDate), shiftType);
+        
+        String deleteDoctorSQL = "DELETE FROM Shift_Doctor WHERE shift_id = ?";
+        String deleteShiftSQL = "DELETE FROM Shift WHERE shift_id = ?";
+
+        try(Connection conn = DBUtils.getConnection();
+            PreparedStatement psDoctor = conn.prepareStatement(deleteDoctorSQL);
+            PreparedStatement psShift = conn.prepareStatement(deleteShiftSQL)) {
+
+            psDoctor.setInt(1, shift.getShiftId());
+            psDoctor.executeUpdate();
+
+            psShift.setInt(1, shift.getShiftId());
+            return psShift.executeUpdate() > 0;
+        }
+    }
+
 }

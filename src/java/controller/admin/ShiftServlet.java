@@ -15,6 +15,7 @@ import com.google.gson.Gson;
 import java.util.HashMap;
 import model.dao.DoctorDAO;
 import model.entity.Doctor;
+import java.sql.SQLException;
 
 @WebServlet("/admin/shift")
 public class ShiftServlet extends HttpServlet 
@@ -48,31 +49,6 @@ public class ShiftServlet extends HttpServlet
             {
                 searchShift(req, resp);
             }
-            else if ("saveDoctors".equals(action)) {
-                int shiftId = Integer.parseInt(req.getParameter("shiftId"));
-                String doctorsJson = req.getParameter("doctors"); // JSON array [{userId:..., fullName:...}, ...]
-
-                Gson gson = new Gson();
-                Doctor[] doctors = gson.fromJson(doctorsJson, Doctor[].class);
-
-                dao.saveDoctorsInShift(shiftId, List.of(doctors));
-
-                resp.setContentType("application/json");
-                resp.getWriter().write("{\"status\":\"success\"}");
-                return;
-            }
-            else if("deleteShiftFromClient".equals(action)) {
-                int shiftId = Integer.parseInt(req.getParameter("shiftId"));
-
-                try {
-                    dao.deleteShiftAndDoctors(shiftId);
-                    resp.setContentType("application/json");
-                    resp.getWriter().write("{\"status\":\"success\"}");
-                } catch(Exception e) {
-                    resp.setContentType("application/json");
-                    resp.getWriter().write("{\"status\":\"error\", \"message\":\"" + e.getMessage() + "\"}");
-                }
-            }
 
 
         } catch (Exception e) {
@@ -81,36 +57,64 @@ public class ShiftServlet extends HttpServlet
     }
 
     @Override
-    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException 
-    {
+    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String action = req.getParameter("action");
+        resp.setContentType("application/json");  // luôn trả JSON
 
         try {
-            if (action.equals("add")) 
-            {
-                Date date = Date.valueOf(req.getParameter("date"));
-                Time start = Time.valueOf(req.getParameter("start") + ":00");
-                Time end = Time.valueOf(req.getParameter("end") + ":00");
+            if ("saveDoctors".equals(action)) {
+                String shiftDate = req.getParameter("shiftDate");
+                String shiftType = req.getParameter("shiftType");
+                String doctorsJson = req.getParameter("doctors");
 
-                dao.addShift(new Shift(date, start, end));
-                resp.sendRedirect(req.getContextPath() + "/admin/shift?action=list");
+                if (doctorsJson == null || doctorsJson.isEmpty()) {
+                    resp.getWriter().write("{\"status\":\"error\", \"message\":\"Danh sách bác sĩ trống\"}");
+                    return;
+                }
+
+                Gson gson = new Gson();
+                Doctor[] doctors = gson.fromJson(doctorsJson, Doctor[].class);
+
+                dao.saveDoctorsInShift(shiftDate, shiftType, List.of(doctors));
+
+                resp.getWriter().write("{\"status\":\"success\"}");
+                return;
             }
 
-            else if (action.equals("edit")) 
-            {
-                int id = Integer.parseInt(req.getParameter("id"));
-                Date date = Date.valueOf(req.getParameter("date"));
-                Time start = Time.valueOf(req.getParameter("start") + ":00");
-                Time end = Time.valueOf(req.getParameter("end") + ":00");
+            else if ("deleteShiftFromClient".equals(action)) {
+                String shiftDate = req.getParameter("shiftDate");
+                String shiftType = req.getParameter("shiftType");
 
-                dao.updateShift(new Shift(id, date, start, end));
-                resp.sendRedirect(req.getContextPath() + "/admin/shift?action=list");
+                try {
+                    dao.deleteShiftAndDoctors(shiftDate, shiftType);
+                    resp.getWriter().write("{\"status\":\"success\"}");
+                } catch (Exception e) {
+                    resp.getWriter().write("{\"status\":\"error\", \"message\":\"" + e.getMessage() + "\"}");
+                }
+                return;
+            }
+            
+            else if ("addShiftFromClient".equals(action)) {
+                String shiftDate = req.getParameter("shiftDate");
+                String shiftType = req.getParameter("shiftType");
+
+                try {
+                    dao.addShiftByDateAndPeriod(shiftDate, shiftType);
+
+                    resp.setContentType("application/json");
+                    resp.getWriter().write("{\"status\":\"success\"}");
+                } catch(Exception e) {
+                    resp.setContentType("application/json");
+                    resp.getWriter().write("{\"status\":\"error\", \"message\":\"" + e.getMessage() + "\"}");
+                }
             }
 
         } catch (Exception e) {
             e.printStackTrace();
+            resp.getWriter().write("{\"status\":\"error\", \"message\":\"" + e.getMessage() + "\"}");
         }
     }
+
     
     public void searchShift(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException      {
         String dateStr = req.getParameter("date");
@@ -179,6 +183,6 @@ public class ShiftServlet extends HttpServlet
             case "13:00:00": return "afternoon";
             case "19:00:00": return "night";
             default: return "unknown";
-        }
+        } 
     }
 }
