@@ -89,4 +89,98 @@ public class ShiftDoctorDAO {
             return false;
         }
     }
+    
+    
+    public List<model.entity.Shift> getShiftsByDoctor(int doctorId, Date fromDate, Date toDate) {
+        List<model.entity.Shift> list = new ArrayList<>();
+        String sql = "SELECT s.* FROM Shift s " +
+                     "JOIN Shift_Doctor sd ON s.shift_id = sd.shift_id " +
+                     "WHERE sd.doctor_id = ? " +
+                     "AND s.shift_date BETWEEN ? AND ? " +
+                     "ORDER BY s.shift_date ASC, s.start_time ASC";
+        
+        try (Connection conn = DBUtils.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, doctorId);
+            ps.setDate(2, fromDate);
+            ps.setDate(3, toDate);
+            
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(new model.entity.Shift(
+                    rs.getInt("shift_id"),
+                    rs.getDate("shift_date"),
+                    rs.getTime("start_time"),
+                    rs.getTime("end_time")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+    
+    // Kiểm tra xem bác sĩ có đang trong ca trực ngay bây giờ không??
+    public boolean isDoctorCurrentlyOnShift(int doctorId) {
+        String sql = "SELECT 1 FROM Shift s " +
+                     "JOIN Shift_Doctor sd ON s.shift_id = sd.shift_id " +
+                     "WHERE sd.doctor_id = ? " +
+                     "AND s.shift_date = CURDATE() " +
+                     "AND CURTIME() BETWEEN s.start_time AND s.end_time";
+        
+        try (Connection conn = DBUtils.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, doctorId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next(); 
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // Đếm số ca trực trong tháng hiện tại
+    public int countShiftsInCurrentMonth(int doctorId) {
+        String sql = "SELECT COUNT(*) FROM Shift s " +
+                     "JOIN Shift_Doctor sd ON s.shift_id = sd.shift_id " +
+                     "WHERE sd.doctor_id = ? " +
+                     "AND MONTH(s.shift_date) = MONTH(CURDATE()) " +
+                     "AND YEAR(s.shift_date) = YEAR(CURDATE())";
+        
+        try (Connection conn = DBUtils.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, doctorId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    // Lấy danh sách ca trực HÔM NAY để hiển thị Timeline
+    public List<model.entity.Shift> getShiftsToday(int doctorId) {
+        List<model.entity.Shift> list = new ArrayList<>();
+        String sql = "SELECT s.* FROM Shift s " +
+                     "JOIN Shift_Doctor sd ON s.shift_id = sd.shift_id " +
+                     "WHERE sd.doctor_id = ? AND s.shift_date = CURDATE() " +
+                     "ORDER BY s.start_time ASC";
+         try (Connection conn = DBUtils.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, doctorId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(new model.entity.Shift(
+                    rs.getInt("shift_id"),
+                    rs.getDate("shift_date"),
+                    rs.getTime("start_time"),
+                    rs.getTime("end_time")
+                ));
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return list;
+    }
 }

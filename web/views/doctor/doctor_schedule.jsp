@@ -1,174 +1,226 @@
-<%@page import="java.time.temporal.WeekFields"%>
-<%@page import="java.time.temporal.IsoFields"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page import="java.util.List"%>
+<%@page import="java.util.ArrayList"%>
+<%@page import="model.entity.Shift"%>
+<%@page import="java.time.LocalDate"%>
 <%@page import="java.time.format.DateTimeFormatter"%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="model.entity.User" %>
-<%@ page import="model.entity.Doctor" %>
-<%@ page import="model.dao.DoctorDAO" %>
-<%@ page import="java.time.*" %>
-<%@ page import="java.util.*" %>
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Lịch trực bác sĩ</title>
+<head>
+    <meta charset="UTF-8">
+    <title>Lịch Trực Cá Nhân</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/user_style.css">
+    <style>
+        :root { --primary: #40855E; --primary-light: #E8F5E9; --bg-gray: #F8F9FA; }
+        body { background-color: var(--bg-gray); font-family: 'Segoe UI', sans-serif; }
 
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/user_style.css">
+        .mini-calendar { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); position: sticky; top: 20px;}
+        .mini-header { display: flex; justify-content: space-between; margin-bottom: 15px; color: var(--primary); font-weight: bold; }
+        .mini-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
+        .mini-day { width: 36px; height: 36px; line-height: 36px; border-radius: 50%; font-size: 0.9rem; cursor: pointer; position: relative; transition: 0.2s; }
+        .mini-day:hover { background-color: var(--primary-light); color: var(--primary); transform: scale(1.1); }
+        .mini-day.selected { background-color: var(--primary); color: white; box-shadow: 0 3px 8px rgba(64, 133, 94, 0.4); }
+        .mini-day.has-shift::after { content: ''; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; background-color: #FFC107; border-radius: 50%; }
+        .mini-day.selected.has-shift::after { background-color: white; }
 
-        <style>
-            .left-panel, .right-panel { min-height: 70vh; }
-            .left-panel { border-right: 2px solid #e0e0e0; }
-            .info-box { background: #f8f9fa; border-radius: 10px; border: 1px solid #ddd; padding: 20px; }
-            table th, table td { text-align: center; vertical-align: middle; }
-        </style>
-    </head>
-    <body>
-    <jsp:include page="/views/shared/empty_header.jsp" />
+        .shift-card-day { background: white; border-radius: 12px; margin-bottom: 15px; border-left: 5px solid transparent; box-shadow: 0 2px 6px rgba(0,0,0,0.02); transition: 0.3s; }
+        .shift-card-day:hover { transform: translateX(5px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .shift-card-day.today { border-left-color: var(--primary); background-color: #fafffc; }
+        
+        .date-box { background-color: var(--primary-light); color: var(--primary); padding: 10px; border-radius: 8px; text-align: center; min-width: 80px; }
+        .date-box .day { font-size: 1.5rem; font-weight: 800; line-height: 1; }
+        .date-box .month { font-size: 0.8rem; text-transform: uppercase; }
+
+        .shift-pill { display: inline-block; padding: 8px 16px; border-radius: 10px; font-size: 0.9rem; font-weight: 600; margin-right: 10px; margin-bottom: 5px; border: 1px solid transparent; }
+        .pill-morning { background-color: #FFF8E1; color: #F57F17; border-color: #FFE082; }
+        .pill-afternoon { background-color: #FFF3E0; color: #E65100; border-color: #FFCC80; }
+        .pill-evening { background-color: #E0F2F1; color: #00695C; border-color: #80CBC4; }
+
+        .btn-floating-home {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            width: 55px;
+            height: 55px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            z-index: 100;
+            text-decoration: none;
+            overflow: hidden;
+        }
+        
+        .btn-floating-home span {
+            max-width: 0;
+            opacity: 0;
+            font-size: 1rem;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            margin-left: 0;
+        }
+
+        .btn-floating-home:hover {
+            width: 160px; 
+            background-color: var(--primary);
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(64, 133, 94, 0.3);
+        }
+
+        .btn-floating-home:hover span {
+            max-width: 100px;
+            opacity: 1;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <% request.setAttribute("currentPage", "schedule"); %>
+    <jsp:include page="/views/shared/doctor_header.jsp" />
 
     <%
-        User user = (User) session.getAttribute("user");       
-        Doctor doctor = null;
-        if(user != null && "doctor".equals(user.getRole())) {
-            DoctorDAO doctorDAO = new DoctorDAO();
-            doctor = doctorDAO.getDoctorById(user.getUserId());
-            request.setAttribute("doctor", doctor);
-        }
-
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-        // Năm và tuần được chọn
-        int selectedYear = request.getParameter("year") != null ? Integer.parseInt(request.getParameter("year")) : LocalDate.now().getYear();
-        int selectedWeek = request.getParameter("week") != null ? Integer.parseInt(request.getParameter("week")) : LocalDate.now().get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
-
-        // Tính ngày đầu tuần và các ngày trong tuần
-        LocalDate firstDayOfWeek = LocalDate.ofYearDay(selectedYear, 1)
-                .with(IsoFields.WEEK_OF_WEEK_BASED_YEAR, selectedWeek)
-                .with(DayOfWeek.MONDAY);
-
-        List<LocalDate> weekDays = new ArrayList<>();
-        for(int i=0; i<7; i++) {
-            weekDays.add(firstDayOfWeek.plusDays(i));
-        }
-
-        // 24 ca giờ
-        String[] shifts = new String[24];
-        for(int i=0; i<24; i++) {
-            int start = i;
-            int end = (i+1) % 24;
-            shifts[i] = start + "h - " + end + "h";
-        }
+       
+        LocalDate selectedDate = (LocalDate) request.getAttribute("selectedDate");
+        if(selectedDate == null) selectedDate = LocalDate.now();
+        
+        int currentMonth = (int) request.getAttribute("currentMonth");
+        int currentYear = (int) request.getAttribute("currentYear");
+        int daysInMonth = (int) request.getAttribute("daysInMonth");
+        int startDayOfWeek = (int) request.getAttribute("startDayOfWeek");
+        
+        List<Shift> myAllShifts = (List<Shift>) request.getAttribute("myAllShifts");
+        List<Shift> myWeeklyShifts = (List<Shift>) request.getAttribute("myWeeklyShifts");
+        
+        DateTimeFormatter dayFormatter = DateTimeFormatter.ofPattern("dd");
+        DateTimeFormatter monthFormatter = DateTimeFormatter.ofPattern("MM");
+        DateTimeFormatter fullFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     %>
 
-    <div class="container-fluid mt-4">
+    <div class="container mt-4 mb-5">
         <div class="row">
-            <!-- Thoi khoa bieu -->
-            <div class="col-md-9 left-panel">
-                <h2 class="mb-3"><strong>Lịch làm việc</strong></h2>
-
-                <form class="mb-3 d-flex gap-2" method="get">
-                    <!-- Dropdown năm -->
-                    <label for="year">Năm:</label>
-                    <select id="year" name="year" class="form-control form-control-sm" style="width:100px;" onchange="this.form.submit()">
+            <div class="col-md-4 mb-4">
+                <div class="mini-calendar">
+                    <div class="mini-header">
                         <% 
-                        int currentYear = LocalDate.now().getYear();
-                        for (int y = 2000; y <= 2050; y++) {
-                            String selected = (y == selectedYear) ? "selected" : "";
+                           LocalDate prevMonthDate = selectedDate.minusMonths(1);
+                           LocalDate nextMonthDate = selectedDate.plusMonths(1);
                         %>
-                            <option value="<%= y %>" <%= selected %>><%= y %></option>
-                        <% } %>
-                    </select>
+                        <a href="?selectedDate=<%=prevMonthDate%>" class="btn btn-sm btn-light text-success"><i class="fa-solid fa-chevron-left"></i></a>
+                        <span>Tháng <%= currentMonth %>, <%= currentYear %></span>
+                        <a href="?selectedDate=<%=nextMonthDate%>" class="btn btn-sm btn-light text-success"><i class="fa-solid fa-chevron-right"></i></a>
+                    </div>
+                    
+                    <div class="mini-grid">
+                        <div class="mini-day-name">T2</div><div class="mini-day-name">T3</div>
+                        <div class="mini-day-name">T4</div><div class="mini-day-name">T5</div>
+                        <div class="mini-day-name">T6</div><div class="mini-day-name">T7</div>
+                        <div class="mini-day-name text-danger">CN</div>
 
-                    <!-- Dropdown tuần -->
-                    <label for="week">Tuần:</label>
-                    <select id="week" name="week" class="form-control form-control-sm" style="width:250px;">
-                        <%
-                            // Số tuần tối đa của năm ISO
-                            WeekFields wf = WeekFields.ISO; // ISO tuần, Thứ Hai là đầu tuần
-                            LocalDate lastDayOfYear = LocalDate.of(selectedYear, 12, 31);
-                            int maxWeeks = LocalDate.of(selectedYear, 12, 28).get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
+                        <% for(int i=1; i < startDayOfWeek; i++) { %> <div></div> <% } %>
 
-                            for (int w = 1; w <= maxWeeks; w++) {
-                                // Lấy ngày đầu tuần theo ISO
-                                LocalDate startOfWeek = LocalDate.of(selectedYear, 1, 4)
-                                        .with(IsoFields.WEEK_OF_WEEK_BASED_YEAR, w)
-                                        .with(DayOfWeek.MONDAY);
-
-                                LocalDate endOfWeek = startOfWeek.plusDays(6);
-
-                                // Nếu startOfWeek < 1/1, hiển thị 1/1 làm đầu tuần
-                                if (startOfWeek.getYear() < selectedYear) startOfWeek = LocalDate.of(selectedYear,1,1);
-                                // Nếu endOfWeek > 31/12, hiển thị 31/12 làm cuối tuần
-                                if (endOfWeek.getYear() > selectedYear) endOfWeek = LocalDate.of(selectedYear,12,31);
-
-                                String selected = (w == selectedWeek) ? "selected" : "";
+                        <% for(int day=1; day <= daysInMonth; day++) { 
+                            LocalDate date = LocalDate.of(currentYear, currentMonth, day);
+                            String dateStr = date.toString();
+                            boolean isSelected = date.equals(selectedDate);
+                            boolean hasShift = false;
+                            if(myAllShifts != null) {
+                                for(Shift s : myAllShifts) {
+                                    if(s.getShiftDate().toString().equals(dateStr)) { hasShift = true; break; }
+                                }
+                            }
                         %>
-                                <option value="<%= w %>" <%= selected %>>
-                                    Tuần <%= w %> (<%= startOfWeek.format(dtf) %> - <%= endOfWeek.format(dtf) %>)
-                                </option>
+                            <a href="?selectedDate=<%=dateStr%>" class="text-decoration-none text-dark">
+                                <div class="mini-day mx-auto <%= isSelected ? "selected" : "" %> <%= hasShift ? "has-shift" : "" %>">
+                                    <%= day %>
+                                </div>
+                            </a>
                         <% } %>
-                    </select>
-
-                    <button type="submit" class="btn btn-success btn-sm">Xem</button>
-                </form>
-
-                <table class="table table-bordered">
-                    <thead class="table-light">
-                        <tr>
-                            <th style="width:120px;">Ca trực</th>
-                            <% for(LocalDate d : weekDays) { %>
-                                <th><%= d.format(dtf) %> (<%= d.getDayOfWeek().toString().substring(0,3) %>)</th>
-                            <% } %>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% for(String shift : shifts) { %>
-                        <tr>
-                            <td><%= shift %></td>
-                            <% for(LocalDate d : weekDays) {
-                                   String shiftTime = "-";  // Hiện tại chưa có dữ liệu
-                            %>
-                            <td><%= shiftTime %></td>
-                            <% } %>
-                        </tr>
-                        <% } %>
-                    </tbody>
-                </table>
+                    </div>
+                    <div class="mt-3 text-center"><small class="text-muted">● Ngày có lịch trực</small></div>
+                </div>
             </div>
 
-            <!--Thao tác-->
-            <div class="col-md-3 right-panel">
-                <h2 class="mb-3">Thao tác</h2>
-                <table class="table table-bordered action-table">
-                    <tbody>
-                        <tr>
-                            <td>Trang chính</td>
-                            <td><a class="btn btn-success btn-sm" href="${pageContext.request.contextPath}/views/doctor/doctor_dashboard.jsp">Xem</a></td>
-                        </tr>
-                        <tr>
-                            <td>Xem ca trực</td>
-                            <td><a class="btn btn-success btn-sm" href="${pageContext.request.contextPath}/views/doctor/doctor_schedule.jsp">Xem</a></td>
-                        </tr>
-                        <tr>
-                            <td>Xem lịch hẹn</td>
-                            <td><a class="btn btn-success btn-sm" href="#">Xem</a></td>
-                        </tr>
-                        <tr>
-                            <td>Cập nhật hồ sơ</td>
-                            <td><a class="btn btn-success btn-sm" href="#">Xem</a></td>
-                        </tr>
-                        <tr>
-                            <td>Đăng ký lịch trực</td>
-                            <td><a class="btn btn-success btn-sm" href="#">Xem</a></td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="col-md-8">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="fw-bold text-secondary">
+                        <i class="fa-solid fa-list-check me-2"></i> Lịch trực của tôi
+                    </h4>
+                    <span class="badge bg-white text-muted border shadow-sm p-2">
+                        Tuần từ: <%= selectedDate.format(fullFormatter) %> <i class="fa-solid fa-arrow-right mx-1"></i> <%= selectedDate.plusDays(6).format(fullFormatter) %>
+                    </span>
+                </div>
+
+                <% 
+                for(int i=0; i<7; i++) {
+                    LocalDate currentDate = selectedDate.plusDays(i);
+                    String currentDateStr = currentDate.toString();
+                    boolean isToday = currentDate.equals(LocalDate.now());
+                    
+                    List<Shift> dayShifts = new ArrayList<>();
+                    if(myWeeklyShifts != null) {
+                        for(Shift s : myWeeklyShifts) {
+                            if(s.getShiftDate().toString().equals(currentDateStr)) {
+                                dayShifts.add(s);
+                            }
+                        }
+                    }
+                %>
+                    <div class="shift-card-day p-3 <%= isToday ? "today" : "" %>">
+                        <div class="d-flex align-items-center">
+                            <div class="date-box me-3">
+                                <div class="day"><%= currentDate.format(dayFormatter) %></div>
+                                <div class="month">T<%= currentDate.format(monthFormatter) %></div>
+                            </div>
+                            
+                            <div class="flex-grow-1">
+                                <h6 class="fw-bold mb-2 <%= isToday ? "text-success" : "text-dark" %>">
+                                    <%= isToday ? "Hôm nay" : "Thứ " + (currentDate.getDayOfWeek().getValue() == 7 ? "CN" : currentDate.getDayOfWeek().getValue() + 1) %>
+                                </h6>
+
+                                <% if(dayShifts.isEmpty()) { %>
+                                    <p class="text-muted small mb-0 fst-italic">Không có lịch trực.</p>
+                                <% } else { %>
+                                    <div>
+                                        <% for(Shift s : dayShifts) { 
+                                            String start = s.getStartTime().toString().substring(0, 5);
+                                            int hour = Integer.parseInt(start.split(":")[0]);
+                                            String pillClass = "pill-evening";
+                                            String icon = "fa-moon";
+                                            String label = "Ca Tối";
+                                            if(hour < 12) { pillClass = "pill-morning"; icon = "fa-sun"; label = "Ca Sáng"; }
+                                            else if(hour < 18) { pillClass = "pill-afternoon"; icon = "fa-cloud-sun"; label = "Ca Chiều"; }
+                                        %>
+                                            <span class="shift-pill <%=pillClass%>" title="<%= label %>">
+                                                <i class="fa-solid <%=icon%> me-2"></i> <%= start %> - <%= s.getEndTime().toString().substring(0, 5) %>
+                                            </span>
+                                        <% } %>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                <% } %>
+                <div style="height: 50px;"></div>
             </div>
         </div>
     </div>
 
+    <a href="${pageContext.request.contextPath}/views/doctor/doctor_dashboard.jsp" class="btn-floating-home" title="Quay về Dashboard">
+        <i class="fa-solid fa-house"></i>
+        <span>Trang chủ</span>
+    </a>
+
     <jsp:include page="/views/shared/user_footer.jsp" />
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-    </body>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>
