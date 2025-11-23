@@ -209,8 +209,8 @@ body {
             <div class="mb-3">
                 <label class="form-label">Giới tính</label>
                 <select name="gender" class="form-select" required>
-                    <option value="Male">Nam</option>
-                    <option value="Female">Nữ</option>
+                    <option value="M">Nam</option>
+                    <option value="F">Nữ</option>
                 </select>
             </div>
             <div class="mb-3">

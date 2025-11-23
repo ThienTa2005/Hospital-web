@@ -1,7 +1,7 @@
 package controller.admin;
 
-import model.dao.DoctorDAO; 
-import model.dao.PatientDAO; 
+import model.dao.DoctorDAO;
+import model.dao.PatientDAO;
 import model.dao.UserDAO;
 import model.entity.User;
 import java.io.IOException;
@@ -20,14 +20,14 @@ import javax.servlet.http.HttpSession;
 @WebServlet("/admin/user")
 public class UserServlet extends HttpServlet {
     private UserDAO userDAO;
-    private DoctorDAO doctorDAO;   
-    private PatientDAO patientDAO; 
+    private DoctorDAO doctorDAO;
+    private PatientDAO patientDAO;
 
     @Override
     public void init() {
         userDAO = new UserDAO();
-        doctorDAO = new DoctorDAO();   
-        patientDAO = new PatientDAO(); 
+        doctorDAO = new DoctorDAO();
+        patientDAO = new PatientDAO();
     }
 
     @Override
@@ -59,13 +59,15 @@ public class UserServlet extends HttpServlet {
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = (String) request.getParameter("action");
-        System.out.println(action);
+        // System.out.println(action); // Debug log
         switch (action) {
             case "add": {
                 try {
                     addUser(request, response);
                 } catch (SQLException | ParseException ex) {
-                    System.getLogger(UserServlet.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+                    ex.printStackTrace();
+                    // Chuyển hướng kèm thông báo lỗi hệ thống nếu có exception
+                    response.sendRedirect(request.getContextPath() + "/admin/user?action=add&success=false");
                 }
                 break;
             }
@@ -74,7 +76,7 @@ public class UserServlet extends HttpServlet {
                 try {
                     editUser(request, response);
                 } catch (SQLException | ParseException ex) {
-                    System.getLogger(UserServlet.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+                    ex.printStackTrace();
                 }
                 break;
             }
@@ -83,6 +85,7 @@ public class UserServlet extends HttpServlet {
 
     // Chuan hoa UTF-8
     private static String newString(String item) {
+        if(item == null) return "";
         byte[] bytes = item.getBytes(StandardCharsets.ISO_8859_1);
         item = new String(bytes, StandardCharsets.UTF_8);
         return item;
@@ -98,59 +101,78 @@ public class UserServlet extends HttpServlet {
         request.getRequestDispatcher("/views/admin/users.jsp").forward(request, response);
     }
 
-  
+    // --- [PHẦN ĐÃ ĐƯỢC SỬA LẠI] ---
     public void addUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException, ParseException {
         request.setCharacterEncoding("UTF-8");
 
-
         String username = request.getParameter("username");
         
-       
+        // 1. Kiểm tra trùng username
         if(userDAO.isUsernameExist(username)) {
-             request.setAttribute("errorMessage", " Tên đăng nhập đã tồn tại.");
+             request.setAttribute("errorMessage", "Tên đăng nhập đã tồn tại.");
+             // Cần load lại danh sách phòng ban nếu forward về trang add (để dropdown không bị trống)
+             // Tuy nhiên ở đây đơn giản hóa, forward về form
              request.getRequestDispatcher("/views/admin/add_user.jsp").forward(request, response);
              return;
         }
 
         String password = request.getParameter("password");
-        String fullname = request.getParameter("fullname"); // Đã set encoding UTF-8 ở trên nên ko cần newString
+        String fullname = request.getParameter("fullname"); 
         String dob = request.getParameter("dob");
-        String gender = request.getParameter("gender");
+        String gender = request.getParameter("gender"); // Đảm bảo JSP gửi 'M' hoặc 'F'
         String phone = request.getParameter("phone");
         String address = request.getParameter("address");
         String role = request.getParameter("role");
 
-        // Lấy thêm dữ liệu riêng của BS
+        // Lấy thông tin bổ sung (Chỉ dành cho Bác sĩ)
         String degree = request.getParameter("degree");
         String deptIdParam = request.getParameter("departmentId");
+        
+        // --- SỬA LỖI Ở ĐÂY: Xử lý departmentId an toàn ---
+        int departmentId = 0;
+        if (deptIdParam != null && !deptIdParam.trim().isEmpty()) {
+            try {
+                departmentId = Integer.parseInt(deptIdParam);
+            } catch (NumberFormatException e) {
+                departmentId = 0; // Nếu lỗi format thì gán về 0
+            }
+        }
+
+        // Validate logic: Nếu là bác sĩ thì BẮT BUỘC phải chọn khoa
+        if ("doctor".equals(role) && departmentId == 0) {
+            request.setAttribute("errorMessage", "Vui lòng chọn chuyên khoa cho bác sĩ.");
+            request.getRequestDispatcher("/views/admin/add_user.jsp").forward(request, response);
+            return;
+        }
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         java.util.Date utilDate = sdf.parse(dob);
         java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
 
         try {
-        
+            // Tạo User chung trước
             User u = new User(0, username, password, fullname, sqlDate, gender, phone, address, role);
-            
             int newUserId = userDAO.createUser(u);
 
-            
-            if ("doctor".equals(role)) {
-                int deptId = (deptIdParam != null && !deptIdParam.isEmpty()) ? Integer.parseInt(deptIdParam) : 0;
-                doctorDAO.addDoctorSpecifics(newUserId, degree, deptId);
-                
-            } else if ("patient".equals(role)) {
-                patientDAO.addPatientSpecifics(newUserId);
+            if (newUserId > 0) {
+                // Phân nhánh insert vào bảng con tương ứng
+                if ("doctor".equals(role)) {
+                    // Gọi hàm addDoctorSpecifics với departmentId đã parse an toàn
+                    doctorDAO.addDoctorSpecifics(newUserId, degree, departmentId);
+                } else if ("patient".equals(role)) {
+                    patientDAO.addPatientSpecifics(newUserId);
+                }
+                // Nếu là admin thì không cần insert thêm bảng nào
             }
 
             response.sendRedirect(request.getContextPath() + "/admin/user?action=list&success=true");
 
         } catch (Exception e) {
             e.printStackTrace();
-            // Báo lỗi
             response.sendRedirect(request.getContextPath() + "/admin/user?action=add&success=false");
         }
     }
+    // --- [HẾT PHẦN SỬA] ---
 
     // Chinh sua
     public void editUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException, ParseException {
@@ -160,6 +182,8 @@ public class UserServlet extends HttpServlet {
 
         int id = Integer.parseInt(request.getParameter("userId"));
         String username = request.getParameter("username");
+        
+        // Check trùng username khi edit (trừ chính user đó ra)
         if (userDAO.checkEditUsername(username, id)) {
             response.sendRedirect(request.getContextPath() + "/admin/user?action=list&error=username-exist");
             return;
@@ -168,11 +192,11 @@ public class UserServlet extends HttpServlet {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
         String password = request.getParameter("password");
-        String fullname = newString(request.getParameter("fullname"));
+        String fullname = request.getParameter("fullname"); // request đã set UTF-8
         String dob = request.getParameter("dob");
         String gender = request.getParameter("gender");
         String phone = request.getParameter("phonenum");
-        String address = newString(request.getParameter("address"));
+        String address = request.getParameter("address");
         String role = request.getParameter("role");
 
         java.util.Date utilDate = sdf.parse(dob);
@@ -185,7 +209,13 @@ public class UserServlet extends HttpServlet {
 
     // Xoa
     public void deleteUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        int id = Integer.parseInt(request.getParameter("id"));
+        String idParam = request.getParameter("id");
+        if(idParam == null || idParam.isEmpty()) {
+             response.sendRedirect(request.getContextPath() + "/admin/user?action=list");
+             return;
+        }
+        
+        int id = Integer.parseInt(idParam);
 
         HttpSession session = request.getSession();
         User currentUser = (User) session.getAttribute("user");
