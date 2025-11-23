@@ -154,7 +154,7 @@ body {
                        for (Doctor doc : doctors) { %>
                     <tr>
                         <td><%= doc.getUserId() %></td>
-                        <td><%= doc.getFullname() %></td>
+                        <td><%= doc.getFullName() %></td>
                         <td><%= doc.getDegree() %></td>
                         <td>
                             <button class="viewDoctor" data-id="<%= doc.getUserId() %>">Xem</button>

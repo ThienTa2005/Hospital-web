@@ -45,8 +45,8 @@
     <div class="mb-3">
         <label>Giới tính</label>
         <select name="gender" class="form-select" disabled>
-            <option value="Male" <%= "Male".equals(doc.getGender()) ? "selected" : "" %>>Nam</option>
-            <option value="Female" <%= "Female".equals(doc.getGender()) ? "selected" : "" %>>Nữ</option>
+            <option value="M" <%= "Male".equals(doc.getGender()) ? "selected" : "" %>>Nam</option>
+            <option value="F" <%= "Female".equals(doc.getGender()) ? "selected" : "" %>>Nữ</option>
         </select>
     </div>
 

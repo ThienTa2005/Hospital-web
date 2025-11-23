@@ -66,7 +66,7 @@ public class UserServlet extends HttpServlet {
                     addUser(request, response);
                 } catch (SQLException | ParseException ex) {
                     ex.printStackTrace();
-                    // Chuyển hướng kèm thông báo lỗi hệ thống nếu có exception
+             
                     response.sendRedirect(request.getContextPath() + "/admin/user?action=add&success=false");
                 }
                 break;
@@ -83,7 +83,6 @@ public class UserServlet extends HttpServlet {
         }
     }
 
-    // Chuan hoa UTF-8
     private static String newString(String item) {
         if(item == null) return "";
         byte[] bytes = item.getBytes(StandardCharsets.ISO_8859_1);
@@ -101,17 +100,13 @@ public class UserServlet extends HttpServlet {
         request.getRequestDispatcher("/views/admin/users.jsp").forward(request, response);
     }
 
-    // --- [PHẦN ĐÃ ĐƯỢC SỬA LẠI] ---
     public void addUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException, ParseException {
         request.setCharacterEncoding("UTF-8");
 
         String username = request.getParameter("username");
         
-        // 1. Kiểm tra trùng username
         if(userDAO.isUsernameExist(username)) {
              request.setAttribute("errorMessage", "Tên đăng nhập đã tồn tại.");
-             // Cần load lại danh sách phòng ban nếu forward về trang add (để dropdown không bị trống)
-             // Tuy nhiên ở đây đơn giản hóa, forward về form
              request.getRequestDispatcher("/views/admin/add_user.jsp").forward(request, response);
              return;
         }
@@ -123,22 +118,18 @@ public class UserServlet extends HttpServlet {
         String phone = request.getParameter("phone");
         String address = request.getParameter("address");
         String role = request.getParameter("role");
-
-        // Lấy thông tin bổ sung (Chỉ dành cho Bác sĩ)
         String degree = request.getParameter("degree");
         String deptIdParam = request.getParameter("departmentId");
-        
-        // --- SỬA LỖI Ở ĐÂY: Xử lý departmentId an toàn ---
+
         int departmentId = 0;
         if (deptIdParam != null && !deptIdParam.trim().isEmpty()) {
             try {
                 departmentId = Integer.parseInt(deptIdParam);
             } catch (NumberFormatException e) {
-                departmentId = 0; // Nếu lỗi format thì gán về 0
+                departmentId = 0;
             }
         }
 
-        // Validate logic: Nếu là bác sĩ thì BẮT BUỘC phải chọn khoa
         if ("doctor".equals(role) && departmentId == 0) {
             request.setAttribute("errorMessage", "Vui lòng chọn chuyên khoa cho bác sĩ.");
             request.getRequestDispatcher("/views/admin/add_user.jsp").forward(request, response);
@@ -150,19 +141,15 @@ public class UserServlet extends HttpServlet {
         java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
 
         try {
-            // Tạo User chung trước
             User u = new User(0, username, password, fullname, sqlDate, gender, phone, address, role);
             int newUserId = userDAO.createUser(u);
 
             if (newUserId > 0) {
-                // Phân nhánh insert vào bảng con tương ứng
                 if ("doctor".equals(role)) {
-                    // Gọi hàm addDoctorSpecifics với departmentId đã parse an toàn
                     doctorDAO.addDoctorSpecifics(newUserId, degree, departmentId);
                 } else if ("patient".equals(role)) {
                     patientDAO.addPatientSpecifics(newUserId);
                 }
-                // Nếu là admin thì không cần insert thêm bảng nào
             }
 
             response.sendRedirect(request.getContextPath() + "/admin/user?action=list&success=true");
@@ -172,9 +159,6 @@ public class UserServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/admin/user?action=add&success=false");
         }
     }
-    // --- [HẾT PHẦN SỬA] ---
-
-    // Chinh sua
     public void editUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException, ParseException {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
@@ -182,8 +166,7 @@ public class UserServlet extends HttpServlet {
 
         int id = Integer.parseInt(request.getParameter("userId"));
         String username = request.getParameter("username");
-        
-        // Check trùng username khi edit (trừ chính user đó ra)
+
         if (userDAO.checkEditUsername(username, id)) {
             response.sendRedirect(request.getContextPath() + "/admin/user?action=list&error=username-exist");
             return;
@@ -221,7 +204,6 @@ public class UserServlet extends HttpServlet {
         User currentUser = (User) session.getAttribute("user");
 
         if (currentUser != null && currentUser.getUserId() == id) {
-            // Khong xoa chinh minh
             response.sendRedirect(request.getContextPath() + "/admin/user?action=list&error=selfDelete");
             return;
         }
