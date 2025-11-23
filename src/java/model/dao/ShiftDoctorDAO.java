@@ -6,6 +6,12 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import Utils.DBUtils;
+import model.entity.ShiftDoctor;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
 public class ShiftDoctorDAO {
 
     public List<ShiftDoctor> getDoctorsByShift(int shiftId) {

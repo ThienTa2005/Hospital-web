@@ -1,6 +1,6 @@
 package model.entity;
 
-import java.util.*;
+import java.sql.Date;
 import java.sql.Time;
 
 public class Shift
@@ -65,6 +65,7 @@ public class Shift
         this.endTime = endTime;
     }
     
+    @Override
     public String toString()
     {
         return shiftId + " " + shiftDate + " " + startTime + " " + endTime;
