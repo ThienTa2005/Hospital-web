@@ -7,6 +7,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AppointmentDAO {
 
@@ -219,6 +221,47 @@ public class AppointmentDAO {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 list.add(mapResultSetToAppointment(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+    public List<Map<String, Object>> getPatientHistoryMap(int patientId) {
+        List<Map<String, Object>> list = new ArrayList<>();
+        
+        // Query nối bảng: Lấy tên BS, Khoa, và ID hồ sơ bệnh án (nếu có)
+        String sql = "SELECT a.appointment_id, a.appointment_date, a.status, " +
+                     "       u.fullname AS doctor_name, d.name AS dept_name, " +
+                     "       mr.record_id " + // Lấy record_id để biết đã có hồ sơ chưa
+                     "FROM Appointment a " +
+                     "JOIN Shift_Doctor sd ON a.shift_doctor_id = sd.shift_doctor_id " +
+                     "JOIN Doctor doc ON sd.doctor_id = doc.user_id " +
+                     "JOIN Users u ON doc.user_id = u.user_id " +
+                     "LEFT JOIN Department d ON doc.department_id = d.department_id " +
+                     "LEFT JOIN MedicalRecord mr ON a.appointment_id = mr.appointment_id " +
+                     "WHERE a.patient_id = ? " +
+                     "ORDER BY a.appointment_date DESC";
+
+        try (Connection conn = DBUtils.getConnection(); 
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, patientId);
+            ResultSet rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                Map<String, Object> row = new HashMap<>();
+                row.put("appointment_id", rs.getInt("appointment_id"));
+                row.put("appointment_date", rs.getTimestamp("appointment_date")); // Lấy cả ngày giờ
+                row.put("status", rs.getString("status"));
+                row.put("doctor_name", rs.getString("doctor_name"));
+                row.put("dept_name", rs.getString("dept_name"));
+                
+                // record_id sẽ là 0 nếu chưa có hồ sơ (do LEFT JOIN)
+                int recordId = rs.getInt("record_id");
+                row.put("record_id", recordId > 0 ? recordId : null);
+                
+                list.add(row);
             }
         } catch (SQLException e) {
             e.printStackTrace();
