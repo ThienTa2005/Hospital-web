@@ -1,273 +1,250 @@
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page import="model.entity.User"%>
+<%@page import="model.entity.Doctor"%>
+<%@page import="model.entity.Shift"%>
+<%@page import="model.dao.DoctorDAO"%>
+<%@page import="model.dao.ShiftDoctorDAO"%>
+<%@page import="java.util.List"%>
 <%@page import="java.util.ArrayList"%>
+<%@page import="java.time.LocalDate"%>
+<%@page import="java.time.format.DateTimeFormatter"%>
+
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <%@page contentType="text/html" pageEncoding="UTF-8"%>
-    <%@ page import="java.text.SimpleDateFormat" %>
-    <%@ page import="java.util.List" %>
-    <%@ page import="model.entity.Appointment" %>
-    <%@ page import="model.entity.Department" %>
-    <%@ page import="model.entity.User" %>
-    <%@ page import="java.sql.Timestamp" %>
-    <%@ page import="java.sql.Time" %>
-    <%@ page import="java.sql.Date" %>
-    <%@ page import="java.util.ArrayList" %>
-    <%@ page import="model.dao.AppointmentDAO" %>
-    <%@ page import="model.dao.DepartmentDAO" %>
-
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Bệnh Nhân</title>
+    <meta charset="utf-8">
+    <title>Trang chủ</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/user_style.css">
+    
     <style>
-        /* Các trang của patient cần có css của main, header và content wrapper*/
-        .main {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column; 
-            min-height: 100vh;    
+        :root {
+            --primary: #40855E;
+            --primary-dark: #2c6e49;
+            --accent: #FFC107;
+            --bg-light: #F3F6F8;
         }
-
-        .header {
-            background-color: #40855e;
-            color: white;
-            padding: 15px 20px;
-            margin-bottom: 35px; 
-            border-radius: 5px;
-            display: flex;
-            justify-content: center;
-        }
+        body { background-color: var(--bg-light); font-family: 'Segoe UI', sans-serif; }
         
-        .content-wrapper {
-            flex: 1;                
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        /* Table*/
-        table {
-            width: 90%;                
-            margin: 50px auto;          
-            border-collapse: collapse;
-            table-layout: auto;         
-            background-color: white;
-            border-radius: 8px;
+        /* Hero Card */
+        .welcome-card {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(64, 133, 94, 0.3);
+            position: relative;
             overflow: hidden;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         }
-
-        /* Ô dữ liệu và tiêu đề */
-        th, td {
-            padding: 10px 15px;
-            text-align: center;
-            border: 1px solid #ccc;
-            white-space: nowrap;       
-        }
-
-        /* Dòng tiêu đề */
-        th {
-            background-color: #2c693b;
-            color: white;
-            font-weight: 600;
-        }
-
-        /* Màu xen kẽ và hiệu ứng hover */
-        tbody tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        tbody tr:hover {
-            background-color: #eaf2ec;
-            transition: background-color 0.2s;
-        }
-
-        /* Nút Xem chi tiết */
-        .btn-detail {
-            padding: 6px 12px;
-            background-color: #706e6e;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .btn-detail:hover {
-            background-color: #929292;
-        }
-
-        .filter {
-            width: 90%;     
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            margin: 25px auto -20px auto;         
-        }
-        .filter input, .filter button {
-            padding: 8px 10px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-        }
-        .filter button {
-            background-color: #2c693b;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        .filter button:hover {
-            background-color: #569571;
+        .welcome-card::after {
+            content: ""; position: absolute; top: -50%; right: -10%; width: 300px; height: 300px;
+            background: rgba(255,255,255,0.1); border-radius: 50%;
         }
         
-        .filter select {
-            padding: 5px 30px 5px 10px;
-            appearance: none; 
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10"><polygon points="0,0 10,0 5,5" fill="black"/></svg>') no-repeat right 10px center;
-            background-size: 10px 10px;
+        /* Stat Cards */
+        .stat-card {
+            background: white; border-radius: 16px; padding: 20px;
+            border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            transition: transform 0.3s;
+            height: 100%;
         }
+        .stat-card:hover { transform: translateY(-5px); }
+        .icon-box {
+            width: 50px; height: 50px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; margin-bottom: 15px;
+        }
+        .bg-icon-blue { background: #E3F2FD; color: #1E88E5; }
+        .bg-icon-orange { background: #FFF3E0; color: #F57C00; }
+        .bg-icon-green { background: #E8F5E9; color: #43A047; }
+
+        /* Timeline */
+        .timeline-item {
+            border-left: 3px solid #e0e0e0; padding-left: 20px; margin-bottom: 20px; position: relative;
+        }
+        .timeline-item::before {
+            content: ""; position: absolute; left: -6px; top: 5px;
+            width: 9px; height: 9px; border-radius: 50%; background: var(--primary);
+        }
+        .timeline-item.active { border-left-color: var(--primary); }
+        .timeline-time { font-weight: 700; color: var(--primary); font-size: 0.9rem; }
         
-        .btn-nearest {
-            display: inline-flex;
-            align-items: center;
-            padding: 8px 14px;
-            background: linear-gradient(135deg, #40855e, #569571);
-            color: white;
-            font-weight: 600;
-            border-radius: 6px;
-            text-decoration: none;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: background 0.3s, transform 0.2s;
+        /* Action Buttons */
+        .action-btn {
+            display: flex; align-items: center; padding: 15px;
+            background: white; border-radius: 15px; text-decoration: none;
+            color: #333; border: 1px solid #eee; transition: all 0.2s;
         }
-
-        .btn-nearest:hover {
-            background: linear-gradient(135deg, #2c693b, #40855e);
-            transform: translateY(-2px);
+        .action-btn:hover {
+            background: var(--bg-light); border-color: var(--primary); color: var(--primary);
+            transform: translateX(5px);
         }
-
+        .action-icon { font-size: 1.5rem; margin-right: 15px; color: var(--primary); }
     </style>
 </head>
 <body>
+    <jsp:include page="/views/shared/doctor_header.jsp" />
 
-    <jsp:include page="patient_navbar.jsp"/>
-    
     <%
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
-    %>
+        User user = (User) session.getAttribute("user");        
+        Doctor doctor = null;
+
+        boolean isOnShift = false;
+        int shiftCount = 0;
+        List<Shift> todayShifts = new ArrayList<>();
         
-    <!-- Main content -->
-    <div class="main">
-        <!-- Header -->
-        <div class="content-wrapper">
-            <div class="header">
-                <h1>Danh sách lịch hẹn</h1>
-            </div>
+        if(user != null && "doctor".equals(user.getRole())) {
+            DoctorDAO doctorDAO = new DoctorDAO();
+            doctor = doctorDAO.getDoctorById(user.getUserId());
             
-            <div style="width: 90%; margin: 10px auto; display: flex; justify-content: flex-end;">
-                <a href="<%= request.getContextPath() %>/patient_dashboard?action=nearest" 
-                class="btn-nearest">
-                 <!-- Icon lịch SVG -->
-                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16" style="margin-right:5px;">
-                     <path d="M3 0h1v2H3V0zm9 0h1v2h-1V0zM1 3h14v12H1V3zm1 1v10h12V4H2zM4 6h2v2H4V6zm0 3h2v2H4V9zm3-3h2v2H7V6zm0 3h2v2H7V9z"/>
-                 </svg>
-                 Xem lịch hẹn gần nhất
-             </a>
+            ShiftDoctorDAO shiftDAO = new ShiftDoctorDAO();
+            int docId = user.getUserId();
+            
+            isOnShift = shiftDAO.isDoctorCurrentlyOnShift(docId);
+            shiftCount = shiftDAO.countShiftsInCurrentMonth(docId);
+            todayShifts = shiftDAO.getShiftsToday(docId);
+        }
+        
+        String docName = (doctor != null) ? doctor.getFullname() : (user != null ? user.getFullname() : "Bác sĩ");
+        String degree = (doctor != null) ? doctor.getDegree() : "Chuyên khoa";
+        String dept = (doctor != null) ? doctor.getDepartmentName() : "Phòng khám";
+        
+        String todayStr = LocalDate.now().format(DateTimeFormatter.ofPattern("dd 'tháng' MM, yyyy"));
+    %>
+
+    <div class="container mt-4 mb-5">
+        <div class="row g-4">
+            
+            <div class="col-lg-8">
+                <div class="welcome-card mb-4 animate__animated animate__fadeInLeft">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h2 class="fw-bold mb-1">Xin chào, <%= docName %>! 👋</h2>
+                            <p class="mb-3 opacity-75"><%= degree %> - <%= dept %></p>
+                            <div class="d-flex gap-3 align-items-center">
+                                <span class="badge bg-white text-success rounded-pill px-3 py-2 shadow-sm">
+                                    <i class="fa-regular fa-calendar me-1"></i> <%= todayStr %>
+                                </span>                               
+                                <%-- <% if (isOnShift) { %>
+                                    <span class="badge bg-warning text-dark rounded-pill px-3 py-2 shadow-sm animate__animated animate__pulse animate__infinite">
+                                        <i class="fa-solid fa-clock me-1"></i> <strong>Đang trong ca trực</strong>
+                                    </span>
+                                <% } else { %>
+                                    <span class="badge bg-success bg-opacity-25 text-white border border-white rounded-pill px-3 py-2">
+                                        <i class="fa-solid fa-mug-hot me-1"></i> Đang nghỉ ngơi
+                                    </span>
+                                <% } %> --%>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-center d-none d-md-block">
+                            <i class="fa-solid fa-user" style="font-size: 80px; opacity: 0.9;"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <div class="icon-box bg-icon-blue"><i class="fa-solid fa-calendar-days"></i></div>
+                            <h3 class="fw-bold mb-1"><%= shiftCount %></h3>
+                            <p class="text-muted small mb-0">Số lịch hẹn tháng này</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <div class="icon-box bg-icon-green"><i class="fa-solid fa-calendar-check"></i></div>
+                            <h3 class="fw-bold mb-1">--</h3> <p class="text-muted small mb-0">Cuộc hẹn đã hoàn thành gần nhất</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <div class="icon-box bg-icon-orange"><i class="fa-solid fa-calendar-day"></i></div>
+                            <h3 class="fw-bold mb-1">--</h3> <p class="text-muted small mb-0">Lịch hẹn sắp tới</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h5 class="fw-bold mb-3 text-secondary">Truy cập nhanh</h5>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <a href="${pageContext.request.contextPath}/doctor/schedule" class="action-btn shadow-sm">
+                            <div class="action-icon text-success" style="font-size: 2rem;"><i class="fa-solid fa-user"></i></div>
+                            <div>
+                                <h6 class="fw-bold m-0">Hồ sơ</h6>
+                                <small class="text-muted">Điều chỉnh thông tin cá nhân</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="#" class="action-btn shadow-sm">
+                            <div class="action-icon text-success" style="font-size: 2rem;"><i class="fa-solid fa-file-medical"></i></div>
+                            <div>
+                                <h6 class="fw-bold m-0">Đặt lịch hẹn</h6>
+                                <small class="text-muted">Đặt lịch hẹn trực tiếp với bác sĩ</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="#" class="action-btn shadow-sm">
+                            <div class="action-icon text-success" style="font-size: 2rem;"><i class="fa-solid fa-book"></i></div>
+                            <div>
+                                <h6 class="fw-bold m-0">Lịch sử khám bệnh</h6>
+                                <small class="text-muted">Xem lịch sử khám bệnh</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="#" class="action-btn shadow-sm">
+                            <div class="action-icon text-success" style="font-size: 2rem;"><i class="fa-solid fa-door-open"></i></div>
+                            <div>
+                                <h6 class="fw-bold m-0">Đăng xuất</h6>
+                                <small class="text-muted">Đăng xuất khỏi tài khoản</small>
+                            </div>
+                        </a>
+                    </div>
+                </div>
             </div>
 
-
-            <!-- Filter/Search -->
-            <form action="<%= request.getContextPath() %>/patient_dashboard" method="post" class="filter">
-                <input type="hidden" name="action" value="list">
-
-                <select name="departmentId">
-                    <option value="">--Chọn chuyên khoa--</option>
-                    <% 
-                        List<Department> departments = (List<Department>) request.getAttribute("departments");
-                        String selectedDept = (String) request.getAttribute("selectedDepartmentId");
-                        for (Department dept : departments) {
-                            String isSelected = String.valueOf(dept.getDepartmentID()).equals(selectedDept) ? "selected" : "";
-                    %>
-                        <option value="<%= dept.getDepartmentID() %>" <%= isSelected %> ><%= dept.getDepartmentName() %></option>
-                    <% } %>
-                </select>
-                    
-                 <!-- Dùng nếu muốn giữ value của lịch value="<%= request.getAttribute("selectedDate") != null ? request.getAttribute("selectedDate") : "" %>"-->
-                <input type="date" name="appointmentDate"> 
-                <select name="appointmentShift">
-                    <option value="">--Chọn ca--</option>
-                    <option value="morning" <%= "morning".equals(request.getAttribute("selectedShift")) ? "selected" : "" %> >Sáng</option>
-                    <option value="afternoon" <%= "afternoon".equals(request.getAttribute("selectedShift")) ? "selected" : "" %> >Chiều</option>
-                </select>
-
-                <button type="submit">Tìm kiếm</button>
-
- 
-                <a href="#"
-                   style="padding: 8px 12px; background-color:#2c693b; color:white; border-radius:4px; 
-                          text-decoration:none; display:flex; align-items:center; gap:5px; margin-left:auto;">
-                    <!-- SVG icon + -->
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16">
-                        <path d="M8 1v14M1 8h14" stroke="white" stroke-width="2"/>
-                    </svg>
-                    Đặt Lịch Hẹn
-                </a>
-
-            </form>
-
-
-
-            <!-- Table danh sách lịch hẹn -->
-            <%
-                List<Appointment> appointments = (List<Appointment>) request.getAttribute("appointments");
-                if (appointments == null || appointments.isEmpty()) {
-
-            %>
-                <div style="text-align: center; margin-top: 100px; white-space: nowrap;">
-                    Không có lịch hẹn nào được tìm thấy! 
-                    <a href="#" style="color: #2c693b; font-weight: 600; text-decoration: underline; display: inline;">
-                        Hãy đặt lịch ngay hôm nay?
-                    </a>
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm h-100 rounded-4">
+                    <div class="card-header bg-white border-0 pt-4 pb-0 d-flex justify-content-between align-items-center">
+                        <h5 class="fw-bold text-dark m-0">Lịch hẹn đã đặt</h5>
+                        <span class="badge bg-light text-dark"><%= todayShifts.size() %> cuộc hẹn</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="mt-3">
+                        <% if (todayShifts.isEmpty()) { %>
+                            <div class="text-center py-5 text-muted">
+                                <i class="fa-solid fa-calendar-xmark fa-3x mb-3 opacity-25"></i>
+                                <p>Tháng này bạn không có lịch hẹn nào.</p>
+                            </div>
+                        <% } else { 
+                                for (Shift s : todayShifts) {
+                                    String timeRange = s.getStartTime().toString().substring(0,5) + " - " + s.getEndTime().toString().substring(0,5);
+                        %>
+                            <div class="timeline-item active">
+                                <div class="timeline-time"><%= timeRange %></div>
+                                <div class="fw-bold text-dark">Trực tại Khoa</div>
+                                <small class="text-muted"><i class="fa-solid fa-location-dot me-1"></i> <%= dept %></small>
+                            </div>
+                        <%      } 
+                           } 
+                        %>
+                        </div>
+                        
+                        <div class="alert alert-info bg-opacity-10 border-0 rounded-3 mt-4">
+                            <small><i class="fa-solid fa-circle-info me-1"></i> Hệ thống tự động cập nhật danh sách lịch hẹn của tháng hiện tại.</small>
+                        </div>
+                    </div>
                 </div>
-            <%
-                } else {
-            %>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Mã</th>
-                            <th style="text-align: left;">Tên bệnh nhân</th>
-                            <th style="text-align: left;">Tên bác sĩ</th>
-                            <th style="text-align: left;">Khoa khám</th>
-                            <th>Ngày</th>
-                            <th>Thời gian</th>
-                            <th>Trạng thái</th>
-                            <th>Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% for (Appointment appt : appointments) { %>
-                        <tr>
-                            <td><%= appt.getAppointmentId() %></td>
-                            <td style="text-align: left;"><%= appt.getPatientName() %></td>
-                            <td style="text-align: left;"><%= appt.getDoctorName() %></td>
-                            <td style="text-align: left;"><%= appt.getDepartmentName() %></td>
-                            <td><%= dateFormat.format(appt.getAppointmentDate()) %></td>
-                            <td><%= timeFormat.format(appt.getAppointmentDate()) %></td>
-                            <td><%= appt.getStatus() %></td>
-                            <td><button class="btn-detail">Xem</button></td>
-                        </tr>
-                        <% } %>
-                    </tbody>
-                </table>
-            <%
-                }
-            %>
+            </div>
         </div>
-        <jsp:include page="patient_footer.jsp" />
     </div>
-    
+
+    <jsp:include page="/views/shared/user_footer.jsp" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-
-</script>
