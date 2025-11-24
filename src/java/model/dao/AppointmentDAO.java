@@ -208,6 +208,31 @@ public class AppointmentDAO {
         return list;
     }
 
+    public List<Appointment> getAppointmentsByPatientInCurrentMonth(int patientId) {
+        List<Appointment> list = new ArrayList<>();
+
+        String sql = SELECT_FULL_INFO +
+            "WHERE a.patient_id = ? " +
+            "  AND MONTH(a.appointment_date) = MONTH(CURRENT_DATE()) " +
+            "  AND YEAR(a.appointment_date) = YEAR(CURRENT_DATE()) " +
+            "ORDER BY a.appointment_date DESC";
+
+        try (Connection conn = DBUtils.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, patientId);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(mapResultSetToAppointment(rs));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
 
     
     public List<Appointment> getAllAppointments() {

@@ -1,13 +1,15 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="model.entity.User"%>
-<%@page import="model.entity.Doctor"%>
+<%@page import="model.entity.Patient"%>
 <%@page import="model.entity.Shift"%>
 <%@page import="model.dao.DoctorDAO"%>
-<%@page import="model.dao.ShiftDoctorDAO"%>
+<%@page import="model.dao.AppointmentDAO"%>
+<%@page import="model.entity.Appointment"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.time.LocalDate"%>
 <%@page import="java.time.format.DateTimeFormatter"%>
+<%@ page import="java.text.SimpleDateFormat" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -86,32 +88,20 @@
     </style>
 </head>
 <body>
-    <jsp:include page="/views/shared/doctor_header.jsp" />
+    <jsp:include page="/views/shared/patient_header.jsp" />
 
     <%
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+        
         User user = (User) session.getAttribute("user");        
-        Doctor doctor = null;
-
-        boolean isOnShift = false;
-        int shiftCount = 0;
-        List<Shift> todayShifts = new ArrayList<>();
+        Patient patient = null;
         
-        if(user != null && "doctor".equals(user.getRole())) {
-            DoctorDAO doctorDAO = new DoctorDAO();
-            doctor = doctorDAO.getDoctorById(user.getUserId());
-            
-            ShiftDoctorDAO shiftDAO = new ShiftDoctorDAO();
-            int docId = user.getUserId();
-            
-            isOnShift = shiftDAO.isDoctorCurrentlyOnShift(docId);
-            shiftCount = shiftDAO.countShiftsInCurrentMonth(docId);
-            todayShifts = shiftDAO.getShiftsToday(docId);
-        }
+        AppointmentDAO appointmentDao = new AppointmentDAO();
         
-        String docName = (doctor != null) ? doctor.getFullname() : (user != null ? user.getFullname() : "Bác sĩ");
-        String degree = (doctor != null) ? doctor.getDegree() : "Chuyên khoa";
-        String dept = (doctor != null) ? doctor.getDepartmentName() : "Phòng khám";
+        List<Appointment> appointmentsInMonth = (List<Appointment>)appointmentDao.getAppointmentsByPatientInCurrentMonth(user.getUserId());
         
+        String patName = (patient != null) ? patient.getFullname() : (user != null ? user.getFullname() : "Bệnh nhân");
         String todayStr = LocalDate.now().format(DateTimeFormatter.ofPattern("dd 'tháng' MM, yyyy"));
     %>
 
@@ -122,8 +112,8 @@
                 <div class="welcome-card mb-4 animate__animated animate__fadeInLeft">
                     <div class="row align-items-center">
                         <div class="col-md-8">
-                            <h2 class="fw-bold mb-1">Xin chào, <%= docName %>! 👋</h2>
-                            <p class="mb-3 opacity-75"><%= degree %> - <%= dept %></p>
+                            <h2 class="fw-bold mb-1">Xin chào, <%= patName %>! 👋</h2>
+
                             <div class="d-flex gap-3 align-items-center">
                                 <span class="badge bg-white text-success rounded-pill px-3 py-2 shadow-sm">
                                     <i class="fa-regular fa-calendar me-1"></i> <%= todayStr %>
@@ -149,7 +139,7 @@
                     <div class="col-md-4">
                         <div class="stat-card">
                             <div class="icon-box bg-icon-blue"><i class="fa-solid fa-calendar-days"></i></div>
-                            <h3 class="fw-bold mb-1"><%= shiftCount %></h3>
+                            <h3 class="fw-bold mb-1"><%= appointmentsInMonth.size() %></h3>
                             <p class="text-muted small mb-0">Số lịch hẹn tháng này</p>
                         </div>
                     </div>
@@ -170,7 +160,7 @@
                 <h5 class="fw-bold mb-3 text-secondary">Truy cập nhanh</h5>
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <a href="${pageContext.request.contextPath}/doctor/schedule" class="action-btn shadow-sm">
+                        <a href="#" class="action-btn shadow-sm">
                             <div class="action-icon text-success" style="font-size: 2rem;"><i class="fa-solid fa-user"></i></div>
                             <div>
                                 <h6 class="fw-bold m-0">Hồ sơ</h6>
@@ -188,7 +178,7 @@
                         </a>
                     </div>
                     <div class="col-md-6">
-                        <a href="#" class="action-btn shadow-sm">
+                        <a href="<%= request.getContextPath() %>/appointment" class="action-btn shadow-sm">
                             <div class="action-icon text-success" style="font-size: 2rem;"><i class="fa-solid fa-book"></i></div>
                             <div>
                                 <h6 class="fw-bold m-0">Lịch sử khám bệnh</h6>
@@ -197,7 +187,7 @@
                         </a>
                     </div>
                     <div class="col-md-6">
-                        <a href="#" class="action-btn shadow-sm">
+                        <a href="<%= request.getContextPath() %>/login" class="action-btn shadow-sm">
                             <div class="action-icon text-success" style="font-size: 2rem;"><i class="fa-solid fa-door-open"></i></div>
                             <div>
                                 <h6 class="fw-bold m-0">Đăng xuất</h6>
@@ -212,23 +202,23 @@
                 <div class="card border-0 shadow-sm h-100 rounded-4">
                     <div class="card-header bg-white border-0 pt-4 pb-0 d-flex justify-content-between align-items-center">
                         <h5 class="fw-bold text-dark m-0">Lịch hẹn đã đặt</h5>
-                        <span class="badge bg-light text-dark"><%= todayShifts.size() %> cuộc hẹn</span>
+                        <span class="badge bg-light text-dark"><%= appointmentsInMonth.size() %> cuộc hẹn</span>
                     </div>
                     <div class="card-body">
                         <div class="mt-3">
-                        <% if (todayShifts.isEmpty()) { %>
+                        <% if (appointmentsInMonth.isEmpty()) { %>
                             <div class="text-center py-5 text-muted">
                                 <i class="fa-solid fa-calendar-xmark fa-3x mb-3 opacity-25"></i>
                                 <p>Tháng này bạn không có lịch hẹn nào.</p>
                             </div>
                         <% } else { 
-                                for (Shift s : todayShifts) {
-                                    String timeRange = s.getStartTime().toString().substring(0,5) + " - " + s.getEndTime().toString().substring(0,5);
+                                for (Appointment a : appointmentsInMonth) {
+                                    String time = timeFormat.format(a.getAppointmentDate()) + " " + dateFormat.format(a.getAppointmentDate());
                         %>
                             <div class="timeline-item active">
-                                <div class="timeline-time"><%= timeRange %></div>
-                                <div class="fw-bold text-dark">Trực tại Khoa</div>
-                                <small class="text-muted"><i class="fa-solid fa-location-dot me-1"></i> <%= dept %></small>
+                                <div class="timeline-time"><%= time %></div>
+                                <div class="fw-bold text-dark">Khám chuyên khoa</div>
+                                <small class="text-muted"><i class="fa-solid fa-location-dot me-1"></i> <%= a.getDepartmentName() %></small>
                             </div>
                         <%      } 
                            } 

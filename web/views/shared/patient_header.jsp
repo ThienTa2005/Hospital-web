@@ -6,7 +6,7 @@
     <div class="container d-flex justify-content-between align-items-center" >
 
         <div class="header-logo">
-            <a href="${pageContext.request.contextPath}/admin/user?action=list" 
+            <a href="${pageContext.request.contextPath}/views/patient/patient_dashboard.jsp"
                style="text-decoration: none; color: inherit;">
                 Trang chủ
             </a>
@@ -28,6 +28,8 @@
             </button>
             <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="#">Hồ sơ</a>
+                <li><a class="dropdown-item" href="#">Đặt lịch hẹn</a>
+                <li><a class="dropdown-item" href="<%= request.getContextPath() %>/appointment">Lịch sử khám bệnh</a>
                 <li><a class="dropdown-item" href="${pageContext.request.contextPath}/logout">Đăng xuất</a>
             </ul>
         </div>
