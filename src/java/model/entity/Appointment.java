@@ -1,6 +1,6 @@
 package model.entity;
 
-import java.sql.Timestamp; // Appointment dùng Datetime hoặc Timestamp
+import java.sql.Timestamp; 
 import java.sql.Time;
 import java.sql.Date;
 
