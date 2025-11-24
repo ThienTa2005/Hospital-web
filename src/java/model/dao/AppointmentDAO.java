@@ -5,6 +5,7 @@ import model.entity.Appointment;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.time.LocalDate;
 
 public class AppointmentDAO {
 
@@ -95,4 +96,71 @@ public class AppointmentDAO {
             rs.getTime("end_time")           //giờ kết thúc
         );
     }
+    
+    public List<Appointment> getAppointmentsByPatientFilter(int patientId, Integer departmentId, LocalDate appointmentDate, String shift) {
+        List<Appointment> list = new ArrayList<>();
+
+        StringBuilder sql = new StringBuilder(SELECT_FULL_INFO);
+        sql.append("WHERE a.patient_id = ? ");
+
+        if (departmentId != null) {
+            sql.append("AND dep.department_id = ? ");
+        }
+
+        if (appointmentDate != null) {
+            sql.append("AND DATE(a.appointment_date) = ? ");
+        }
+
+        Time shiftStart = null;
+        Time shiftEnd = null;
+        if (shift != null && !shift.isEmpty()) {
+            switch (shift.toLowerCase()) {
+                case "morning":
+                    shiftStart = Time.valueOf("07:00:00");
+                    shiftEnd   = Time.valueOf("12:00:00");
+                    break;
+                case "afternoon":
+                    shiftStart = Time.valueOf("13:00:00");
+                    shiftEnd   = Time.valueOf("18:00:00");
+                    break;
+            }
+            if (shiftStart != null && shiftEnd != null) {
+                sql.append("AND TIME(a.appointment_date) BETWEEN ? AND ? ");
+            }
+        }
+
+        sql.append("ORDER BY a.appointment_date DESC, a.appointment_id ASC");
+
+        try (Connection conn = DBUtils.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+
+            int index = 1;
+            ps.setInt(index++, patientId);
+
+            if (departmentId != null) {
+                ps.setInt(index++, departmentId);
+            }
+
+            if (appointmentDate != null) {
+                ps.setDate(index++, Date.valueOf(appointmentDate));
+            }
+
+            if (shiftStart != null && shiftEnd != null) {
+                ps.setTime(index++, shiftStart);
+                ps.setTime(index++, shiftEnd);
+            }
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(mapResultSetToAppointment(rs));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+
 }

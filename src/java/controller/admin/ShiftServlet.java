@@ -179,7 +179,6 @@ public class ShiftServlet extends HttpServlet
 
         switch (t) {
             case "07:00:00": return "morning";
-            case "08:00:00": return "morning";
             case "13:00:00": return "afternoon";
             case "19:00:00": return "night";
             default: return "unknown";

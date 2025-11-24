@@ -239,7 +239,7 @@
             display: flex;
             align-items: center;
             gap: 10px;               /* khoảng cách icon + text */
-            padding: 10px 15px 10px 25px; /* giống li cũ */
+            padding: 10px 25px 10px 25px; /* giống li cũ */
             position: relative;      /* để ::before/::after hoạt động */
             color: #fff;
             text-decoration: none;
@@ -323,6 +323,11 @@
             padding: 0;              /* bỏ padding nếu muốn li kiểm soát padding */
             margin: 0;               /* bỏ margin mặc định */
         }
+        
+        .sidebar ul li a span
+        {
+            padding-top: 5px !important;
+        }
 
     </style>
 </head>
@@ -333,7 +338,7 @@
     <div class="sidebar" id="sidebar">
         <!-- Header mới với icon + tên bệnh viện -->
         <div class="sidebar-top">
-            <img src="../shared/logo.png" alt="Bệnh viện" class="icon">
+            <img src="<%= request.getContextPath() %>/views/shared/logo.png" alt="Bệnh viện" class="icon">
             <div class="greeting">
                 <span class="hello">Xin chào</span>
                 <span class="name" style="margin-top: 5px; margin-left: 5px">
@@ -346,7 +351,7 @@
         <h3>Tính năng</h3>
         <ul>
             <li class="<%= request.getRequestURI().contains("patient_dashboard.jsp") ? "active" : "" %>">
-                <a href="patient_dashboard.jsp">
+                <a href="<%= request.getContextPath() %>/patient_dashboard">
                     <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24" fill="currentColor" class="menu-icon">
                         <path d="M3 5h7l2 2h9c1.1 0 2 .9 2 2v10c0 1.1-.9 2-2 2H3c-1.1 0-2-.9-2-2V7c0-1.1.9-2 2-2z"></path>
                     </svg>
@@ -355,7 +360,7 @@
             </li>
             
             <li class="<%= request.getRequestURI().contains("patient_records.jsp") ? "active" : "" %>">
-                <a href="patient_records.jsp">
+                <a href="<%= request.getContextPath() %>/views/patient/patient_records.jsp">
                     <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24" fill="currentColor" class="menu-icon">
                         <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 
                                  1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 
@@ -389,7 +394,7 @@
             </li>
         </ul>
         
-        <a href="../auth/login.jsp" class="logout-btn <%= request.getRequestURI().contains("patient_dashboard.jsp") ? "active" : "" %>">
+        <a href="<%= request.getContextPath() %>/login" class="logout-btn <%= request.getRequestURI().contains("patient_dashboard.jsp") ? "active" : "" %>">
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="menu-icon" viewBox="0 0 24 24">
                 <path d="M16 13v-2H7V8l-5 4 5 4v-3zM20 3H10v2h10v14H10v2h10c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
             </svg>

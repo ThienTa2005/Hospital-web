@@ -11,7 +11,7 @@ import model.entity.Department;
 public class DepartmentDAO
 {
     // Lay tat ca chuyen khoa
-    public List<Department> getAllDepartments() throws SQLException
+    public List<Department> getAllDepartments()
     {
         List<Department> list = new ArrayList<>();
         String sql = "SELECT * FROM Department";
@@ -23,6 +23,7 @@ public class DepartmentDAO
                 list.add(new Department(rs.getInt("department_id"), rs.getString("name")));
             }
         }
+        catch (SQLException e) { e.printStackTrace(); }
         return list;
     }
     

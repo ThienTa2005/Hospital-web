@@ -4,13 +4,19 @@ import model.dao.AppointmentDAO;
 import model.entity.Appointment;
 import model.entity.User;
 import java.io.IOException;
-import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.stream.Collectors;
+import java.time.LocalDate;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+
 
 @WebServlet("/appointment")
 public class AppointmentServlet extends HttpServlet {
@@ -33,10 +39,7 @@ public class AppointmentServlet extends HttpServlet {
             List<Appointment> list = null;
 
             if ("patient".equals(user.getRole())) {
-                //bệnh nhân xem lịch sử khám của mình
-                list = appointmentDAO.getAppointmentsByPatientId(user.getUserId());
-                req.setAttribute("appointments", list);
-                req.getRequestDispatcher("/views/patient/patient_dashboard.jsp").forward(req, resp); // Hoặc trang history
+               
             } 
             else if ("doctor".equals(user.getRole())) {
                 //bác sĩ đk xem danh sách bệnh nhân đặt lịch với mình
@@ -77,4 +80,6 @@ public class AppointmentServlet extends HttpServlet {
             }
         }
     }
+    
+    
 }
