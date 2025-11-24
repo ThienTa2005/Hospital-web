@@ -46,7 +46,7 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
         session.setAttribute("username", username);
         switch (user.getRole()) {
             case "admin":                
-                response.sendRedirect(request.getContextPath() + "/admin/user");
+                response.sendRedirect(request.getContextPath() + "/admin/dashboard");
                 break;
             case "doctor":
                 response.sendRedirect("views/doctor/doctor_dashboard.jsp");

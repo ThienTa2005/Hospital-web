@@ -63,7 +63,6 @@ public class ShiftDAO
 
         return list;
     }
-
     
     // Them ca truc
     public boolean addShift(Shift shift) throws SQLException
@@ -79,8 +78,6 @@ public class ShiftDAO
             return ps.executeUpdate() > 0;
         }
     }
-    
-    
     
     // Lay ca truc qua ID
     public Shift getShiftById(int id) throws SQLException
@@ -144,6 +141,30 @@ public class ShiftDAO
         }
     }
     
+    public List<Shift> getShiftsByDate(LocalDate date) {
+        List<Shift> list = new ArrayList<>();
+        String sql = "SELECT * FROM Shift WHERE shift_date = ? ORDER BY start_time ASC";
+        
+        try (Connection conn = DBUtils.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setDate(1, Date.valueOf(date));
+            ResultSet rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                list.add(new Shift(
+                    rs.getInt("shift_id"),
+                    rs.getDate("shift_date"),
+                    rs.getTime("start_time"),
+                    rs.getTime("end_time")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+    
     // Hàm tìm theo ngày và ca (morning/afternoon/night)
     public Shift getShiftsByDateAndPeriod(Date date, String period) throws SQLException {
         List<Shift> list = new ArrayList<>();
@@ -190,9 +211,7 @@ public class ShiftDAO
 
         return list.get(0);
     }
-
-
-    
+  
     // Cap nhat ca truc
     public void updateShift(Shift shift) throws SQLException {
         String sql = "UPDATE Shift SET shift_date=?, start_time=?, end_time=? WHERE shift_id=?";
@@ -262,5 +281,5 @@ public class ShiftDAO
             return psShift.executeUpdate() > 0;
         }
     }
-
+    
 }

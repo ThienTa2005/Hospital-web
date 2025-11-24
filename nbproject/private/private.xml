@@ -3,13 +3,37 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/Hospital-web/web/views/patient/patient_dashboard.jsp</file>
-            <file>file:/D:/Hospital-web/web/views/patient/patient_records.jsp</file>
-            <file>file:/D:/Hospital-web/web/views/admin/add_user.jsp</file>
-            <file>file:/D:/Hospital-web/src/java/model/entity/Appointment.java</file>
-            <file>file:/D:/Hospital-web/web/views/patient/patient_footer.jsp</file>
-            <file>file:/D:/Hospital-web/web/views/patient/patient_navbar.jsp</file>
-            <file>file:/D:/Hospital-web/web/views/doctor/doctor_dashboard.jsp</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/src/java/model/dao/UserDAO.java</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/src/java/model/dao/ShiftDoctorDAO.java</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/src/java/model/dao/PatientDAO.java</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/src/java/model/dao/DoctorDAO.java</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/src/java/model/entity/Shift.java</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/src/java/model/entity/ShiftDoctor.java</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/src/java/controller/admin/ShiftDoctorServlet.java</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/views/doctor/doctor_dashboard.jsp</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/views/doctor/doctor_schedule.jsp</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/src/java/model/dao/ShiftDAO.java</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/src/java/Utils/DBUtils.java</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/views/admin/patient_form.jsp</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/src/java/model/dao/DepartmentDAO.java</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/views/admin/users.jsp</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/views/shared/user_header.jsp</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/views/shared/user_footer.jsp</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/views/admin/shift.jsp</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/views/admin/patient.jsp</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/views/shared/doctor_header.jsp</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/src/java/controller/admin/PatientServlet.java</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/src/java/controller/admin/UserServlet.java</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/views/shared/empty_header.jsp</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/src/java/controller/admin/DepartmentServlet.java</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/views/auth/login.jsp</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/src/java/controller/auth/LoginServlet.java</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/src/java/model/dao/AppointmentDAO.java</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/src/java/model/entity/Patient.java</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/src/java/controller/admin/ShiftServlet.java</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/src/java/model/entity/Doctor.java</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/src/java/model/dao/MedicalRecordDAO.java</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/WEB-INF/web.xml</file>
         </group>
     </open-files>
 </project-private>

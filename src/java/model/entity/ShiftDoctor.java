@@ -1,7 +1,6 @@
 package model.entity;
 
 public class ShiftDoctor {
-    private int shiftDoctorId;
     private int shiftId;
     private int doctorId;
     
@@ -11,8 +10,7 @@ public class ShiftDoctor {
 
     public ShiftDoctor() {}
 
-    public ShiftDoctor(int shiftDoctorId, int shiftId, int doctorId, String doctorName, String degree, String departmentName) {
-        this.shiftDoctorId = shiftDoctorId;
+    public ShiftDoctor(int shiftId, int doctorId, String doctorName, String degree, String departmentName) {
         this.shiftId = shiftId;
         this.doctorId = doctorId;
         this.doctorName = doctorName;
@@ -21,9 +19,6 @@ public class ShiftDoctor {
     }
 
     // Getters and Setters
-    public int getShiftDoctorId() { return shiftDoctorId; }
-    public void setShiftDoctorId(int shiftDoctorId) { this.shiftDoctorId = shiftDoctorId; }
-
     public int getShiftId() { return shiftId; }
     public void setShiftId(int shiftId) { this.shiftId = shiftId; }
 
