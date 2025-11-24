@@ -141,7 +141,7 @@ public class UserServlet extends HttpServlet {
         java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
 
         try {
-            User u = new User(0, username, password, fullname, sqlDate, gender, phone, address, role);
+            User u = new User(0, username, password, newString(fullname), sqlDate, gender, phone, newString(address), role);
             int newUserId = userDAO.createUser(u);
 
             if (newUserId > 0) {
@@ -152,13 +152,14 @@ public class UserServlet extends HttpServlet {
                 }
             }
 
-            response.sendRedirect(request.getContextPath() + "/admin/user?action=list&success=true");
+            response.sendRedirect(request.getContextPath() + "/admin/user?action=add&success=true");
 
         } catch (Exception e) {
             e.printStackTrace();
             response.sendRedirect(request.getContextPath() + "/admin/user?action=add&success=false");
         }
     }
+    
     public void editUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException, ParseException {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
@@ -185,7 +186,7 @@ public class UserServlet extends HttpServlet {
         java.util.Date utilDate = sdf.parse(dob);
         java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
 
-        User u = new User(id, username, password, fullname, sqlDate, gender, phone, address, role);
+        User u = new User(id, username, password, newString(fullname), sqlDate, gender, phone, newString(address), role);
         userDAO.updateUser(u);
         response.sendRedirect(request.getContextPath() + "/admin/user?action=list&success=true");
     }
