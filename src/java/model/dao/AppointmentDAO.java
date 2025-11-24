@@ -3,6 +3,7 @@ package model.dao;
 import Utils.DBUtils;
 import model.entity.Appointment;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDate;
@@ -56,6 +57,51 @@ public class AppointmentDAO {
         return list;
     }
 
+    public List<Appointment> getAppointmentsByDate(LocalDate date) {
+        List<Appointment> list = new ArrayList<>();
+        String sql = "SELECT a.appointment_id, a.patient_id, a.shift_id, a.appointment_date, a.status, " +
+                     "u_doc.fullname AS doctor_name, " +
+                     "u_pat.fullname AS patient_name, " +
+                     "dep.name AS department_name, " +
+                     "s.shift_date, s.start_time, s.end_time " +
+                     "FROM Appointment a " +
+                     "JOIN Shift s ON a.shift_id = s.shift_id " +
+                     "JOIN Shift_Doctor sd ON a.shift_id = sd.shift_id " +
+                     "JOIN Doctor d ON sd.doctor_id = d.user_id " +
+                     "JOIN Users u_doc ON d.user_id = u_doc.user_id " +
+                     "LEFT JOIN Department dep ON d.department_id = dep.department_id " +
+                     "JOIN Users u_pat ON a.patient_id = u_pat.user_id " +
+                     "WHERE s.shift_date = ? " +
+                     "ORDER BY s.start_time ASC";
+
+        try (Connection conn = DBUtils.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setDate(1, java.sql.Date.valueOf(date));
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                list.add(new Appointment(
+                    rs.getInt("appointment_id"),
+                    rs.getInt("patient_id"),
+                    rs.getInt("shift_id"),            // dùng shift_id thay cho shift_doctor_id
+                    rs.getTimestamp("appointment_date"),
+                    rs.getString("status"),
+                    rs.getString("doctor_name"),
+                    rs.getString("department_name"),
+                    rs.getString("patient_name"),
+                    rs.getDate("shift_date"),
+                    rs.getTime("start_time"),
+                    rs.getTime("end_time")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+  
     //tạo lịch hẹn mới
     public boolean createBooking(Appointment app) {
         String sql = "INSERT INTO Appointment(patient_id, shift_doctor_id, appointment_date, status) VALUES (?, ?, NOW(), ?)";
@@ -163,4 +209,20 @@ public class AppointmentDAO {
     }
 
 
+    
+    public List<Appointment> getAllAppointments() {
+        List<Appointment> list = new ArrayList<>();
+        String sql = SELECT_FULL_INFO + "ORDER BY a.appointment_date DESC, s.start_time ASC";
+
+        try (Connection conn = DBUtils.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(mapResultSetToAppointment(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 }
