@@ -267,7 +267,7 @@ public class AppointmentDAO {
         return list;
     }
 
-    public List<Appointment> getAllAppointments() {
+    public List<Appointment> getAppointmentsByDate() {
         List<Appointment> list = new ArrayList<>();
 
         String sql = SELECT_FULL_INFO + 

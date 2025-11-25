@@ -35,28 +35,22 @@
             <file>file:/C:/Users/hocmo/Hospital-web/src/java/model/dao/MedicalRecordDAO.java</file>
             <file>file:/C:/Users/hocmo/Hospital-web/web/WEB-INF/web.xml</file>
             <file>file:/C:/Users/hocmo/Hospital-web/web/views/admin/admin_dashboard/admin_dashboard.jsp</file>
-            <file>file:/C:/Users/hocmo/Hospital-web/web/views/patient/patient_dashboar.jsp</file>
             <file>file:/C:/Users/hocmo/Hospital-web/web/views/patient/patient_dashboard.jsp</file>
             <file>file:/C:/Users/hocmo/Hospital-web/src/java/controller/patient/PatientDashboardServlet.java</file>
             <file>file:/C:/Users/hocmo/Hospital-web/src/java/controller/doctor/DoctorScheduleServlet.java</file>
             <file>file:/C:/Users/hocmo/Hospital-web/src/java/controller/auth/LogoutServlet.java</file>
-            <file>file:/C:/Users/hocmo/Hospital-web/web/views/doctor/doctor_appointments.jsp</file>
             <file>file:/C:/Users/hocmo/Hospital-web/web/views/admin/admin_dashboard/visiting_patients.jsp</file>
-            <file>file:/C:/Users/hocmo/Hospital-web/web/views/patient/patient_appointments.jsp</file>
             <file>file:/C:/Users/hocmo/Hospital-web/web/views/admin/admin_dashboard/report.jsp</file>
-            <file>file:/C:/Users/hocmo/Hospital-web/web/views/patient/patient_records.jsp</file>
             <file>file:/C:/Users/hocmo/Hospital-web/web/views/admin/doctor_form.jsp</file>
             <file>file:/C:/Users/hocmo/Hospital-web/src/java/model/entity/MedicalRecord.java</file>
             <file>file:/C:/Users/hocmo/Hospital-web/src/java/controller/patient/AppointmentServlet.java</file>
             <file>file:/C:/Users/hocmo/Hospital-web/src/java/model/entity/Appointment.java</file>
             <file>file:/C:/Users/hocmo/Hospital-web/src/java/controller/admin/AdminDashboardServlet.java</file>
-            <file>file:/C:/Users/hocmo/Hospital-web/web/views/admin/appointments.jsp</file>
             <file>file:/C:/Users/hocmo/Hospital-web/src/java/controller/patient/MedicalRecordServlet.java</file>
-            <file>file:/C:/Users/hocmo/Hospital-web/src/java/controller/admin/AppointmentDetailServlet.java</file>
             <file>file:/C:/Users/hocmo/Hospital-web/src/java/model/dao/TestDAO.java</file>
             <file>file:/C:/Users/hocmo/Hospital-web/src/java/model/entity/Test.java</file>
             <file>file:/C:/Users/hocmo/Hospital-web/src/java/controller/patient/TestServlet.java</file>
-            <file>file:/C:/Users/hocmo/Hospital-web/web/views/admin/appointment_detail.jsp</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/src/java/model/entity/User.java</file>
         </group>
     </open-files>
 </project-private>

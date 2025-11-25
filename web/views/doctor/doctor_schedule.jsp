@@ -230,7 +230,7 @@
         Map<Integer, MedicalRecord> appointmentRecordMap = new HashMap<>();
         try {
             for (Appointment ap : doctorAppointments) {
-                List<MedicalRecord> tmp = medDAO.getAppointmentById(ap.getAppointmentId());
+                List<MedicalRecord> tmp = medDAO.getMedicalRecordByAppointmentId(ap.getAppointmentId());
                 if (tmp != null && !tmp.isEmpty()) {
                     appointmentRecordMap.put(ap.getAppointmentId(), tmp.get(0));
                 }

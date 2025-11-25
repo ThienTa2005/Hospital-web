@@ -94,9 +94,16 @@ public class MedicalRecordServlet extends HttpServlet {
             }
             return;
         }
+    }
 
     public void listRecords(HttpServletRequest request, HttpServletResponse response) throws Exception 
     {
+        HttpSession session = request.getSession(false);
+        User currentUser = (session != null) ? (User) session.getAttribute("user") : null;
+        if (currentUser == null) {
+            response.sendRedirect(request.getContextPath() + "/login.jsp");
+            return;
+        }
         int appointmentId = Integer.parseInt((String) request.getAttribute("appointment_id"));
         List<MedicalRecord> list = medicalDAO.getMedicalRecordByAppointmentId(appointmentId);
         request.setAttribute("records", list);
