@@ -1,9 +1,9 @@
+
 package model.dao;
 
 import Utils.DBUtils;
 import model.entity.Appointment;
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDate;
@@ -27,6 +27,37 @@ public class AppointmentDAO {
             + "JOIN Shift s ON sd.shift_id = s.shift_id "
             + "JOIN Users u_pat ON a.patient_id = u_pat.user_id ";
 
+    public List<Appointment> getAllAppointments() {
+        List<Appointment> list = new ArrayList<>();
+        String sql = SELECT_FULL_INFO + "ORDER BY a.appointment_date DESC";
+        try (Connection conn = DBUtils.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(mapResultSetToAppointment(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    
+    public Appointment getAppointmentById(int appointmentId) {
+        String sql = SELECT_FULL_INFO + "WHERE a.appointment_id = ?";
+        try (Connection conn = DBUtils.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, appointmentId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return mapResultSetToAppointment(rs);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
     //lấy danh sách lịch hẹn của một Bệnh nhân 
     public List<Appointment> getAppointmentsByPatientId(int patientId) {
         List<Appointment> list = new ArrayList<>();
@@ -238,7 +269,10 @@ public class AppointmentDAO {
 
     public List<Appointment> getAllAppointments() {
         List<Appointment> list = new ArrayList<>();
-        String sql = SELECT_FULL_INFO + "ORDER BY a.appointment_date DESC, s.start_time ASC";
+
+        String sql = SELECT_FULL_INFO + 
+                     "WHERE DATE(a.appointment_date) = ? " +
+                     "ORDER BY s.start_time ASC";
 
         try (Connection conn = DBUtils.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
@@ -248,6 +282,7 @@ public class AppointmentDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return list;
     }
 

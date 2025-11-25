@@ -91,7 +91,7 @@ public class TestServlet extends HttpServlet {
         int appointmentId = Integer.parseInt(req.getParameter("appointment_id"));
 
         req.setAttribute("appointmentId", appointmentId);
-        req.setAttribute("tests", dao.getTestById(appointmentId));
+        req.setAttribute("tests", dao.getTestByAppointmentId(appointmentId));
 
         req.getRequestDispatcher("/test_list.jsp").forward(req, resp);
     }

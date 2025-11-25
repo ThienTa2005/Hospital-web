@@ -53,12 +53,22 @@ public class AppointmentServlet extends HttpServlet {
                 req.getRequestDispatcher("/views/patient/patient_appointment.jsp").forward(req, resp);
             } 
             else if ("doctor".equals(user.getRole())) {
-                //bác sĩ đk xem danh sách bệnh nhân đặt lịch với mình
+                //bác sĩ xem danh sách bệnh nhân đặt lịch với mình
                 list = appointmentDAO.getAppointmentsByDoctorId(user.getUserId());
                 req.setAttribute("appointments", list);
-                req.getRequestDispatcher("/views/doctor/doctor_dashboard.jsp").forward(req, resp);
+                req.getRequestDispatcher("/views/doctor/doctor_appointments.jsp").forward(req, resp);
             }
             else if ("admin".equals(user.getRole())) {
+                //Admin xem danh sách lịch hẹn của patient
+                String patientId = req.getParameter("patientId");
+                int pId = 0;
+                if(patientId != null)
+                {
+                    pId = Integer.parseInt(patientId);
+                }
+                list = appointmentDAO.getAppointmentsByPatientId(pId);
+                req.setAttribute("appointments", list);
+                req.getRequestDispatcher("/views/admin/appointments.jsp").forward(req, resp);
             }
         } 
         else if ("cancel".equals(action)) {

@@ -11,7 +11,7 @@
         </div>-->
 
         <div class="header-logo">
-            <a href="${pageContext.request.contextPath}/admin/user?action=list" 
+            <a href="${pageContext.request.contextPath}/views/doctor/doctor_dashboard.jsp" 
                style="text-decoration: none; color: inherit;">
                 Nghiệp vụ phòng khám
             </a>

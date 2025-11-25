@@ -1,3 +1,5 @@
+<%@page import="model.entity.Appointment"%>
+<%@page import="java.util.List"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@page import="model.entity.Patient"%>
 <%@page import="model.entity.User"%>
@@ -78,7 +80,7 @@
                     <div class="row g-3">
                         <div class="col-md-8">
                             <label class="form-label fw-bold">Họ và tên</label>
-                            <input type="text" name="fullname" class="form-control form-control-lg fw-bold text-primary" 
+                            <input type="text" name="fullname" class="form-control form-control-lg fw-bold text-success" 
                                    value="<%= isEdit ? p.getFullname() : "" %>" <%= readOnlyAttr %> required>
                         </div>
                         <div class="col-md-4">
@@ -134,58 +136,84 @@
     <div class="mt-3">
         <ul class="nav nav-tabs nav-fill px-3" id="myTab" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="appointment-tab" data-bs-toggle="tab" data-bs-target="#appointment" type="button" role="tab">
-                    <i class="fa-regular fa-calendar-check me-2"></i>Lịch Hẹn
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="record-tab" data-bs-toggle="tab" data-bs-target="#record" type="button" role="tab">
-                    <i class="fa-solid fa-notes-medical me-2"></i>Bệnh Án
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="test-tab" data-bs-toggle="tab" data-bs-target="#test" type="button" role="tab">
-                    <i class="fa-solid fa-flask-vial me-2"></i>Xét Nghiệm
+                <button class="nav-link active">
+                    <i class="fa-solid fa-calendar"></i> Lịch Hẹn
                 </button>
             </li>
         </ul>
 
         <div class="tab-content" id="myTabContent">
             <div class="tab-pane fade show active" id="appointment" role="tabpanel">
+
                 <div class="d-flex justify-content-between mb-3">
-                    <h6 class="fw-bold text-primary">Lịch sử đặt hẹn</h6>
-                    <% if(!isDoctor) { %><button class="btn btn-sm btn-primary">+ Đặt hẹn mới</button><% } %>
+                    <h6 class="fw-bold text-success">Lịch sử đặt hẹn</h6>
+                    <% if(!isDoctor) { %>
+                        <button class="btn btn-sm btn-success">+ Đặt hẹn mới</button>
+                    <% } %>
                 </div>
+
                 <table class="table table-striped table-hover text-center">
-                    <thead class="table-light"><tr><th>Ngày</th><th>Giờ</th><th>Bác sĩ</th><th>Trạng thái</th></tr></thead>
+                    <thead class="table-light">
+                        <tr>
+                            <th>Ngày</th>
+                            <th>Giờ</th>
+                            <th>Bác sĩ</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
                     <tbody>
-                        <tr><td>25/11/2025</td><td>09:30</td><td>BS. Nguyễn Văn A</td><td><span class="badge bg-warning text-dark">Sắp tới</span></td></tr>
-                        <tr><td>10/10/2025</td><td>14:00</td><td>BS. Trần Thị B</td><td><span class="badge bg-success">Đã khám</span></td></tr>
+                    <%
+                        List<Appointment> apps = (List<Appointment>) request.getAttribute("appointments");
+                        if (apps != null && !apps.isEmpty()) {
+                            for (Appointment a : apps) {
+                    %>
+                    <tr>
+                        <td><%= new java.text.SimpleDateFormat("dd/MM/yyyy").format(a.getShiftDate()) %></td>
+                        <td><%= a.getStartTime().toString().substring(0,5) %> - <%= a.getEndTime().toString().substring(0,5) %></td>
+                        <td><%= a.getDoctorName() %></td>
+                        <td>
+                            <% if ("pending".equals(a.getStatus())) { %>
+                                <span class="badge bg-warning text-dark">Sắp tới</span>
+                            <% } else if ("completed".equals(a.getStatus())) { %>
+                                <span class="badge bg-success">Đã khám</span>
+                            <% } else if ("cancelled".equals(a.getStatus())){ %>
+                                <span class="badge bg-secondary">Đã huỷ</span>
+                            <% } %>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-success btn-view-detail" 
+                                    data-id="<%= a.getAppointmentId() %>">Xem</button>
+                        </td>
+                    </tr>
+                    <%
+                            }
+                        } else { 
+                    %>
+                    <tr>
+                        <td colspan="5" class="text-muted fst-italic">Chưa có lịch hẹn nào.</td>
+                    </tr>
+                    <% } %>
                     </tbody>
                 </table>
-            </div>
+                
+                <div class="modal fade" id="appointmentModal" tabindex="-1" aria-labelledby="appointmentModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                      <div class="modal-content">
+                        <div class="modal-header bg-success text-white">
+                          <h5 class="modal-title" id="appointmentModalLabel">Chi tiết lịch hẹn</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                        </div>
+                        <div class="modal-body" id="modal-detail-content">
 
-            <div class="tab-pane fade" id="record" role="tabpanel">
-                <div class="d-flex justify-content-between mb-3">
-                    <h6 class="fw-bold text-success">Lịch sử khám bệnh</h6>
-                    <% if(isDoctor) { %><button class="btn btn-sm btn-success">+ Thêm bệnh án</button><% } %>
-                </div>
-                <div class="card mb-3 border-success">
-                    <div class="card-header bg-success text-white d-flex justify-content-between">
-                        <span>Ngày khám: 10/10/2025</span>
-                        <span>BS. Trần Thị B</span>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        </div>
+                      </div>
                     </div>
-                    <div class="card-body">
-                        <p><strong>Chẩn đoán:</strong> Viêm họng cấp.</p>
-                        <p><strong>Đơn thuốc:</strong> Paracetamol 500mg (2v/ngày), Vitamin C.</p>
-                        <p class="text-muted fst-italic">Ghi chú: Bệnh nhân có tiền sử dị ứng Aspirin.</p>
-                    </div>
-                </div>
-            </div>
+                  </div>
 
-            <div class="tab-pane fade" id="test" role="tabpanel">
-                <h6 class="fw-bold text-info mb-3">Kết quả Cận lâm sàng</h6>
-                <div class="alert alert-info text-center">Chưa có kết quả xét nghiệm nào.</div>
             </div>
         </div>
     </div>
@@ -193,5 +221,31 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const buttons = document.querySelectorAll(".btn-view-detail");
+    const modalContent = document.getElementById("modal-detail-content");
+    const basePath = "<%= request.getContextPath() %>";
+
+    buttons.forEach(btn => {
+        btn.addEventListener("click", function() {
+            const appointmentId = this.dataset.id;
+
+            fetch(basePath + "/admin/appointmentDetail?id=" + appointmentId)
+            .then(response => response.text())
+            .then(html => {
+                modalContent.innerHTML = html;
+                const modal = new bootstrap.Modal(document.getElementById('appointmentModal'));
+                modal.show();
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Không tải được chi tiết!");
+            });
+        });
+    });
+});
+</script>
+
 </body>
 </html>

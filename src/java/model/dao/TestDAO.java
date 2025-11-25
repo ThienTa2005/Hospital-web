@@ -9,18 +9,26 @@ import model.entity.Test;
 public class TestDAO
 {
     // Lay tat ca xet nghiem
-    public List<Test> getTestById(int appointmentId) throws SQLException, Exception 
-    {
+    public List<Test> getTestByAppointmentId(int appointmentId) {
         List<Test> list = new ArrayList<>();
-        String sql = "SELECT * FROM Test WHERE appointment_id = ?";
-        try(Connection conn = DBUtils.getConnection(); PreparedStatement ps = conn.prepareStatement(sql);
-                ResultSet rs = ps.executeQuery())
-        {
-            while(rs.next())
-            {
-                list.add(map(rs));
+        String sql = "SELECT * FROM Test WHERE appointment_id = ? ORDER BY test_time ASC";
+
+        try (Connection conn = DBUtils.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, appointmentId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(map(rs));
+                }
             }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
         return list;
     }
     

@@ -95,9 +95,10 @@ public class MedicalRecordServlet extends HttpServlet {
             return;
         }
 
-        int appointmentId = Integer.parseInt(appointmentIdStr);
-
-        List<MedicalRecord> list = medicalDAO.getAppointmentById(appointmentId);
+    public void listRecords(HttpServletRequest request, HttpServletResponse response) throws Exception 
+    {
+        int appointmentId = Integer.parseInt((String) request.getAttribute("appointment_id"));
+        List<MedicalRecord> list = medicalDAO.getMedicalRecordByAppointmentId(appointmentId);
         request.setAttribute("records", list);
         request.setAttribute("appointment_id", appointmentId);
 

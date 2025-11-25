@@ -163,7 +163,7 @@
                     <div class="col-md-4">
                         <div class="stat-card">
                             <div class="icon-box bg-icon-orange"><i class="fa-solid fa-clipboard-list"></i></div>
-                            <h3 class="fw-bold mb-1">--</h3> <p class="text-muted small mb-0">Chờ duyệt kết quả</p>
+                            <h3 class="fw-bold mb-1">--</h3> <p class="text-muted small mb-0">Lịch hẹn chờ duyệt</p>
                         </div>
                     </div>
                 </div>
@@ -174,17 +174,35 @@
                         <a href="${pageContext.request.contextPath}/doctor/schedule" class="action-btn shadow-sm">
                             <div class="action-icon text-success" style="font-size: 2rem;"><i class="fa-solid fa-calendar-days"></i></div>
                             <div>
-                                <h6 class="fw-bold m-0">Xem Lịch Trực</h6>
+                                <h6 class="fw-bold m-0">Xem lịch trực</h6>
                                 <small class="text-muted">Kiểm tra ca làm việc</small>
                             </div>
                         </a>
                     </div>
                     <div class="col-md-6">
-                        <a href="#" class="action-btn shadow-sm">
-                            <div class="action-icon text-primary" style="font-size: 2rem;"><i class="fa-solid fa-file-medical"></i></div>
+                        <a href="${pageContext.request.contextPath}/appointment" class="action-btn shadow-sm">
+                            <div class="action-icon text-success" style="font-size: 2rem;"><i class="fa-solid fa-address-card"></i></div>
                             <div>
-                                <h6 class="fw-bold m-0">Hồ sơ Bệnh án</h6>
-                                <small class="text-muted">Nhập liệu và kê đơn</small>
+                                <h6 class="fw-bold m-0">Danh sách lịch hẹn</h6>
+                                <small class="text-muted">Quản lý các cuộc hẹn</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="#" class="action-btn shadow-sm">
+                            <div class="action-icon text-success" style="font-size: 2rem;"><i class="fa-solid fa-user-doctor"></i></div>
+                            <div>
+                                <h6 class="fw-bold m-0">Hồ sơ</h6>
+                                <small class="text-muted">Tùy chỉnh thông tin cá nhân</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="${pageContext.request.contextPath}/logout" class="action-btn shadow-sm">
+                            <div class="action-icon text-success" style="font-size: 2rem;"><i class="fa-solid fa-door-open"></i></div>
+                            <div>
+                                <h6 class="fw-bold m-0">Đăng xuất</h6>
+                                <small class="text-muted">Đăng xuất khỏi tài khoản</small>
                             </div>
                         </a>
                     </div>
