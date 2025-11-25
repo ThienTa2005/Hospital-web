@@ -52,8 +52,7 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
                 response.sendRedirect("views/doctor/doctor_dashboard.jsp");
                 break;
             case "patient":
-                response.sendRedirect("views/patient/patient_dashboard.jsp");
-                //request.getContextPath() + "/patient_dashboard"
+                response.sendRedirect(request.getContextPath() + "/patient_dashboard");
                 break;
 
             default:

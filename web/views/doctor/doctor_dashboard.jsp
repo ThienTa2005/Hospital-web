@@ -195,7 +195,7 @@
                 <div class="card border-0 shadow-sm h-100 rounded-4">
                     <div class="card-header bg-white border-0 pt-4 pb-0 d-flex justify-content-between align-items-center">
                         <h5 class="fw-bold text-dark m-0">Lịch trình hôm nay</h5>
-                        <span class="badge bg-light text-dark"><%= todayShifts.size() %> ca trực</span>
+                        <span class="badge bg-light text-dark"><%= todayShifts.size() %> sự kiện</span>
                     </div>
                     <div class="card-body">
                         <div class="mt-3">
