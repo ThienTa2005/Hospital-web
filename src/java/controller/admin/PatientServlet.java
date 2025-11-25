@@ -16,16 +16,20 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Date;
 import java.util.List;
+import model.dao.AppointmentDAO;
+import model.entity.Appointment;
 
 @WebServlet("/admin/patient")
 public class PatientServlet extends HttpServlet {
     private PatientDAO patientDAO;
     private UserDAO userDAO;
+    private AppointmentDAO appointmentDAO;
 
     @Override
     public void init() {
         patientDAO = new PatientDAO();
         userDAO = new UserDAO();
+        appointmentDAO = new AppointmentDAO();
     }
 
     @Override
@@ -93,7 +97,9 @@ public class PatientServlet extends HttpServlet {
             throws ServletException, IOException {
         int userId = Integer.parseInt(request.getParameter("id"));
         Patient existingPatient = patientDAO.getPatientById(userId);
-        
+        List<Appointment> appointments = appointmentDAO.getAppointmentsByPatientId(userId);
+        System.out.println("Appointments for patient " + userId + ": " + appointments.size());
+        request.setAttribute("appointments", appointments);
         request.setAttribute("patient", existingPatient);
         RequestDispatcher dispatcher = request.getRequestDispatcher("/views/admin/patient_form.jsp");
         dispatcher.forward(request, response);

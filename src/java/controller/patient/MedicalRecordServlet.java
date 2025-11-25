@@ -66,7 +66,7 @@ public class MedicalRecordServlet extends HttpServlet {
     public void listRecords(HttpServletRequest request, HttpServletResponse response) throws Exception 
     {
         int appointmentId = Integer.parseInt((String) request.getAttribute("appointment_id"));
-        List<MedicalRecord> list = medicalDAO.getAppointmentById(appointmentId);
+        List<MedicalRecord> list = medicalDAO.getMedicalRecordByAppointmentId(appointmentId);
         request.setAttribute("records", list);
         request.setAttribute("appointment_id", appointmentId);
         request.getRequestDispatcher("/medical_record_list.jsp").forward(request, response);

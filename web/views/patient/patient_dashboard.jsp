@@ -86,7 +86,7 @@
     </style>
 </head>
 <body>
-    <jsp:include page="/views/shared/doctor_header.jsp" />
+    <jsp:include page="/views/shared/empty_header.jsp" />
 
     <%
         User user = (User) session.getAttribute("user");        
@@ -188,7 +188,7 @@
                         </a>
                     </div>
                     <div class="col-md-6">
-                        <a href="#" class="action-btn shadow-sm">
+                        <a href="${pageContext.request.contextPath}/appointment" class="action-btn shadow-sm">
                             <div class="action-icon text-success" style="font-size: 2rem;"><i class="fa-solid fa-book"></i></div>
                             <div>
                                 <h6 class="fw-bold m-0">Lịch sử khám bệnh</h6>
@@ -197,7 +197,7 @@
                         </a>
                     </div>
                     <div class="col-md-6">
-                        <a href="#" class="action-btn shadow-sm">
+                        <a href="${pageContext.request.contextPath}/logout" class="action-btn shadow-sm">
                             <div class="action-icon text-success" style="font-size: 2rem;"><i class="fa-solid fa-door-open"></i></div>
                             <div>
                                 <h6 class="fw-bold m-0">Đăng xuất</h6>

@@ -8,7 +8,7 @@ import model.entity.MedicalRecord;
 public class MedicalRecordDAO
 {
     // Lay ho so theo lich hen
-    public List<MedicalRecord> getAppointmentById(int appointmentId) throws SQLException
+    public List<MedicalRecord> getMedicalRecordByAppointmentId(int appointmentId) throws SQLException
     {
         List<MedicalRecord> list = new ArrayList<>();
         String sql = "SELECT * FROM MedicalRecord WHERE appointment_id=?";
