@@ -7,10 +7,8 @@ import model.entity.Appointment;
 import model.entity.Department;
 
 import java.io.IOException;
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,7 +17,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 @WebServlet("/patient_dashboard")
 public class PatientDashboardServlet extends HttpServlet {
 
@@ -36,76 +33,54 @@ public class PatientDashboardServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        request.setCharacterEncoding("UTF-8");
+        response.setContentType("text/html; charset=UTF-8");
+
         User user = (User) request.getSession().getAttribute("user");
 
-        if (user != null) 
-        {
-            List<Appointment> appointments = appointmentDAO.getAppointmentsByPatientId(user.getUserId());
+        if (user != null) {
+            List<Appointment> allAppointments = appointmentDAO.getAppointmentsByPatientId(user.getUserId());
             List<Department> departments = departmentDAO.getAllDepartments();
+            LocalDate now = LocalDate.now();
+            long countMonth = allAppointments.stream()
+                    .filter(a -> {
+                        LocalDate appDate = a.getAppointmentDate().toLocalDateTime().toLocalDate();
+                        return appDate.getMonth() == now.getMonth() && appDate.getYear() == now.getYear();
+                    })
+                    .count();
+            Appointment lastVisit = allAppointments.stream()
+                    .filter(a -> "completed".equalsIgnoreCase(a.getStatus()))
+                    .sorted(Comparator.comparing(Appointment::getAppointmentDate).reversed())
+                    .findFirst().orElse(null);
+            Appointment nextVisit = allAppointments.stream()
+                    .filter(a -> ("pending".equalsIgnoreCase(a.getStatus()) || "confirmed".equalsIgnoreCase(a.getStatus())))
+                    .filter(a -> a.getAppointmentDate().toLocalDateTime().toLocalDate().isAfter(now.minusDays(1)))
+                    .sorted(Comparator.comparing(Appointment::getAppointmentDate))
+                    .findFirst().orElse(null);
+            List<Appointment> upcomingList = allAppointments.stream()
+                    .filter(a -> ("pending".equalsIgnoreCase(a.getStatus()) || "confirmed".equalsIgnoreCase(a.getStatus())))
+                    .filter(a -> a.getAppointmentDate().toLocalDateTime().toLocalDate().isAfter(now.minusDays(1)))
+                    .sorted(Comparator.comparing(Appointment::getAppointmentDate))
+                    .limit(5)
+                    .collect(Collectors.toList());
 
-            request.setAttribute("appointments", appointments);
+            request.setAttribute("appointments", allAppointments);
             request.setAttribute("departments", departments);
-            
+
+            request.setAttribute("countMonth", countMonth);
+            request.setAttribute("lastVisit", lastVisit);
+            request.setAttribute("nextVisit", nextVisit);
+            request.setAttribute("upcomingList", upcomingList);
+
             request.getRequestDispatcher("/views/patient/patient_dashboard.jsp").forward(request, response);
+        } else {
+            response.sendRedirect(request.getContextPath() + "/login.jsp");
         }
     }
-    
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
-        User user = (User) request.getSession().getAttribute("user");
-        if (user != null) 
-        {
-            String action = request.getParameter("action");
-            if ("list".equals(action)) 
-            {
-                showPatientAppointments(request, response, user);
-            } else {
-                doGet(request, response);
-            }
-        } else {
-            response.sendRedirect(request.getContextPath() + "/login");
-        }
-    }
-    
-    private void showPatientAppointments(HttpServletRequest req, HttpServletResponse resp, User user)
-        throws ServletException, IOException {
-
-        String departmentIdStr = req.getParameter("departmentId");
-        String dateStr = req.getParameter("appointmentDate");
-        String shift = req.getParameter("appointmentShift");
-
-        Integer departmentId = null;
-        if (departmentIdStr != null && !departmentIdStr.isEmpty()) {
-            try {
-                departmentId = Integer.parseInt(departmentIdStr);
-            } catch (NumberFormatException e) {
-                departmentId = null;
-            }
-        }
-
-        LocalDate appointmentDate = null;
-        if (dateStr != null && !dateStr.isEmpty()) {
-            appointmentDate = LocalDate.parse(dateStr);
-        }
-
-        List<Appointment> appointments = appointmentDAO.getAppointmentsByPatientFilter(
-                user.getUserId(),
-                departmentId,
-                appointmentDate,
-                shift
-        );
-        
-        req.setAttribute("selectedDepartmentId", departmentIdStr);
-        req.setAttribute("selectedDate", dateStr);
-        req.setAttribute("selectedShift", shift);
-
-
-        List<Department> departments = departmentDAO.getAllDepartments();
-        req.setAttribute("departments", departments);
-        req.setAttribute("appointments", appointments);
-
-        req.getRequestDispatcher("/views/patient/patient_dashboard.jsp").forward(req, resp);
+        doGet(request, response);
     }
 }

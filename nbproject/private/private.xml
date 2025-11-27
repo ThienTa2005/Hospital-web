@@ -51,6 +51,10 @@
             <file>file:/C:/Users/hocmo/Hospital-web/src/java/model/entity/Test.java</file>
             <file>file:/C:/Users/hocmo/Hospital-web/src/java/controller/patient/TestServlet.java</file>
             <file>file:/C:/Users/hocmo/Hospital-web/src/java/model/entity/User.java</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/views/doctor/doctor_appointments.jsp</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/views/admin/appointment_detail.jsp</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/src/java/controller/admin/AppointmentDetailServlet.java</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/views/admin/appointments.jsp</file>
         </group>
     </open-files>
 </project-private>

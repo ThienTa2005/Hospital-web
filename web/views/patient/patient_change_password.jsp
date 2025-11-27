@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/user_style.css">
 
     <style>
-        /* --- LAYOUT FIX --- */
+
         body { 
             background-color: #F3F6F8; 
             font-family: 'Segoe UI', sans-serif; 
@@ -21,14 +21,14 @@
             min-height: 100vh; 
         }
         .main { 
-            flex: 1; /* Đẩy footer xuống đáy */
+            flex: 1; 
             width: 100%; 
-            max-width: 600px; /* Form nhỏ gọn ở giữa */ 
+            max-width: 600px; 
             margin: 0 auto; 
             padding-bottom: 30px; 
         }
         .content-wrapper { padding: 40px 20px; }
-        /* ----------------- */
+
 
         .password-card {
             background: white;
@@ -65,7 +65,6 @@
         }
         .btn-submit:hover { background-color: #2c6e49; transform: translateY(-2px); color: white; }
         
-        /* Style cho nút con mắt ẩn hiện pass */
         .input-group-text { cursor: pointer; background: white; border-left: none; }
         .form-control { border-right: none; }
         .input-group:focus-within .input-group-text { border-color: #40855E; }
@@ -131,7 +130,6 @@
     <jsp:include page="/views/shared/user_footer.jsp" />
     
     <script>
-        // Script để ẩn/hiện mật khẩu khi bấm vào con mắt
         function togglePass(fieldId, iconSpan) {
             const input = document.getElementById(fieldId);
             const icon = iconSpan.querySelector('i');

@@ -53,7 +53,6 @@
     if (appointments != null && !appointments.isEmpty()) {
         for (Appointment a : appointments) {
             if (a.getShiftDate() != null && a.getStartTime() != null && a.getEndTime() != null) {
-                // tạo Date cho giờ bắt đầu và giờ kết thúc
                 Date start = new Date(a.getShiftDate().getTime() + a.getStartTime().getTime());
                 Date end = new Date(a.getShiftDate().getTime() + a.getEndTime().getTime());
 

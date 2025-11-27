@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/user_style.css">
 
     <style>
-        /* --- FIX FOOTER --- */
+
         body { 
             background-color: #F3F6F8; 
             font-family: 'Segoe UI', sans-serif; 
@@ -26,7 +26,7 @@
             padding-bottom: 30px; 
         }
         .content-wrapper { padding: 30px 20px; }
-        /* ---------------- */
+
 
         .profile-header-card { background: white; border-radius: 15px; padding: 30px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); height: 100%; }
         .avatar-circle { width: 120px; height: 120px; background-color: #e9f6ec; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; color: #40855E; font-size: 3.5rem; border: 4px solid #fff; box-shadow: 0 5px 15px rgba(64, 133, 94, 0.15); }

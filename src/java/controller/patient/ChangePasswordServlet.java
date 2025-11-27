@@ -19,14 +19,11 @@ public class ChangePasswordServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        // Kiểm tra đăng nhập
         HttpSession session = request.getSession();
         if (session.getAttribute("user") == null) {
             response.sendRedirect("login.jsp");
             return;
         }
-
-        // Chuyển hướng sang trang giao diện
         request.getRequestDispatcher("/views/patient/patient_change_password.jsp").forward(request, response);
     }
 
@@ -42,13 +39,9 @@ public class ChangePasswordServlet extends HttpServlet {
             response.sendRedirect("login.jsp");
             return;
         }
-
-        // 1. Lấy dữ liệu từ form
         String oldPass = request.getParameter("oldPass");
         String newPass = request.getParameter("newPass");
         String confirmPass = request.getParameter("confirmPass");
-
-        // 2. Validate dữ liệu
         if (newPass == null || !newPass.equals(confirmPass)) {
             request.setAttribute("error", "Mật khẩu xác nhận không khớp!");
             request.getRequestDispatcher("/views/patient/patient_change_password.jsp").forward(request, response);
@@ -60,8 +53,6 @@ public class ChangePasswordServlet extends HttpServlet {
              request.getRequestDispatcher("/views/patient/patient_change_password.jsp").forward(request, response);
              return;
         }
-
-        // 3. Kiểm tra mật khẩu cũ
         boolean isOldPassCorrect = userDAO.checkOldPassword(user.getUserId(), oldPass);
         
         if (!isOldPassCorrect) {
@@ -69,16 +60,12 @@ public class ChangePasswordServlet extends HttpServlet {
             request.getRequestDispatcher("/views/patient/patient_change_password.jsp").forward(request, response);
             return;
         }
-
-        // 4. Thực hiện đổi mật khẩu
         boolean success = userDAO.changePassword(user.getUserId(), newPass);
 
         if (success) {
-            // Cập nhật lại session (nếu session có lưu pass - dù thường là không nên)
             user.setPassword(newPass);
             session.setAttribute("user", user);
-            
-            // Gửi thông báo thành công
+
             request.setAttribute("msg", "Đổi mật khẩu thành công!");
             request.getRequestDispatcher("/views/patient/patient_change_password.jsp").forward(request, response);
         } else {
