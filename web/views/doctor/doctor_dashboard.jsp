@@ -183,13 +183,13 @@
                         <a href="${pageContext.request.contextPath}/appointment" class="action-btn shadow-sm">
                             <div class="action-icon text-success" style="font-size: 2rem;"><i class="fa-solid fa-address-card"></i></div>
                             <div>
-                                <h6 class="fw-bold m-0">Danh sách lịch hẹn</h6>
+                                <h6 class="fw-bold m-0">Danh sách lịch hẹn hôm nay</h6>
                                 <small class="text-muted">Quản lý các cuộc hẹn</small>
                             </div>
                         </a>
                     </div>
                     <div class="col-md-6">
-                        <a href="#" class="action-btn shadow-sm">
+                        <a href="${pageContext.request.contextPath}/profile" class="action-btn shadow-sm">
                             <div class="action-icon text-success" style="font-size: 2rem;"><i class="fa-solid fa-user-doctor"></i></div>
                             <div>
                                 <h6 class="fw-bold m-0">Hồ sơ</h6>

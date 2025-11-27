@@ -398,7 +398,7 @@
                                                                         • Mã hẹn: <%= ap.getAppointmentId() %>
                                                                     </span>
                                                                 </div>
-                                                                <div class="btn-group btn-group-sm">
+                                                        <%--        <div class="btn-group btn-group-sm">
                                                                     <% if (mr == null) { %>
                                                                         <a href="<%= request.getContextPath() %>/record?appointment_id=<%= ap.getAppointmentId() %>"
                                                                            class="btn btn-outline-success btn-sm">
@@ -415,7 +415,7 @@
                                                                             Xóa
                                                                         </a>
                                                                     <% } %>
-                                                                </div>
+                                                                </div> --%>
                                                             </div>
                                                         <% } %>
                                                     </div>

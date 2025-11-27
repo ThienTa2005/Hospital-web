@@ -63,6 +63,12 @@
             <% } else { %>
                 <p class="text-muted fst-italic">Không có thông tin bệnh nhân</p>
             <% } %>
+            <button class="btn btn-success shadow-sm">
+                <a href="${pageContext.request.contextPath}/doctor/appointmentList?patientId=<%= p != null ? p.getUserId() : "" %>" 
+                   class="text-white text-decoration-none">
+                    Xem lịch sử khám bệnh
+                </a>
+            </button>
         </div>
 
         <!-- Thông tin bác sĩ -->
