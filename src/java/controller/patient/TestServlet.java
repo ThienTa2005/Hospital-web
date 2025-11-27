@@ -2,146 +2,162 @@ package controller.patient;
 
 import model.dao.TestDAO;
 import model.entity.Test;
+import model.entity.User;
+import model.dao.AppointmentDAO;
+import model.entity.Appointment;
 
-import javax.servlet.*;
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.sql.Timestamp;
 
 @WebServlet("/test")
 public class TestServlet extends HttpServlet {
 
-    private TestDAO dao = new TestDAO();
+    private TestDAO testDAO;
 
     @Override
-    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
-    {
-        String action = req.getParameter("action");
-        if (action == null) action = "list";
+    public void init() throws ServletException {
+        testDAO = new TestDAO();
+    }
 
-        switch (action) 
-        {
-            case "delete":
-            {
-                try
-                {
-                    deleteTest(req, resp);
-                } catch (Exception ex)
-                {
-                    System.getLogger(TestServlet.class.getName()).
-                            log(System.Logger.Level.ERROR, (String) null, ex);
-                }
-                break;
-            }
-                
-            default:
-            {
-                try
-                {
-                    listTest(req, resp);
-                } catch (Exception ex)
-                {
-                    System.getLogger(TestServlet.class.getName()).
-                            log(System.Logger.Level.ERROR, (String) null, ex);
-                }
-            }
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
+        request.setCharacterEncoding("UTF-8");
+        response.setContentType("text/html;charset=UTF-8");
+
+        // Chỉ dùng để xem các xét nghiệm theo appointment_id
+        String appointmentIdStr = request.getParameter("appointment_id");
+        if (appointmentIdStr == null || appointmentIdStr.isEmpty()) {
+            response.sendRedirect(request.getContextPath() + "/doctor/schedule");
+            return;
+        }
+
+        try {
+            viewTests(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ServletException(e);
         }
     }
 
     @Override
-    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException 
-    {
-        String action = req.getParameter("action");
-        if (action == null) action = "add";
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-        switch (action) {
-            case "add":
-            {
-                try
-                {
-                    addTest(req, resp);
-                } catch (Exception ex)
-                {
-                    System.getLogger(TestServlet.class.getName()).
-                            log(System.Logger.Level.ERROR, (String) null, ex);
-                }
-                break;
-            }
+        request.setCharacterEncoding("UTF-8");
+        response.setContentType("text/html;charset=UTF-8");
 
-            case "update":
-            {
-                try
-                {
-                    updateTest(req, resp);
-                } catch (Exception ex)
-                {
-                    System.getLogger(TestServlet.class.getName()).
-                            log(System.Logger.Level.ERROR, (String) null, ex);
-                }
-                 break;
+        String action = request.getParameter("action"); // từ modalTestAction
+        if (action == null || action.isEmpty()) {
+            response.sendRedirect(request.getContextPath() + "/doctor/schedule");
+            return;
+        }
+
+        try {
+            switch (action) {
+                case "add":
+                case "update":
+                    saveTest(request, response);
+                    break;
+                case "delete":
+                    deleteTest(request, response);
+                    break;
+                default:
+                    response.sendRedirect(request.getContextPath() + "/doctor/schedule");
+                    break;
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ServletException(e);
         }
     }
 
-    // Liet ke tests theo appointment_id
-    public void listTest(HttpServletRequest req, HttpServletResponse resp) throws Exception
-    {
-        int appointmentId = Integer.parseInt(req.getParameter("appointment_id"));
+    /** Xem danh sách xét nghiệm theo appointment_id */
+    private void viewTests(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        HttpSession session = request.getSession(false);
+        User currentUser = (session != null) ? (User) session.getAttribute("user") : null;
+        if (currentUser == null) {
+            response.sendRedirect(request.getContextPath() + "/login.jsp");
+            return;
+        }
 
-        req.setAttribute("appointmentId", appointmentId);
-        req.setAttribute("tests", dao.getTestByAppointmentId(appointmentId));
+        int appointmentId = Integer.parseInt(request.getParameter("appointment_id"));
+        AppointmentDAO appointmentDAO = new AppointmentDAO();
+        Appointment appointment = appointmentDAO.getAppointmentById(appointmentId);
 
-        req.getRequestDispatcher("/test_list.jsp").forward(req, resp);
+        if (appointment == null) {
+            response.sendRedirect(request.getContextPath() + "/doctor/schedule");
+            return;
+        }
+
+        List<Test> tests = testDAO.getTestByAppointmentId(appointmentId);
+
+        request.setAttribute("appointment", appointment);
+        request.setAttribute("tests", tests);
+
+        request.getRequestDispatcher("/views/doctor/appointment_detail.jsp")
+                .forward(request, response);
     }
 
-    // Them test
-    public void addTest(HttpServletRequest req, HttpServletResponse resp) throws Exception 
-    {
-        int appointmentId = Integer.parseInt(req.getParameter("appointment_id"));
-        int shiftDoctorId = Integer.parseInt(req.getParameter("shift_doctor_id"));
+    /** Thêm hoặc cập nhật xét nghiệm */
+    private void saveTest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        int appointmentId = Integer.parseInt(request.getParameter("appointment_id"));
+        int shiftDoctorId = Integer.parseInt(request.getParameter("shift_doctor_id"));
 
-        Test t = new Test();
-        t.setName(req.getParameter("test_name"));
-        t.setTestTime(Timestamp.valueOf(req.getParameter("test_time")));
-        t.setParameter(req.getParameter("parameter"));
-        t.setParameterValue(req.getParameter("parameter_value"));
-        t.setUnit(req.getParameter("unit"));
-        t.setReferenceRange(req.getParameter("reference_range"));
-        t.setAppointmentId(appointmentId);
-        t.setShiftDoctorId(shiftDoctorId);
+        String testIdStr = request.getParameter("test_id");
+        int testId = (testIdStr != null && !testIdStr.isEmpty()) ? Integer.parseInt(testIdStr) : 0;
 
-        dao.addTest(t);
-        resp.sendRedirect("test?action=list&appointment_id=" + appointmentId);
+        String testName = request.getParameter("test_name");
+        String parameter = request.getParameter("parameter");
+        String parameterValue = request.getParameter("parameter_value");
+        String unit = request.getParameter("unit");
+        String referenceRange = request.getParameter("reference_range");
+
+        String testTimeStr = request.getParameter("test_time");
+        Timestamp testTime = null;
+
+        if (testTimeStr != null && !testTimeStr.isEmpty()) {
+            // Chuyển từ "yyyy-MM-ddTHH:mm" sang Timestamp
+            testTime = Timestamp.valueOf(testTimeStr.replace("T", " ") + ":00");
+        }
+
+        Test test = new Test(); // tạo object rỗng
+        test.setTestId(testId);
+        test.setName(testName);
+        test.setTestTime(testTime);
+        test.setParameter(parameter);
+        test.setParameterValue(parameterValue);
+        test.setUnit(unit);
+        test.setReferenceRange(referenceRange);
+        test.setAppointmentId(appointmentId);
+        test.setShiftDoctorId(shiftDoctorId);
+
+        if (testId == 0) {
+            testDAO.addTest(test); // action = add
+        } else {
+            testDAO.updateTest(test); // action = update
+        }
+
+        response.sendRedirect(request.getContextPath() + "/doctor/appointmentDetail?id=" + appointmentId);
     }
-    
-    // Cap nhat test
-    public void updateTest(HttpServletRequest req, HttpServletResponse resp) throws Exception
-    {
-        Test t = new Test();
 
-        t.setTestId(Integer.parseInt(req.getParameter("test_id")));
-        t.setName(req.getParameter("test_name"));
-        t.setTestTime(Timestamp.valueOf(req.getParameter("test_time")));
-        t.setParameter(req.getParameter("parameter"));
-        t.setParameterValue(req.getParameter("parameter_value"));
-        t.setUnit(req.getParameter("unit"));
-        t.setReferenceRange(req.getParameter("reference_range"));
-        t.setAppointmentId(Integer.parseInt(req.getParameter("appointment_id")));
-        t.setShiftDoctorId(Integer.parseInt(req.getParameter("shift_doctor_id")));
+    /** Xóa xét nghiệm */
+    private void deleteTest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String testIdStr = request.getParameter("test_id");
+        int appointmentId = Integer.parseInt(request.getParameter("appointment_id"));
 
-        dao.updateTest(t);
-        resp.sendRedirect("test?action=list&appointment_id=" + t.getAppointmentId());
-    }
+        if (testIdStr != null && !testIdStr.isEmpty()) {
+            int testId = Integer.parseInt(testIdStr);
+            testDAO.deleteTest(testId);
+        }
 
-    // Xoa test
-    public void deleteTest(HttpServletRequest req, HttpServletResponse resp) throws Exception
-    {
-        int testId = Integer.parseInt(req.getParameter("test_id"));
-        int appointmentId = Integer.parseInt(req.getParameter("appointment_id"));
-
-        dao.deleteTest(testId);
-        resp.sendRedirect("test?action=list&appointment_id=" + appointmentId);
+        response.sendRedirect(request.getContextPath() + "/doctor/appointmentDetail?id=" + appointmentId);
     }
 }

@@ -359,4 +359,48 @@ public class AppointmentDAO {
                 rs.getTime("end_time")
         );
     }
+    
+    public List<Appointment> getAppointmentsByDoctorIdAndDate(int doctorId, LocalDate date) {
+        List<Appointment> list = new ArrayList<>();
+        String sql = SELECT_FULL_INFO
+                   + "WHERE sd.doctor_id = ? AND s.shift_date = ? "
+                   + "ORDER BY s.start_time ASC";
+
+        try (Connection conn = DBUtils.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, doctorId);
+            ps.setDate(2, java.sql.Date.valueOf(date));
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(mapResultSetToAppointment(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+    
+    public List<Appointment> getCompletedAppointmentsByPatientId(int patientId) {
+        List<Appointment> list = new ArrayList<>();
+        // Sử dụng SELECT_FULL_INFO từ đầu class
+        String sql = SELECT_FULL_INFO + "WHERE a.patient_id = ? AND a.status = 'completed' ORDER BY a.appointment_date DESC";
+
+        try (Connection conn = DBUtils.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, patientId);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(mapResultSetToAppointment(rs));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
 }
