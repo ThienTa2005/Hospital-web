@@ -1,24 +1,23 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ page import="model.entity.User" %>
 <% 
-    // Giữ logic active để tô màu nếu cần, hoặc bỏ qua cũng được
+
     String activePage = (String) request.getAttribute("activePage");
     if(activePage == null) activePage = "";
 %>
 <style>
-    /* Container cố định ở góc phải màn hình */
+
     .fab-container {
         position: fixed;
         bottom: 30px;
         right: 30px;
         z-index: 9999;
         display: flex;
-        flex-direction: column-reverse; /* Nút chính ở dưới cùng */
+        flex-direction: column-reverse;
         align-items: center;
-        gap: 15px; /* Khoảng cách giữa các nút */
+        gap: 15px; 
     }
 
-    /* Nút chính to nhất */
     .fab-main {
         width: 60px;
         height: 60px;
@@ -34,7 +33,6 @@
         transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
-    /* Nút con (các tính năng) */
     .fab-item {
         width: 50px;
         height: 50px;
@@ -48,25 +46,23 @@
         text-decoration: none;
         position: relative;
         
-        /* Mặc định ẩn đi */
         opacity: 0;
         transform: translateY(20px) scale(0.8);
-        pointer-events: none; /* Không bấm được khi ẩn */
+        pointer-events: none; 
         transition: all 0.3s ease;
     }
 
-    /* SVG Icon */
     .fab-item svg, .fab-main svg {
         width: 24px;
         height: 24px;
         fill: currentColor;
     }
 
-    /* Tooltip (Chữ hiện bên cạnh nút con) */
+
     .fab-item::after {
         content: attr(data-tooltip);
         position: absolute;
-        right: 65px; /* Cách nút 1 chút về bên trái */
+        right: 65px; 
         background-color: rgba(0,0,0,0.7);
         color: white;
         padding: 5px 10px;
@@ -78,22 +74,21 @@
         pointer-events: none;
     }
 
-    /* --- HIỆU ỨNG KHI HOVER VÀO CONTAINER --- */
+
     
-    /* Xoay nút chính */
+
     .fab-container:hover .fab-main {
-        transform: rotate(45deg); /* Biến dấu + thành dấu x */
-        background: #B23A48; /* Đổi màu thành đỏ (như nút đóng) */
+        transform: rotate(45deg); 
+        background: #B23A48;
     }
 
-    /* Hiện các nút con */
+
     .fab-container:hover .fab-item {
         opacity: 1;
         transform: translateY(0) scale(1);
         pointer-events: auto;
     }
 
-    /* Hiện tooltip khi hover vào từng nút con */
     .fab-item:hover::after {
         opacity: 1;
     }
@@ -103,7 +98,6 @@
         color: white;
     }
 
-    /* Delay nhẹ để tạo hiệu ứng cuộn từng cái (Stagger) */
     .fab-container:hover .fab-item:nth-child(2) { transition-delay: 0.05s; }
     .fab-container:hover .fab-item:nth-child(3) { transition-delay: 0.1s; }
     .fab-container:hover .fab-item:nth-child(4) { transition-delay: 0.15s; }

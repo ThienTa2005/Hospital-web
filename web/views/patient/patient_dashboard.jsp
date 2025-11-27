@@ -15,7 +15,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <title>Trang chủ</title>
+        <title>Trang chủ</title>
 
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -34,7 +34,6 @@
                 font-family: 'Segoe UI', sans-serif;
             }
 
-            /* Hero Card */
             .welcome-card {
                 background: linear-gradient(135deg, var(--primary), var(--primary-dark));
                 color: white;
@@ -55,7 +54,6 @@
                 border-radius: 50%;
             }
 
-            /* Stat Cards */
             .stat-card {
                 background: white;
                 border-radius: 16px;
@@ -80,7 +78,7 @@
             }
             .bg-icon-blue {
                 background: #E3F2FD;
-                color: #1E88E5;
+                color: #1976d2;
             }
             .bg-icon-orange {
                 background: #FFF3E0;
@@ -117,7 +115,6 @@
                 font-size: 0.9rem;
             }
 
-            /* Action Buttons */
             .action-btn {
                 display: flex;
                 align-items: center;
@@ -150,14 +147,15 @@
             SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 
             User user = (User) session.getAttribute("user");
-            Patient patient = null;
+            
+            Long countMonth = (Long) request.getAttribute("countMonth");
+            Appointment lastVisit = (Appointment) request.getAttribute("lastVisit");
+            Appointment nextVisit = (Appointment) request.getAttribute("nextVisit");
+            List<Appointment> upcomingList = (List<Appointment>) request.getAttribute("upcomingList");
 
-            AppointmentDAO appointmentDao = new AppointmentDAO();
-
-            List<Appointment> appointmentsInMonth = (List<Appointment>) appointmentDao.getAppointmentsByPatientInCurrentMonth(user.getUserId());
-
-            String patName = (patient != null) ? patient.getFullname() : (user != null ? user.getFullname() : "Bệnh nhân");
             String todayStr = LocalDate.now().format(DateTimeFormatter.ofPattern("dd 'tháng' MM, yyyy"));
+
+            if(countMonth == null) countMonth = 0L;
         %>
 
         <div class="container mt-4 mb-5">
@@ -167,21 +165,12 @@
                     <div class="welcome-card mb-4 animate__animated animate__fadeInLeft">
                         <div class="row align-items-center">
                             <div class="col-md-8">
-                                <h2 class="fw-bold mb-1">Xin chào, <%= patName%>! 👋</h2>
+                                <h2 class="fw-bold mb-1">Xin chào, <%= user.getFullname() %>! 👋</h2>
 
                                 <div class="d-flex gap-3 align-items-center">
                                     <span class="badge bg-white text-success rounded-pill px-3 py-2 shadow-sm">
                                         <i class="fa-regular fa-calendar me-1"></i> <%= todayStr%>
-                                    </span>                               
-                                    <%-- <% if (isOnShift) { %>
-                                        <span class="badge bg-warning text-dark rounded-pill px-3 py-2 shadow-sm animate__animated animate__pulse animate__infinite">
-                                            <i class="fa-solid fa-clock me-1"></i> <strong>Đang trong ca trực</strong>
-                                        </span>
-                                    <% } else { %>
-                                        <span class="badge bg-success bg-opacity-25 text-white border border-white rounded-pill px-3 py-2">
-                                            <i class="fa-solid fa-mug-hot me-1"></i> Đang nghỉ ngơi
-                                        </span>
-                                    <% } %> --%>
+                                    </span>                                
                                 </div>
                             </div>
                             <div class="col-md-4 text-center d-none d-md-block">
@@ -194,20 +183,34 @@
                         <div class="col-md-4">
                             <div class="stat-card">
                                 <div class="icon-box bg-icon-blue"><i class="fa-solid fa-calendar-days"></i></div>
-                                <h3 class="fw-bold mb-1"><%= appointmentsInMonth.size()%></h3>
-                                <p class="text-muted small mb-0">Số lịch hẹn tháng này</p>
+                                <h3 class="fw-bold mb-1"><%= countMonth %></h3>
+                                <p class="text-muted small mb-0">Số lịch hẹn tháng này</p>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="stat-card">
                                 <div class="icon-box bg-icon-green"><i class="fa-solid fa-calendar-check"></i></div>
-                                <h3 class="fw-bold mb-1">--</h3> <p class="text-muted small mb-0">Cuộc hẹn đã hoàn thành gần nhất</p>
+                                
+                                <% if (lastVisit != null) { %>
+                                    <h5 class="fw-bold mb-1"><%= dateFormat.format(lastVisit.getAppointmentDate()) %></h5>
+                                    <p class="text-muted small mb-0">BS. <%= lastVisit.getDoctorName() %></p>
+                                <% } else { %>
+                                    <h3 class="fw-bold mb-1">--</h3> 
+                                    <p class="text-muted small mb-0">Chưa có lịch sử khám</p>
+                                <% } %>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="stat-card">
                                 <div class="icon-box bg-icon-orange"><i class="fa-solid fa-calendar-day"></i></div>
-                                <h3 class="fw-bold mb-1">--</h3> <p class="text-muted small mb-0">Lịch hẹn sắp tới</p>
+                                
+                                <% if (nextVisit != null) { %>
+                                    <h5 class="fw-bold mb-1 text-danger"><%= dateFormat.format(nextVisit.getAppointmentDate()) %></h5>
+                                    <p class="text-muted small mb-0"><%= timeFormat.format(nextVisit.getAppointmentDate()) %> - Sắp tới</p>
+                                <% } else { %>
+                                    <h3 class="fw-bold mb-1">--</h3> 
+                                    <p class="text-muted small mb-0">Không có lịch sắp tới</p>
+                                <% } %>
                             </div>
                         </div>
                     </div>
@@ -218,8 +221,8 @@
                             <a href="${pageContext.request.contextPath}/profile" class="action-btn shadow-sm">
                                 <div class="action-icon text-success" style="font-size: 2rem;"><i class="fa-solid fa-user"></i></div>
                                 <div>
-                                    <h6 class="fw-bold m-0">Hồ sơ</h6>
-                                    <small class="text-muted">Điều chỉnh thông tin cá nhân</small>
+                                    <h6 class="fw-bold m-0">Hồ sơ</h6>
+                                    <small class="text-muted">Điều chỉnh thông tin cá nhân</small>
                                 </div>
                             </a>
                         </div>
@@ -229,8 +232,8 @@
                                     <i class="fa-solid fa-file-medical"></i>
                                 </div>
                                 <div>
-                                    <h6 class="fw-bold m-0">Đặt lịch hẹn</h6>
-                                    <small class="text-muted">Đặt lịch hẹn trực tiếp với bác sĩ</small>
+                                    <h6 class="fw-bold m-0">Đặt lịch hẹn</h6>
+                                    <small class="text-muted">Đặt lịch hẹn trực tiếp với bác sĩ</small>
                                 </div>
                             </a>
                         </div>
@@ -238,8 +241,8 @@
                             <a href="<%= request.getContextPath()%>/appointment" class="action-btn shadow-sm">
                                 <div class="action-icon text-success" style="font-size: 2rem;"><i class="fa-solid fa-book"></i></div>
                                 <div>
-                                    <h6 class="fw-bold m-0">Lịch sử khám bệnh</h6>
-                                    <small class="text-muted">Xem lịch sử khám bệnh</small>
+                                    <h6 class="fw-bold m-0">Lịch sử khám bệnh</h6>
+                                    <small class="text-muted">Xem lịch sử khám bệnh</small>
                                 </div>
                             </a>
                         </div>
@@ -247,8 +250,8 @@
                             <a href="<%= request.getContextPath()%>/login" class="action-btn shadow-sm">
                                 <div class="action-icon text-success" style="font-size: 2rem;"><i class="fa-solid fa-door-open"></i></div>
                                 <div>
-                                    <h6 class="fw-bold m-0">Đăng xuất</h6>
-                                    <small class="text-muted">Đăng xuất khỏi tài khoản</small>
+                                    <h6 class="fw-bold m-0">Đăng xuất</h6>
+                                    <small class="text-muted">Đăng xuất khỏi tài khoản</small>
                                 </div>
                             </a>
                         </div>
@@ -258,24 +261,29 @@
                 <div class="col-lg-4">
                     <div class="card border-0 shadow-sm h-100 rounded-4">
                         <div class="card-header bg-white border-0 pt-4 pb-0 d-flex justify-content-between align-items-center">
-                            <h5 class="fw-bold text-dark m-0">Lịch hẹn đã đặt</h5>
-                            <span class="badge bg-light text-dark"><%= appointmentsInMonth.size()%> cuộc hẹn</span>
+                            <h5 class="fw-bold text-dark m-0">Lịch hẹn sắp tới</h5>
+                            <span class="badge bg-light text-dark"><%= (upcomingList != null) ? upcomingList.size() : 0 %> cuộc hẹn</span>
                         </div>
                         <div class="card-body">
                             <div class="mt-3">
-                                <% if (appointmentsInMonth.isEmpty()) { %>
+                                <% if (upcomingList == null || upcomingList.isEmpty()) { %>
                                 <div class="text-center py-5 text-muted">
                                     <i class="fa-solid fa-calendar-xmark fa-3x mb-3 opacity-25"></i>
-                                    <p>Tháng này bạn không có lịch hẹn nào.</p>
+                                    <p>Tháng này bạn không có lịch hẹn nào sắp tới.</p>
                                 </div>
                                 <% } else {
-                                    for (Appointment a : appointmentsInMonth) {
+                                    for (Appointment a : upcomingList) {
                                         String time = timeFormat.format(a.getAppointmentDate()) + " " + dateFormat.format(a.getAppointmentDate());
                                 %>
                                 <div class="timeline-item active">
                                     <div class="timeline-time"><%= time%></div>
-                                    <div class="fw-bold text-dark">Khám chuyên khoa</div>
+                                    <div class="fw-bold text-dark">BS. <%= a.getDoctorName() %></div>
                                     <small class="text-muted"><i class="fa-solid fa-location-dot me-1"></i> <%= a.getDepartmentName()%></small>
+                                    <div class="mt-1">
+                                        <span class="badge <%= "confirmed".equalsIgnoreCase(a.getStatus()) ? "bg-success" : "bg-warning text-dark" %>">
+                                            <%= a.getStatus() %>
+                                        </span>
+                                    </div>
                                 </div>
                                 <%      }
                                     }
@@ -283,7 +291,7 @@
                             </div>
 
                             <div class="alert alert-info bg-opacity-10 border-0 rounded-3 mt-4">
-                                <small><i class="fa-solid fa-circle-info me-1"></i> Hệ thống tự động cập nhật danh sách lịch hẹn của tháng hiện tại.</small>
+                                <small><i class="fa-solid fa-circle-info me-1"></i> Hệ thống tự động cập nhật danh sách lịch hẹn sắp tới của bạn.</small>
                             </div>
                         </div>
                     </div>

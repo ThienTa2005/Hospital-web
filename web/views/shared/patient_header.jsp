@@ -26,12 +26,6 @@
             <button class="btn logout-btn" data-bs-toggle="dropdown" aria-expanded="false"> 
                 <i class="fa-solid fa-user" style="margin-right: 5px; margin-left: 2px;"></i> <%= u.getFullname() %>
             </button>
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Hồ sơ</a>
-                <li><a class="dropdown-item" href="#">Đặt lịch hẹn</a>
-                <li><a class="dropdown-item" href="<%= request.getContextPath() %>/appointment">Lịch sử khám bệnh</a>
-                <li><a class="dropdown-item" href="${pageContext.request.contextPath}/logout">Đăng xuất</a>
-            </ul>
         </div>
     </div>
 </section>

@@ -18,8 +18,7 @@ public class ProfileServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
-        // Set tiếng Việt
+
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html; charset=UTF-8");
         
@@ -29,7 +28,6 @@ public class ProfileServlet extends HttpServlet {
             return;
         }
 
-        // Báo cho Navbar biết đang ở trang profile
         request.setAttribute("activePage", "profile");
         request.getRequestDispatcher("/views/patient/patient_profile.jsp").forward(request, response);
     }
@@ -52,21 +50,14 @@ public class ProfileServlet extends HttpServlet {
         String action = request.getParameter("action");
         
         if ("updateProfile".equals(action)) {
-            // 1. Lấy dữ liệu từ form
             String newPhone = request.getParameter("phonenum");
-            String newAddress = request.getParameter("address");
-            
-            // 2. Gọi DAO để update xuống Database
+            String newAddress = request.getParameter("address");       
             boolean success = userDAO.updateUserProfile(user.getUserId(), newPhone, newAddress);
             
             if (success) {
-                // 3. QUAN TRỌNG: Cập nhật lại Session
-                // Nếu thiếu bước này, F5 lại trang web vẫn hiện thông tin cũ
                 user.setPhonenum(newPhone);
                 user.setAddress(newAddress);
                 session.setAttribute("user", user); 
-                
-                // Redirect kèm thông báo thành công
                 response.sendRedirect("profile?msg=updated");
             } else {
                 response.sendRedirect("profile?error=fail");

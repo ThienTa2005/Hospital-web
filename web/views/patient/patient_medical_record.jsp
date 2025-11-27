@@ -5,7 +5,7 @@
 <%@page import="java.text.SimpleDateFormat"%>
 
 <%
-    // Lấy dữ liệu từ Servlet
+
     MedicalRecord record = (MedicalRecord) request.getAttribute("record");
     List<Test> tests = (List<Test>) request.getAttribute("tests");
     String appointmentId = request.getParameter("appointment_id");
@@ -23,7 +23,6 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/user_style.css">
     
     <style>
-        /* --- LAYOUT FIX (Sticky Footer) --- */
         body { 
             background-color: #F3F6F8; 
             font-family: 'Segoe UI', sans-serif; 
@@ -34,20 +33,18 @@
         .main { 
             flex: 1; 
             width: 100%; 
-            max-width: 900px; /* Độ rộng vừa phải giống tờ giấy A4 */
+            max-width: 900px; 
             margin: 0 auto; 
             padding-bottom: 80px; 
         }
         .content-wrapper { padding: 30px 20px; }
-        /* ---------------- */
 
-        /* Card hồ sơ */
         .medical-paper {
             background-color: white;
-            border-radius: 8px; /* Bo góc ít để giống giấy */
+            border-radius: 8px; 
             box-shadow: 0 2px 20px rgba(0,0,0,0.08);
             overflow: hidden;
-            border-top: 5px solid #40855E; /* Điểm nhấn màu xanh */
+            border-top: 5px solid #40855E; 
         }
 
         .paper-header {
@@ -64,7 +61,6 @@
 
         .paper-body { padding: 30px; }
 
-        /* Các section trong hồ sơ */
         .section-box { margin-bottom: 30px; }
         .section-title {
             font-size: 1.1rem;
@@ -91,18 +87,16 @@
             font-style: italic;
         }
 
-        /* Phần đơn thuốc */
         .prescription-list {
-            background-color: #fff9e6; /* Màu giấy vàng nhạt */
+            background-color: #fff9e6; 
             padding: 20px;
             border: 1px solid #f0e6cc;
             border-radius: 8px;
-            font-family: 'Courier New', Courier, monospace; /* Font kiểu đánh máy */
-            white-space: pre-line; /* Giữ xuống dòng */
+            font-family: 'Courier New', Courier, monospace; 
+            white-space: pre-line;
             color: #444;
         }
 
-        /* Bảng xét nghiệm */
         .test-table {
             width: 100%;
             border-collapse: collapse;
@@ -111,11 +105,9 @@
         .test-table th { background-color: #f1f1f1; padding: 10px; text-align: left; }
         .test-table td { border-bottom: 1px solid #eee; padding: 10px; }
         
-        /* Empty State */
         .empty-state { text-align: center; padding: 60px 20px; color: #999; }
         .empty-icon { font-size: 4rem; margin-bottom: 20px; color: #ddd; }
 
-        /* Nút quay lại */
         .back-nav { margin-top: 20px; }
         .back-nav a { text-decoration: none; color: #666; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; transition: 0.2s; }
         .back-nav a:hover { color: #40855E; transform: translateX(-5px); }

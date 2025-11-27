@@ -6,12 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title></title>
     <style>
-        /* Footer chung cho cả doctor & patient */
+
         #footer {
             background-color: #569571;
             color: white;
             text-align: center;
-            padding: 8px 15px;        /* nhỏ gọn */
+            padding: 8px 15px;  
             font-size: 14px;
             line-height: 1.4;
             border-top: 1px solid #ccc;
@@ -19,7 +19,6 @@
             border-radius: 10px;
         }
 
-        /* Link trong footer */
         #footer a {
             color: white;
             text-decoration: none;
@@ -34,7 +33,6 @@
             padding-top: 0px !important;
         }
 
-        /* Footer responsive */
         @media (max-width: 768px) {
             #footer {
                 font-size: 12px;

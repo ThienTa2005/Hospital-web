@@ -2,6 +2,7 @@
 package model.dao;
 
 import Utils.DBUtils;
+import static Utils.DBUtils.getConnection;
 import model.entity.Appointment;
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,8 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AppointmentDAO {
-
-    //lấy tên bs, khoa, giờ trực,tên bệnh nhân
     private static final String SELECT_FULL_INFO
             = "SELECT a.appointment_id, a.patient_id, a.shift_doctor_id, a.appointment_date, a.status, "
             + "       u_doc.fullname AS doctor_name, "
@@ -138,17 +137,26 @@ public class AppointmentDAO {
 
     //tạo lịch hẹn mới
     public boolean createBooking(Appointment app) {
-        String sql = "INSERT INTO Appointment(patient_id, shift_doctor_id, appointment_date, status) VALUES (?, ?, NOW(), ?)";
-        try (Connection conn = DBUtils.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, app.getPatientId());
-            ps.setInt(2, app.getShiftDoctorId());
-            ps.setString(3, "pending"); //mặc định là pending
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
+           String sql = "INSERT INTO Appointment (patient_id, shift_doctor_id, appointment_date, status) VALUES (?, ?, ?, ?)";
+
+           try (Connection conn = getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+
+               ps.setInt(1, app.getPatientId());
+               ps.setInt(2, app.getShiftDoctorId());
+
+               // ĐÂY LÀ DÒNG QUYẾT ĐỊNH:
+               // Lấy Timestamp đã ghép (Ngày + Giờ Slot) từ Servlet để đẩy vào DB
+               ps.setTimestamp(3, app.getAppointmentDate()); 
+
+               ps.setString(4, app.getStatus()); // pending
+
+               return ps.executeUpdate() > 0;
+           } catch (Exception e) {
+               e.printStackTrace();
+               return false;
+           }
+       }
 
     //hủy lịch hẹn
     public boolean cancelAppointment(int id) {
@@ -289,11 +297,10 @@ public class AppointmentDAO {
     public List<Map<String, Object>> getPatientHistoryMap(int patientId) {
         List<Map<String, Object>> list = new ArrayList<>();
 
-        // Query nối bảng: Lấy tên BS, Khoa, và ID hồ sơ bệnh án (nếu có)
         String sql = "SELECT a.appointment_id, a.appointment_date, a.status, "
                 + "       u.fullname AS doctor_name, d.name AS dept_name, "
                 + "       mr.record_id "
-                + // Lấy record_id để biết đã có hồ sơ chưa
+                +
                 "FROM Appointment a "
                 + "JOIN Shift_Doctor sd ON a.shift_doctor_id = sd.shift_doctor_id "
                 + "JOIN Doctor doc ON sd.doctor_id = doc.user_id "
@@ -316,7 +323,6 @@ public class AppointmentDAO {
                 row.put("doctor_name", rs.getString("doctor_name"));
                 row.put("dept_name", rs.getString("dept_name"));
 
-                // record_id sẽ là 0 nếu chưa có hồ sơ (do LEFT JOIN)
                 int recordId = rs.getInt("record_id");
                 row.put("record_id", recordId > 0 ? recordId : null);
 
@@ -327,9 +333,6 @@ public class AppointmentDAO {
         }
         return list;
     }
-    /* =====================================================
-       1. LẤY ĐẦY ĐỦ THÔNG TIN APPOINTMENT
-    ====================================================== */
     private static final String BASE_QUERY
             = "SELECT a.appointment_id, a.patient_id, a.shift_doctor_id, a.appointment_date, a.status, "
             + "       u_doc.fullname AS doctor_name, "
