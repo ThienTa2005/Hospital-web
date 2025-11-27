@@ -1,111 +1,140 @@
 package controller.patient;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.servlet.annotation.*;
-import java.io.IOException;
-import java.util.List;
-import model.dao.AppointmentDAO;
 import model.dao.MedicalRecordDAO;
 import model.entity.MedicalRecord;
+import model.entity.User;
+import model.dao.AppointmentDAO;
+import model.entity.Appointment;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+import java.io.IOException;
+import java.util.List;
 
 @WebServlet("/record")
 public class MedicalRecordServlet extends HttpServlet {
 
-    private MedicalRecordDAO medicalDAO = new MedicalRecordDAO();
-    private AppointmentDAO appDAO = new AppointmentDAO(); 
+    private MedicalRecordDAO medicalDAO;
 
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
-    {
-        String action = request.getParameter("action");
-        if (action == null) action = "list";
+    public void init() throws ServletException {
+        medicalDAO = new MedicalRecordDAO();
+    }
 
-        try 
-        {
-            switch (action) 
-            {
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        request.setCharacterEncoding("UTF-8");
+        response.setContentType("text/html;charset=UTF-8");
+
+        // Chỉ dùng để xem hồ sơ theo appointment_id
+        String appointmentIdStr = request.getParameter("appointment_id");
+        if (appointmentIdStr == null || appointmentIdStr.isEmpty()) {
+            response.sendRedirect(request.getContextPath() + "/doctor/schedule");
+            return;
+        }
+
+        try {
+            viewRecord(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ServletException(e);
+        }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        request.setCharacterEncoding("UTF-8");
+        response.setContentType("text/html;charset=UTF-8");
+
+        String action = request.getParameter("action"); // từ modalAction
+        if (action == null || action.isEmpty()) {
+            response.sendRedirect(request.getContextPath() + "/doctor/schedule");
+            return;
+        }
+
+        try {
+            switch (action) {
                 case "add":
-                    addRecord(request, response);
+                case "update":
+                    saveRecord(request, response);
                     break;
-
                 case "delete":
                     deleteRecord(request, response);
                     break;
-
-                case "list":
                 default:
-                    listRecords(request, response);
+                    response.sendRedirect(request.getContextPath() + "/doctor/schedule");
                     break;
             }
-
         } catch (Exception e) {
             e.printStackTrace();
+            throw new ServletException(e);
         }
     }
 
-    @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String action = request.getParameter("action");
+    /** Xem hồ sơ theo appointment_id */
+    private void viewRecord(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        try {
-            if ("add".equals(action)) 
-            {
-                addRecord(request, response);
-            }
-            else if ("update".equals(action))
-            {
-                updateRecord(request, response);
-            }
-            
-        } catch (Exception e) {
-            e.printStackTrace();
+        HttpSession session = request.getSession(false);
+        User currentUser = (session != null) ? (User) session.getAttribute("user") : null;
+        if (currentUser == null) {
+            response.sendRedirect(request.getContextPath() + "/login.jsp");
+            return;
         }
+
+        int appointmentId = Integer.parseInt(request.getParameter("appointment_id"));
+        AppointmentDAO appointmentDAO = new AppointmentDAO();
+        Appointment appointment = appointmentDAO.getAppointmentById(appointmentId);
+
+        if (appointment == null) {
+            response.sendRedirect(request.getContextPath() + "/doctor/schedule");
+            return;
+        }
+
+        List<MedicalRecord> records = medicalDAO.getMedicalRecordByAppointmentId(appointmentId);
+
+        request.setAttribute("appointment", appointment);
+        request.setAttribute("records", records);
+
+        request.getRequestDispatcher("/views/doctor/appointment_detail.jsp")
+                .forward(request, response);
     }
 
-    public void listRecords(HttpServletRequest request, HttpServletResponse response) throws Exception 
-    {
-        int appointmentId = Integer.parseInt((String) request.getAttribute("appointment_id"));
-        List<MedicalRecord> list = medicalDAO.getMedicalRecordByAppointmentId(appointmentId);
-        request.setAttribute("records", list);
-        request.setAttribute("appointment_id", appointmentId);
-        request.getRequestDispatcher("/medical_record_list.jsp").forward(request, response);
-    }
+    /** Thêm hoặc cập nhật hồ sơ */
+    private void saveRecord(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        int appointmentId = Integer.parseInt(request.getParameter("appointment_id"));
+        String recordIdStr = request.getParameter("record_id");
+        int recordId = (recordIdStr != null && !recordIdStr.isEmpty()) ? Integer.parseInt(recordIdStr) : 0;
 
-
-    public void addRecord(HttpServletRequest request, HttpServletResponse response) throws Exception 
-    {
         String diagnosis = request.getParameter("diagnosis");
         String notes = request.getParameter("notes");
         String prescription = request.getParameter("prescription");
+
+        MedicalRecord record = new MedicalRecord(recordId, diagnosis, notes, prescription, appointmentId);
+
+        if (recordId == 0) {
+            medicalDAO.addRecord(record); // action = add
+        } else {
+            medicalDAO.updateRecord(record); // action = update
+        }
+
+        response.sendRedirect(request.getContextPath() + "/doctor/appointmentDetail?id=" + appointmentId);
+    }
+
+    /** Xóa hồ sơ */
+    private void deleteRecord(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String recordIdStr = request.getParameter("record_id");
         int appointmentId = Integer.parseInt(request.getParameter("appointment_id"));
 
-        MedicalRecord m = new MedicalRecord(0, diagnosis, notes, prescription, appointmentId);
-        medicalDAO.addRecord(m);
+        if (recordIdStr != null && !recordIdStr.isEmpty()) {
+            int recordId = Integer.parseInt(recordIdStr);
+            medicalDAO.delete(recordId);
+        }
 
-        response.sendRedirect("record?action=list");
-    }
-    
-    public void updateRecord(HttpServletRequest request, HttpServletResponse response) throws Exception
-    {
-        int recordId = Integer.parseInt((String) request.getAttribute("record_id"));
-        int appointmentId = Integer.parseInt((String) request.getAttribute("appointment_id"));
-        
-        String diagnosis = (String) request.getAttribute("diagnosis");
-        String notes = (String) request.getAttribute("notes");
-        String prescription = (String) request.getAttribute("prescription");
-
-        MedicalRecord m = new MedicalRecord(recordId, diagnosis, notes, prescription, appointmentId);
-
-        if (medicalDAO.updateRecord(m)) {
-            response.sendRedirect("records?action=list");
-        } 
-    }
-
-    public void deleteRecord(HttpServletRequest request, HttpServletResponse response) throws Exception 
-    {
-        int id = Integer.parseInt(request.getParameter("record_id"));
-        medicalDAO.delete(id);
-        response.sendRedirect("record?action=list");
+        response.sendRedirect(request.getContextPath() + "/doctor/appointmentDetail?id=" + appointmentId);
     }
 }

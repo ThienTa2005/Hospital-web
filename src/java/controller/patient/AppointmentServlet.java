@@ -46,7 +46,9 @@ public class AppointmentServlet extends HttpServlet {
             } 
             else if ("doctor".equals(user.getRole())) {
                 //bác sĩ xem danh sách bệnh nhân đặt lịch với mình
-                list = appointmentDAO.getAppointmentsByDoctorId(user.getUserId());
+                LocalDate today = LocalDate.now();
+                list = appointmentDAO.getAppointmentsByDoctorIdAndDate(user.getUserId(), today);
+
                 req.setAttribute("appointments", list);
                 req.getRequestDispatcher("/views/doctor/doctor_appointments.jsp").forward(req, resp);
             }
