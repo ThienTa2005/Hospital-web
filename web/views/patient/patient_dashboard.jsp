@@ -215,7 +215,7 @@
                     <h5 class="fw-bold mb-3 text-secondary">Truy cập nhanh</h5>
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <a href="#" class="action-btn shadow-sm">
+                            <a href="${pageContext.request.contextPath}/profile" class="action-btn shadow-sm">
                                 <div class="action-icon text-success" style="font-size: 2rem;"><i class="fa-solid fa-user"></i></div>
                                 <div>
                                     <h6 class="fw-bold m-0">Hồ sơ</h6>

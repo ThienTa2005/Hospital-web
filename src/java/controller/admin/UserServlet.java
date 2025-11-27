@@ -228,4 +228,5 @@ public class UserServlet extends HttpServlet {
         request.setAttribute("keyword", keyword);
         request.getRequestDispatcher("/views/admin/users.jsp").forward(request, response);
     }
+    
 }

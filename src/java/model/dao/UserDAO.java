@@ -4,6 +4,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import Utils.DBUtils;
+import static Utils.DBUtils.getConnection;
 import model.entity.User;
 import model.entity.Doctor;
 
@@ -176,4 +177,53 @@ public int createUser(User user) throws SQLException {
         }
         return list;
     }
+        // Trong class UserDAO
+        public boolean updateUserProfile(int userId, String newPhone, String newAddress) {
+        String sql = "UPDATE users SET phonenum = ?, address = ? WHERE user_id = ?";
+
+        try (java.sql.Connection conn = getConnection();
+             java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, newPhone);
+            ps.setString(2, newAddress);
+            ps.setInt(3, userId);
+
+            return ps.executeUpdate() > 0; // Trả về true nếu update thành công
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+        
+        public boolean checkOldPassword(int userId, String oldPass) {
+            String sql = "SELECT user_id FROM Users WHERE user_id = ? AND password = ?";
+            try (java.sql.Connection conn = getConnection();
+                 java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+
+                ps.setInt(1, userId);
+                ps.setString(2, oldPass); 
+
+                java.sql.ResultSet rs = ps.executeQuery();
+                return rs.next(); // Nếu tìm thấy dòng nào thì trả về true (đúng pass)
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
+
+        // 2. Cập nhật mật khẩu mới
+        public boolean changePassword(int userId, String newPass) {
+            String sql = "UPDATE Users SET password = ? WHERE user_id = ?";
+            try (java.sql.Connection conn = getConnection();
+                 java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+
+                ps.setString(1, newPass); 
+                ps.setInt(2, userId);
+
+                return ps.executeUpdate() > 0; // Trả về true nếu update thành công
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
 }

@@ -1,15 +1,16 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="java.util.List"%>
 <%@page import="model.entity.MedicalRecord"%>
+<%@page import="model.entity.Test"%>
+<%@page import="java.text.SimpleDateFormat"%>
 
 <%
-    List<MedicalRecord> records = (List<MedicalRecord>) request.getAttribute("records");
-    MedicalRecord currentRecord = (records != null && !records.isEmpty()) ? records.get(0) : null;
-
-    Object appIdObj = request.getAttribute("appointment_id");
-    String appointmentId = (appIdObj != null)
-            ? String.valueOf(appIdObj)
-            : request.getParameter("appointment_id");
+    // Lấy dữ liệu từ Servlet
+    MedicalRecord record = (MedicalRecord) request.getAttribute("record");
+    List<Test> tests = (List<Test>) request.getAttribute("tests");
+    String appointmentId = request.getParameter("appointment_id");
+    
+    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 %>
 
 <!DOCTYPE html>
@@ -19,189 +20,201 @@
     <title>Chi tiết hồ sơ bệnh án</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/user_style.css">
+    
     <style>
-        /* GIỐNG CẤU TRÚC CÁC TRANG PATIENT KHÁC */
-        .main {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
+        /* --- LAYOUT FIX (Sticky Footer) --- */
+        body { 
+            background-color: #F3F6F8; 
+            font-family: 'Segoe UI', sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            min-height: 100vh; 
+        }
+        .main { 
+            flex: 1; 
+            width: 100%; 
+            max-width: 900px; /* Độ rộng vừa phải giống tờ giấy A4 */
+            margin: 0 auto; 
+            padding-bottom: 80px; 
+        }
+        .content-wrapper { padding: 30px 20px; }
+        /* ---------------- */
+
+        /* Card hồ sơ */
+        .medical-paper {
+            background-color: white;
+            border-radius: 8px; /* Bo góc ít để giống giấy */
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+            border-top: 5px solid #40855E; /* Điểm nhấn màu xanh */
         }
 
-        .content-wrapper {
-            flex: 1;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        .header {
-            background-color: #40855e;
-            color: white;
-            padding: 15px 20px;
-            margin-bottom: 35px;
-            border-radius: 5px;
-            display: flex;
-            justify-content: center;
-        }
-
-        .header h1 {
-            margin: 0;
-            font-size: 24px;
-        }
-
-        /* CARD CHI TIẾT HỒ SƠ – rộng 90%, căn giữa giống table ở patient_records.jsp */
-        .record-container {
-            width: 90%;
-            margin: 0 auto 30px auto;
-        }
-
-        .record-card {
-            background-color: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.06);
-            padding: 22px 26px 26px;
-        }
-
-        .record-header {
+        .paper-header {
+            padding: 25px 30px;
+            border-bottom: 2px dashed #eee;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 6px;
+            background-color: #fcfcfc;
         }
+        
+        .paper-title { font-weight: 700; color: #2c5038; margin: 0; font-size: 1.5rem; }
+        .paper-id { color: #888; font-family: monospace; font-size: 1rem; }
 
-        .record-header h2 {
-            font-size: 20px;
-            margin: 0;
-            color: #2c693b;
+        .paper-body { padding: 30px; }
+
+        /* Các section trong hồ sơ */
+        .section-box { margin-bottom: 30px; }
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #40855E;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-
-        .badge-record {
+        
+        .diagnosis-box {
             background-color: #e9f6ec;
-            color: #2c693b;
-            border-radius: 999px;
-            padding: 4px 12px;
-            font-size: 12px;
-            border: 1px solid #b4dfbe;
-        }
-
-        .sub-info {
-            font-size: 13px;
-            color: #6c757d;
-            margin-bottom: 18px;
-        }
-
-        .field-label {
-            font-weight: 600;
-            margin-bottom: 4px;
-            color: #444;
-        }
-
-        .field-box,
-        .field-textarea {
-            width: 100%;
+            padding: 15px;
             border-radius: 8px;
-            border: 1px solid #dde2e7;
-            background-color: #f9fbfd;
-            padding: 10px 12px;
-            font-size: 14px;
+            border-left: 4px solid #40855E;
+            font-weight: 600;
             color: #333;
         }
 
-        .field-textarea {
-            resize: none;
-            min-height: 70px;
-            line-height: 1.5;
+        .note-box {
+            color: #555;
+            line-height: 1.6;
+            font-style: italic;
         }
 
-        .btn-back {
-            display: inline-block;
-            margin-top: 18px;
-            padding: 8px 24px;
-            border-radius: 999px;
-            border: none;
-            background-color: #2c693b;
-            color: #fff;
-            font-size: 14px;
-            cursor: pointer;
-            text-decoration: none;
-        }
-
-        .btn-back:hover {
-            background-color: #3f8f54;
-        }
-
-        /* TRƯỜNG HỢP CHƯA CÓ HỒ SƠ */
-        .empty-card {
-            text-align: center;
-            padding: 40px 20px 30px 20px;
-        }
-
-        .empty-card h3 {
+        /* Phần đơn thuốc */
+        .prescription-list {
+            background-color: #fff9e6; /* Màu giấy vàng nhạt */
+            padding: 20px;
+            border: 1px solid #f0e6cc;
+            border-radius: 8px;
+            font-family: 'Courier New', Courier, monospace; /* Font kiểu đánh máy */
+            white-space: pre-line; /* Giữ xuống dòng */
             color: #444;
-            margin-bottom: 8px;
         }
 
-        .empty-card p {
-            color: #777;
-            margin-bottom: 16px;
+        /* Bảng xét nghiệm */
+        .test-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
         }
+        .test-table th { background-color: #f1f1f1; padding: 10px; text-align: left; }
+        .test-table td { border-bottom: 1px solid #eee; padding: 10px; }
+        
+        /* Empty State */
+        .empty-state { text-align: center; padding: 60px 20px; color: #999; }
+        .empty-icon { font-size: 4rem; margin-bottom: 20px; color: #ddd; }
+
+        /* Nút quay lại */
+        .back-nav { margin-top: 20px; }
+        .back-nav a { text-decoration: none; color: #666; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; transition: 0.2s; }
+        .back-nav a:hover { color: #40855E; transform: translateX(-5px); }
     </style>
 </head>
 <body>
+    <jsp:include page="patient_menu.jsp" />
 
-    <!-- MAIN GIỐNG patient_records.jsp -->
     <div class="main">
         <div class="content-wrapper">
-            <div class="header">
-                <h1>Chi tiết hồ sơ bệnh án</h1>
+            
+            <div class="back-nav mb-3">
+                <a href="<%= request.getContextPath() %>/appointment?action=list">
+                    <i class="fa-solid fa-arrow-left"></i> Quay lại danh sách
+                </a>
             </div>
 
-            <div class="record-container">
-                <% if (currentRecord != null) { %>
-                    <div class="record-card">
-                        <div class="record-header">
-                            <h2>Hồ sơ cho cuộc hẹn #<%= appointmentId %></h2>
-                            <span class="badge-record">Mã hồ sơ: <%= currentRecord.getRecordId() %></span>
+            <div class="medical-paper">
+                <% if (record != null) { %>
+                    <div class="paper-header">
+                        <div>
+                            <h2 class="paper-title"><i class="fa-solid fa-file-medical me-2"></i>Phiếu Kết Quả Khám</h2>
+                            <small class="text-muted">Phòng khám Đa khoa</small>
                         </div>
-                        <div class="sub-info">
-                            Thông tin dưới đây được bác sĩ ghi nhận sau khi thăm khám.
+                        <div class="text-end">
+                            <div class="paper-id">Mã HS: #<%= record.getRecordId() %></div>
+                            <div class="paper-id">Cuộc hẹn: #<%= appointmentId %></div>
                         </div>
-
-                        <div class="mb-3">
-                            <div class="field-label">Chẩn đoán</div>
-                            <input type="text" class="field-box" readonly
-                                   value="<%= currentRecord.getDiagnosis() %>">
-                        </div>
-
-                        <div class="mb-3">
-                            <div class="field-label">Ghi chú</div>
-                            <textarea class="field-textarea" readonly><%= currentRecord.getNotes() %></textarea>
-                        </div>
-
-                        <div class="mb-2">
-                            <div class="field-label">Đơn thuốc</div>
-                            <textarea class="field-textarea" readonly><%= currentRecord.getPrescription() %></textarea>
-                        </div>
-
-                        <a href="<%= request.getContextPath() %>/appointment" class="btn-back">
-                            ← Quay lại tra cứu hồ sơ
-                        </a>
                     </div>
+
+                    <div class="paper-body">
+                        <div class="section-box">
+                            <h4 class="section-title"><i class="fa-solid fa-stethoscope"></i> Chẩn đoán & Kết luận</h4>
+                            <div class="diagnosis-box">
+                                <%= record.getDiagnosis() %>
+                            </div>
+                        </div>
+
+                        <div class="section-box">
+                            <h4 class="section-title"><i class="fa-solid fa-user-doctor"></i> Lời dặn của bác sĩ</h4>
+                            <div class="note-box">
+                                "<%= (record.getNotes() != null && !record.getNotes().isEmpty()) ? record.getNotes() : "Không có lời dặn thêm." %>"
+                            </div>
+                        </div>
+
+                        <% if (tests != null && !tests.isEmpty()) { %>
+                        <div class="section-box">
+                            <h4 class="section-title"><i class="fa-solid fa-flask"></i> Kết quả xét nghiệm</h4>
+                            <table class="test-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tên xét nghiệm</th>
+                                        <th>Chỉ số</th>
+                                        <th>Giá trị</th>
+                                        <th>Đơn vị</th>
+                                        <th>Ngưỡng</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% for (Test t : tests) { %>
+                                    <tr>
+                                        <td><%= t.getName() %></td>
+                                        <td><b><%= t.getParameter() %></b></td>
+                                        <td style="color: #d63384; font-weight: bold;"><%= t.getParameterValue() %></td>
+                                        <td><%= t.getUnit() %></td>
+                                        <td><%= t.getReferenceRange() %></td>
+                                    </tr>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                        <% } %>
+
+                        <div class="section-box mb-0">
+                            <h4 class="section-title"><i class="fa-solid fa-pills"></i> Đơn thuốc</h4>
+                            <div class="prescription-list">
+                                <%= (record.getPrescription() != null && !record.getPrescription().isEmpty()) 
+                                    ? record.getPrescription() 
+                                    : "Không có đơn thuốc." %>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-3 bg-light text-center border-top">
+                        <small class="text-muted">Phiếu khám này có giá trị lưu hành nội bộ.</small>
+                    </div>
+
                 <% } else { %>
-                    <div class="record-card empty-card">
-                        <h3>Chưa có hồ sơ cho cuộc hẹn này</h3>
-                        <p>Bác sĩ chưa cập nhật kết quả khám. Vui lòng kiểm tra lại sau.</p>
-                        <a href="<%= request.getContextPath() %>/appointment" class="btn-back">
-                            ← Quay lại tra cứu hồ sơ
-                        </a>
+                    <div class="empty-state">
+                        <i class="fa-regular fa-folder-open empty-icon"></i>
+                        <h3>Chưa có hồ sơ bệnh án</h3>
+                        <p>Bác sĩ chưa cập nhật kết quả khám cho cuộc hẹn này.<br>Vui lòng quay lại sau khi buổi khám kết thúc.</p>
+                        <a href="<%= request.getContextPath() %>/appointment?action=list" class="btn btn-primary mt-3">Quay lại danh sách</a>
                     </div>
                 <% } %>
             </div>
         </div>
     </div>
+
     <jsp:include page="/views/shared/user_footer.jsp" />
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
