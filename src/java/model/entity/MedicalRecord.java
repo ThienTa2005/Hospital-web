@@ -15,6 +15,10 @@ public class MedicalRecord
         this.appointmentId = appointmentId;
     }
 
+    public MedicalRecord() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
     public int getRecordId()
     {
         return recordId;

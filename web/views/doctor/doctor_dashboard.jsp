@@ -12,7 +12,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <title>Bàn làm việc Bác sĩ</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -61,7 +61,6 @@
         .bg-icon-orange { background: #FFF3E0; color: #F57C00; }
         .bg-icon-green { background: #E8F5E9; color: #43A047; }
 
-        /* Timeline */
         .timeline-item {
             border-left: 3px solid #e0e0e0; padding-left: 20px; margin-bottom: 20px; position: relative;
         }
@@ -89,24 +88,22 @@
     <jsp:include page="/views/shared/doctor_header.jsp" />
 
     <%
-        User user = (User) session.getAttribute("user");        
-        Doctor doctor = null;
-
-        boolean isOnShift = false;
-        int shiftCount = 0;
-        List<Shift> todayShifts = new ArrayList<>();
+       User user = (User) session.getAttribute("user");        
+        Doctor doctor = (Doctor) request.getAttribute("doctor");
         
-        if(user != null && "doctor".equals(user.getRole())) {
-            DoctorDAO doctorDAO = new DoctorDAO();
-            doctor = doctorDAO.getDoctorById(user.getUserId());
-            
-            ShiftDoctorDAO shiftDAO = new ShiftDoctorDAO();
-            int docId = user.getUserId();
-            
-            isOnShift = shiftDAO.isDoctorCurrentlyOnShift(docId);
-            shiftCount = shiftDAO.countShiftsInCurrentMonth(docId);
-            todayShifts = shiftDAO.getShiftsToday(docId);
-        }
+        Boolean isOnShift = (Boolean) request.getAttribute("isOnShift");
+        Integer shiftCount = (Integer) request.getAttribute("shiftCount");
+        List<Shift> todayShifts = (List<Shift>) request.getAttribute("todayShifts");
+        
+        Integer patientsTodayCount = (Integer) request.getAttribute("patientsTodayCount");
+        Integer pendingCount = (Integer) request.getAttribute("pendingCount");
+
+
+        if(isOnShift == null) isOnShift = false;
+        if(shiftCount == null) shiftCount = 0;
+        if(patientsTodayCount == null) patientsTodayCount = 0;
+        if(pendingCount == null) pendingCount = 0;
+        if(todayShifts == null) todayShifts = new ArrayList<>();
         
         String docName = (doctor != null) ? doctor.getFullname() : (user != null ? user.getFullname() : "Bác sĩ");
         String degree = (doctor != null) ? doctor.getDegree() : "Chuyên khoa";
@@ -157,13 +154,19 @@
                     <div class="col-md-4">
                         <div class="stat-card">
                             <div class="icon-box bg-icon-green"><i class="fa-solid fa-user-injured"></i></div>
-                            <h3 class="fw-bold mb-1">--</h3> <p class="text-muted small mb-0">Bệnh nhân hôm nay</p>
+                            <h3 class="fw-bold mb-1"><%= patientsTodayCount %></h3> 
+                            <p class="text-muted small mb-0">Bệnh nhân hôm nay</p>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="stat-card">
                             <div class="icon-box bg-icon-orange"><i class="fa-solid fa-clipboard-list"></i></div>
-                            <h3 class="fw-bold mb-1">--</h3> <p class="text-muted small mb-0">Lịch hẹn chờ duyệt</p>
+                            <% if (pendingCount > 0) { %>
+                                <h3 class="fw-bold mb-1 text-danger"><%= pendingCount %></h3> 
+                            <% } else { %>
+                                <h3 class="fw-bold mb-1">0</h3> 
+                            <% } %>
+                            <p class="text-muted small mb-0">Lịch hẹn chờ duyệt</p>
                         </div>
                     </div>
                 </div>
@@ -172,38 +175,26 @@
                 <div class="row g-3">
                     <div class="col-md-6">
                         <a href="${pageContext.request.contextPath}/doctor/schedule" class="action-btn shadow-sm">
-                            <div class="action-icon text-success" style="font-size: 2rem;"><i class="fa-solid fa-calendar-days"></i></div>
-                            <div>
-                                <h6 class="fw-bold m-0">Xem lịch trực</h6>
-                                <small class="text-muted">Kiểm tra ca làm việc</small>
-                            </div>
+                            <div class="action-icon text-success me-3"><i class="fa-solid fa-calendar-days" style="font-size: 2rem;"></i></div>
+                            <div><h6 class="fw-bold m-0">Xem lịch trực</h6><small class="text-muted">Kiểm tra ca làm việc</small></div>
                         </a>
                     </div>
                     <div class="col-md-6">
-                        <a href="${pageContext.request.contextPath}/appointment" class="action-btn shadow-sm">
-                            <div class="action-icon text-success" style="font-size: 2rem;"><i class="fa-solid fa-address-card"></i></div>
-                            <div>
-                                <h6 class="fw-bold m-0">Danh sách lịch hẹn hôm nay</h6>
-                                <small class="text-muted">Quản lý các cuộc hẹn</small>
-                            </div>
+                        <a href="${pageContext.request.contextPath}/doctor/appointmentList" class="action-btn shadow-sm">
+                            <div class="action-icon text-success me-3"><i class="fa-solid fa-address-card" style="font-size: 2rem;"></i></div>
+                            <div><h6 class="fw-bold m-0">Quản lý Lịch hẹn</h6><small class="text-muted">Xem danh sách bệnh nhân</small></div>
                         </a>
                     </div>
-                    <div class="col-md-6">
-                        <a href="${pageContext.request.contextPath}/profile" class="action-btn shadow-sm">
-                            <div class="action-icon text-success" style="font-size: 2rem;"><i class="fa-solid fa-user-doctor"></i></div>
-                            <div>
-                                <h6 class="fw-bold m-0">Hồ sơ</h6>
-                                <small class="text-muted">Tùy chỉnh thông tin cá nhân</small>
-                            </div>
+                     <div class="col-md-6">
+                        <a href="${pageContext.request.contextPath}/doctor/profile" class="action-btn shadow-sm">
+                            <div class="action-icon text-success me-3"><i class="fa-solid fa-user-doctor" style="font-size: 2rem;"></i></div>
+                            <div><h6 class="fw-bold m-0">Hồ sơ cá nhân</h6><small class="text-muted">Cập nhật thông tin</small></div>
                         </a>
                     </div>
                     <div class="col-md-6">
                         <a href="${pageContext.request.contextPath}/logout" class="action-btn shadow-sm">
-                            <div class="action-icon text-success" style="font-size: 2rem;"><i class="fa-solid fa-door-open"></i></div>
-                            <div>
-                                <h6 class="fw-bold m-0">Đăng xuất</h6>
-                                <small class="text-muted">Đăng xuất khỏi tài khoản</small>
-                            </div>
+                            <div class="action-icon text-success me-3"><i class="fa-solid fa-door-open" style="font-size: 2rem;"></i></div>
+                            <div><h6 class="fw-bold m-0">Đăng xuất</h6><small class="text-muted">Thoát khỏi hệ thống</small></div>
                         </a>
                     </div>
                 </div>
@@ -227,7 +218,7 @@
                                     String timeRange = s.getStartTime().toString().substring(0,5) + " - " + s.getEndTime().toString().substring(0,5);
                         %>
                             <div class="timeline-item active">
-                                <div class="timeline-time"><%= timeRange %></div>
+                                <div class="fw-bold" style="color: #40855E;"><%= timeRange %></div>
                                 <div class="fw-bold text-dark">Trực tại Khoa</div>
                                 <small class="text-muted"><i class="fa-solid fa-location-dot me-1"></i> <%= dept %></small>
                             </div>
