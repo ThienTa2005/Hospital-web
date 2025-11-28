@@ -11,7 +11,8 @@
         </div>-->
 
         <div class="header-logo">
-            <a href="${pageContext.request.contextPath}/views/doctor/doctor_dashboard.jsp" 
+            <a href="${pageContext.request.contextPath}/doctor/dashboard" 
+    
                style="text-decoration: none; color: inherit;">
                 Nghiệp vụ phòng khám
             </a>
@@ -31,10 +32,7 @@
             <button class="btn logout-btn" data-bs-toggle="dropdown" aria-expanded="false"> 
                 <i class="fa-solid fa-user" style="margin-right: 5px; margin-left: 2px;"></i> <%= u.getFullname() %>
             </button>
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Hồ sơ</a>
-                <li><a class="dropdown-item" href="${pageContext.request.contextPath}/logout">Đăng xuất</a>
-            </ul>
+        
         </div>
     </div>
 </section>

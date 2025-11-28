@@ -1,4 +1,4 @@
-package controller.patient;
+package controller.doctor;
 
 import model.dao.UserDAO;
 import model.entity.User;
