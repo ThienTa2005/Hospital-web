@@ -1,4 +1,4 @@
-<%@ page contentType="text/html" pageEncoding="UTF-8"%>
+    <%@ page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ page import="model.dao.DepartmentDAO" %>
 <%@ page import="model.entity.Department" %>
 <%@ page import="java.util.List" %>

@@ -239,18 +239,26 @@
                         <div class="card-body">
                             <div class="mt-3">
                             <%
-                               boolean hasCurrent = false;
-                               LocalTime now = LocalTime.now(); // thời gian hiện tại
+                                boolean hasCurrent = false;
+                                LocalDateTime nowDT = LocalDateTime.now(); // thời gian hiện tại
 
                                 for (Appointment appt : appointmentsTodayList) {
-                                    if (appt.getShiftDate() != null && appt.getShiftDate().toLocalDate().isEqual(today)) { // lọc lịch hôm nay
-                                        if (appt.getStartTime() != null && appt.getEndTime() != null) { // lọc lịch trong khung giờ hiện tại
-                                            java.time.LocalTime start = appt.getStartTime().toLocalTime();
-                                            java.time.LocalTime end = appt.getEndTime().toLocalTime();
+                                    if (appt.getShiftDate() != null && appt.getStartTime() != null && appt.getEndTime() != null) {
 
-                                            if (!now.isBefore(start) && !now.isAfter(end)) {
-                                                hasCurrent = true;
-                                                String timeRange = start.toString().substring(0,5) + " - " + end.toString().substring(0,5);
+                                        LocalDate apptDate = appt.getShiftDate().toLocalDate();
+                                        LocalDateTime start = LocalDateTime.of(apptDate, appt.getStartTime().toLocalTime());
+                                        LocalDateTime end = LocalDateTime.of(apptDate, appt.getEndTime().toLocalTime());
+
+                                        // Nếu ca kết thúc trước ca bắt đầu → ca qua đêm
+                                        if (end.isBefore(start) || end.equals(start)) {
+                                            end = end.plusDays(1);
+                                        }
+
+                                        if (!nowDT.isBefore(start) && !nowDT.isAfter(end)) {
+                                            hasCurrent = true;
+                                            String timeRange = start.toLocalTime().toString().substring(0,5) 
+                                                             + " - " 
+                                                             + end.toLocalTime().toString().substring(0,5);
                             %>
                                 <div class="timeline-item active animate__animated animate__pulse animate__infinite">
                                     <div class="timeline-time"><%= timeRange %>
@@ -264,7 +272,6 @@
                                             }
                                         }
                                     }
-                                }
 
                                 if (!hasCurrent) {
                             %>

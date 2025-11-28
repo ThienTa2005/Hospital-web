@@ -137,7 +137,7 @@
         <ul class="nav nav-tabs nav-fill px-3" id="myTab" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active">
-                    <i class="fa-solid fa-calendar"></i> Lịch Hẹn
+                    <i class="fa-solid fa-calendar"></i> Lịch hẹn
                 </button>
             </li>
         </ul>
@@ -147,9 +147,6 @@
 
                 <div class="d-flex justify-content-between mb-3">
                     <h6 class="fw-bold text-success">Lịch sử đặt hẹn</h6>
-                    <% if(!isDoctor) { %>
-                        <button class="btn btn-sm btn-success">+ Đặt hẹn mới</button>
-                    <% } %>
                 </div>
 
                 <table class="table table-striped table-hover text-center">

@@ -23,18 +23,7 @@ public class VisitingPatientsServlet extends HttpServlet {
         LocalDate today = LocalDate.now();
         List<Appointment> allTodayAppointments = appointmentDAO.getAppointmentsByDate(today);
 
-        // Lọc lịch hẹn đang diễn ra
-        LocalDateTime now = LocalDateTime.now();
-        List<Appointment> ongoingAppointments = allTodayAppointments.stream()
-            .filter(a -> a.getStartTime() != null && a.getEndTime() != null)
-            .filter(a -> {
-                LocalDateTime start = LocalDateTime.of(a.getShiftDate().toLocalDate(), a.getStartTime().toLocalTime());
-                LocalDateTime end = LocalDateTime.of(a.getShiftDate().toLocalDate(), a.getEndTime().toLocalTime());
-                return !now.isBefore(start) && !now.isAfter(end);
-            })
-            .toList();
-
-        request.setAttribute("appointments", ongoingAppointments);
+        request.setAttribute("appointments", allTodayAppointments);
 
         // Forward đến JSP
         request.getRequestDispatcher("/views/admin/admin_dashboard/visiting_patients.jsp")

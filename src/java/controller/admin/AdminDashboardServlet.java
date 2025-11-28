@@ -29,7 +29,6 @@ public class AdminDashboardServlet extends HttpServlet {
 
         LocalDate today = LocalDate.now();
         LocalDateTime nowDT = LocalDateTime.now();
-        LocalTime nowTime = LocalTime.now();
 
         ShiftDAO shiftDAO = new ShiftDAO();
         ShiftDoctorDAO shiftDoctorDAO = new ShiftDoctorDAO();
@@ -38,36 +37,38 @@ public class AdminDashboardServlet extends HttpServlet {
         List<Shift> todayShifts = shiftDAO.getShiftsByDate(today);
 
         List<ShiftDoctor> doctorsOnShiftNowList = new ArrayList<>();
-        int doctorsOnShiftNowCount = 0;
 
         for (Shift shift : todayShifts) {
             if (shift.getShiftDate() != null && shift.getStartTime() != null && shift.getEndTime() != null) {
+
                 LocalDate shiftDate = shift.getShiftDate().toLocalDate();
-                LocalTime startTime = shift.getStartTime().toLocalTime();
-                LocalTime endTime = shift.getEndTime().toLocalTime();
+                LocalDateTime start = LocalDateTime.of(shiftDate, shift.getStartTime().toLocalTime());
+                LocalDateTime end = LocalDateTime.of(shiftDate, shift.getEndTime().toLocalTime());
 
-                LocalDateTime startDT = LocalDateTime.of(shiftDate, startTime);
-                LocalDateTime endDT = LocalDateTime.of(shiftDate, endTime);
+                // Ca qua đêm thì cộng thêm 1 ngày cho end
+                if (end.isBefore(start) || end.equals(start)) {
+                    end = end.plusDays(1);
+                }
 
-                if (!nowDT.isBefore(startDT) && !nowDT.isAfter(endDT)) {
+                // Nếu thời điểm hiện tại nằm trong ca, thêm bác sĩ vào danh sách
+                if (!nowDT.isBefore(start) && !nowDT.isAfter(end)) {
                     List<ShiftDoctor> doctorsInShift = shiftDoctorDAO.getDoctorsByShift(shift.getShiftId());
-                    if (doctorsInShift != null) {
+                    if (doctorsInShift != null && !doctorsInShift.isEmpty()) {
                         doctorsOnShiftNowList.addAll(doctorsInShift);
-                        doctorsOnShiftNowCount += doctorsInShift.size();
                     }
                 }
             }
         }
 
+        int doctorsOnShiftNowCount = doctorsOnShiftNowList.size();
+
+        // Lấy danh sách lịch hẹn trong ngày
         List<Appointment> appointmentsTodayList = appointmentDAO.getAppointmentsByDate(today);
 
         request.setAttribute("doctorsOnShiftNowCount", doctorsOnShiftNowCount);
         request.setAttribute("doctorsOnShiftNowList", doctorsOnShiftNowList);
         request.setAttribute("appointmentsTodayList", appointmentsTodayList);
         request.setAttribute("appointmentsTodayCount", appointmentsTodayList.size());
-        System.out.println(doctorsOnShiftNowCount);
-        System.out.println(appointmentsTodayList);
-
         request.getRequestDispatcher("/views/admin/admin_dashboard/admin_dashboard.jsp")
                .forward(request, response);
     }

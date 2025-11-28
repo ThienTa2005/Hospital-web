@@ -31,9 +31,17 @@ public class WorkingDoctorsServlet extends HttpServlet {
 
         for (Shift shift : todayShifts) {
             if (shift.getShiftDate() != null && shift.getStartTime() != null && shift.getEndTime() != null) {
-                LocalDateTime start = LocalDateTime.of(shift.getShiftDate().toLocalDate(), shift.getStartTime().toLocalTime());
-                LocalDateTime end = LocalDateTime.of(shift.getShiftDate().toLocalDate(), shift.getEndTime().toLocalTime());
 
+                LocalDate shiftDate = shift.getShiftDate().toLocalDate();
+                LocalDateTime start = LocalDateTime.of(shiftDate, shift.getStartTime().toLocalTime());
+                LocalDateTime end = LocalDateTime.of(shiftDate, shift.getEndTime().toLocalTime());
+
+                // Nếu ca qua đêm thì cộng thêm 1 ngày cho end
+                if (end.isBefore(start) || end.equals(start)) {
+                    end = end.plusDays(1);
+                }
+
+                // Nếu thời điểm hiện tại nằm trong ca, thêm bác sĩ vào danh sách
                 if (!now.isBefore(start) && !now.isAfter(end)) {
                     List<ShiftDoctor> doctorsInShift = shiftDoctorDAO.getDoctorsByShift(shift.getShiftId());
                     if (doctorsInShift != null) {
