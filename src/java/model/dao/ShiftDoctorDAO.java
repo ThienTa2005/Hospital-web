@@ -22,15 +22,15 @@ public class ShiftDoctorDAO {
    
     public List<ShiftDoctor> getDoctorsByShift(int shiftId) {
         List<ShiftDoctor> list = new ArrayList<>();
-        String sql = "SELECT sd.shift_id, sd.doctor_id, u.fullname, d.degree, dp.name AS department_name "
-                + "FROM Shift_Doctor sd "
-                + "JOIN Doctor d ON sd.doctor_id = d.user_id "
-                + "JOIN Users u ON d.user_id = u.user_id "
-                + "LEFT JOIN Department dp ON d.department_id = dp.department_id "
-                + "WHERE sd.shift_id = ?";
+        String sql = "SELECT sd.shift_doctor_id, sd.shift_id, sd.doctor_id, "
+                   + "u.fullname, d.degree, dp.name AS department_name "
+                   + "FROM Shift_Doctor sd "
+                   + "JOIN Doctor d ON sd.doctor_id = d.user_id "
+                   + "JOIN Users u ON d.user_id = u.user_id "
+                   + "LEFT JOIN Department dp ON d.department_id = dp.department_id "
+                   + "WHERE sd.shift_id = ?";
 
         try (Connection conn = DBUtils.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-
             ps.setInt(1, shiftId);
             ResultSet rs = ps.executeQuery();
 
@@ -39,9 +39,9 @@ public class ShiftDoctorDAO {
                     rs.getInt("shift_doctor_id"),
                     rs.getInt("shift_id"),
                     rs.getInt("doctor_id"),
-                    rs.getString("fullname"),
-                    rs.getString("degree"),
-                    rs.getString("department_name")
+                    rs.getString("fullname"),      // từ bảng Users
+                    rs.getString("degree"),        // từ bảng Doctor
+                    rs.getString("department_name") // từ bảng Department
                 ));
             }
         } catch (SQLException e) {

@@ -114,8 +114,22 @@ body {
     font-size: 0.9rem;
     box-shadow: 0 -2px 6px rgba(0,0,0,0.1);
     width: 100%;
+    
+    .toast-container {
+        top: 65px !important;    
+        z-index: 1055;           
+    }
+
+    .modal-backdrop {
+        z-index: 2500 !important;
+     }
+
+      .modal {
+        z-index: 2600 !important;
+    }
 }
 </style>
+
 </head>
 <body>
 
@@ -177,9 +191,9 @@ body {
     </div>
 </div>
 
-<!-- Modal Thêm bác sĩ -->
-<div class="modal fade" id="addDoctorModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
+<!-- Modal thêm bác sĩ -->
+<div class="modal fade" id="addDoctorModal" tabindex="-1" style="margin-top: 40px;">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <form id="addDoctorForm" method="post" action="<%= request.getContextPath() %>/admin/doctor">
         <input type="hidden" name="action" value="add">

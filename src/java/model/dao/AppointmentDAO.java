@@ -1,4 +1,3 @@
-
 package model.dao;
 
 import Utils.DBUtils;
@@ -93,22 +92,23 @@ public class AppointmentDAO {
 
     public List<Appointment> getAppointmentsByDate(LocalDate date) {
         List<Appointment> list = new ArrayList<>();
-        String sql = "SELECT a.appointment_id, a.patient_id, a.shift_id, a.appointment_date, a.status, "
+        String sql = "SELECT a.appointment_id, a.patient_id, a.shift_doctor_id, a.appointment_date, a.status, "
                 + "u_doc.fullname AS doctor_name, "
                 + "u_pat.fullname AS patient_name, "
                 + "dep.name AS department_name, "
                 + "s.shift_date, s.start_time, s.end_time "
                 + "FROM Appointment a "
-                + "JOIN Shift s ON a.shift_id = s.shift_id "
-                + "JOIN Shift_Doctor sd ON a.shift_id = sd.shift_id "
+                + "JOIN Shift_Doctor sd ON a.shift_doctor_id = sd.shift_doctor_id "
                 + "JOIN Doctor d ON sd.doctor_id = d.user_id "
                 + "JOIN Users u_doc ON d.user_id = u_doc.user_id "
                 + "LEFT JOIN Department dep ON d.department_id = dep.department_id "
+                + "JOIN Shift s ON sd.shift_id = s.shift_id "
                 + "JOIN Users u_pat ON a.patient_id = u_pat.user_id "
                 + "WHERE s.shift_date = ? "
                 + "ORDER BY s.start_time ASC";
 
-        try (Connection conn = DBUtils.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBUtils.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setDate(1, java.sql.Date.valueOf(date));
             ResultSet rs = ps.executeQuery();
@@ -117,7 +117,7 @@ public class AppointmentDAO {
                 list.add(new Appointment(
                         rs.getInt("appointment_id"),
                         rs.getInt("patient_id"),
-                        rs.getInt("shift_id"), // dùng shift_id thay cho shift_doctor_id
+                        rs.getInt("shift_doctor_id"), // đúng theo DB
                         rs.getTimestamp("appointment_date"),
                         rs.getString("status"),
                         rs.getString("doctor_name"),
@@ -145,8 +145,6 @@ public class AppointmentDAO {
                ps.setInt(1, app.getPatientId());
                ps.setInt(2, app.getShiftDoctorId());
 
-               // ĐÂY LÀ DÒNG QUYẾT ĐỊNH:
-               // Lấy Timestamp đã ghép (Ngày + Giờ Slot) từ Servlet để đẩy vào DB
                ps.setTimestamp(3, app.getAppointmentDate()); 
 
                ps.setString(4, app.getStatus()); // pending
@@ -275,25 +273,6 @@ public class AppointmentDAO {
         return list;
     }
 
-    public List<Appointment> getAppointmentsByDate() {
-        List<Appointment> list = new ArrayList<>();
-
-        String sql = SELECT_FULL_INFO + 
-                     "WHERE DATE(a.appointment_date) = ? " +
-                     "ORDER BY s.start_time ASC";
-
-        try (Connection conn = DBUtils.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                list.add(mapResultSetToAppointment(rs));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return list;
-    }
-
     public List<Map<String, Object>> getPatientHistoryMap(int patientId) {
         List<Map<String, Object>> list = new ArrayList<>();
 
@@ -333,36 +312,7 @@ public class AppointmentDAO {
         }
         return list;
     }
-    private static final String BASE_QUERY
-            = "SELECT a.appointment_id, a.patient_id, a.shift_doctor_id, a.appointment_date, a.status, "
-            + "       u_doc.fullname AS doctor_name, "
-            + "       u_pat.fullname AS patient_name, "
-            + "       dep.name AS department_name, "
-            + "       s.shift_date, s.start_time, s.end_time "
-            + "FROM Appointment a "
-            + "JOIN Shift_Doctor sd ON a.shift_doctor_id = sd.shift_doctor_id "
-            + "JOIN Doctor d ON sd.doctor_id = d.user_id "
-            + "JOIN Users u_doc ON d.user_id = u_doc.user_id "
-            + "LEFT JOIN Department dep ON d.department_id = dep.department_id "
-            + "JOIN Shift s ON sd.shift_id = s.shift_id "
-            + "JOIN Users u_pat ON a.patient_id = u_pat.user_id ";
 
-    private Appointment map(ResultSet rs) throws SQLException {
-        return new Appointment(
-                rs.getInt("appointment_id"),
-                rs.getInt("patient_id"),
-                rs.getInt("shift_doctor_id"),
-                rs.getTimestamp("appointment_date"),
-                rs.getString("status"),
-                rs.getString("doctor_name"),
-                rs.getString("department_name"),
-                rs.getString("patient_name"),
-                rs.getDate("shift_date"),
-                rs.getTime("start_time"),
-                rs.getTime("end_time")
-        );
-    }
-    
     public List<Appointment> getAppointmentsByDoctorIdAndDate(int doctorId, LocalDate date) {
         List<Appointment> list = new ArrayList<>();
         String sql = SELECT_FULL_INFO
@@ -387,7 +337,6 @@ public class AppointmentDAO {
     
     public List<Appointment> getCompletedAppointmentsByPatientId(int patientId) {
         List<Appointment> list = new ArrayList<>();
-        // Sử dụng SELECT_FULL_INFO từ đầu class
         String sql = SELECT_FULL_INFO + "WHERE a.patient_id = ? AND a.status = 'completed' ORDER BY a.appointment_date DESC";
 
         try (Connection conn = DBUtils.getConnection();
@@ -405,5 +354,17 @@ public class AppointmentDAO {
         }
 
         return list;
+    }
+    public boolean updateStatus(int appointmentId, String status) {
+        String sql = "UPDATE Appointment SET status = ? WHERE appointment_id = ?";
+        try (java.sql.Connection conn = getConnection();
+             java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, status);
+            ps.setInt(2, appointmentId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

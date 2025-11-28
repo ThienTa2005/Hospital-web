@@ -98,49 +98,23 @@
             request.setAttribute("currentPage", "dashboard");
         %>
         <jsp:include page="/views/shared/user_header.jsp" />
+        
     <%
-        // Lấy user từ session
         User user = (User) session.getAttribute("user");        
-        Doctor doctor = null; // Nếu cần, có thể gán doctor từ user
+        Doctor doctor = null; 
 
         String docName = (doctor != null) ? doctor.getFullname() : (user != null ? user.getFullname() : "Admin");
         String todayStr = LocalDate.now().format(DateTimeFormatter.ofPattern("dd 'tháng' MM, yyyy"));
+        
+         LocalDate today = LocalDate.now();
 
-        ShiftDAO shiftDAO = new ShiftDAO();
-        ShiftDoctorDAO shiftDoctorDAO = new ShiftDoctorDAO();
-        AppointmentDAO appointmentDAO = new AppointmentDAO();
+        Integer doctorsOnShiftNowCount = (Integer) request.getAttribute("doctorsOnShiftNowCount");
+        Integer appointmentsTodayCount = (Integer) request.getAttribute("appointmentsTodayCount");
 
-        LocalDate today = LocalDate.now();
-        LocalDateTime nowDT = LocalDateTime.now();
-
-        // Lấy tất cả ca trực hôm nay
-        List<Shift> todayShifts = shiftDAO.getShiftsByDate(today);
-        int doctorsOnShiftNow = 0;
-
-        for (Shift shift : todayShifts) {
-            if (shift.getShiftDate() != null && shift.getStartTime() != null && shift.getEndTime() != null) {
-                LocalDate shiftDate = shift.getShiftDate().toLocalDate();
-                LocalTime startTime = shift.getStartTime().toLocalTime();
-                LocalTime endTime = shift.getEndTime().toLocalTime();
-
-                LocalDateTime startDT = LocalDateTime.of(shiftDate, startTime);
-                LocalDateTime endDT = LocalDateTime.of(shiftDate, endTime);
-
-                // Kiểm tra ca trực hiện tại
-                if (!nowDT.isBefore(startDT) && !nowDT.isAfter(endDT)) {
-                    List<ShiftDoctor> doctorsInShift = shiftDoctorDAO.getDoctorsByShift(shift.getShiftId());
-                    doctorsOnShiftNow += doctorsInShift.size();
-                }
-            }
-        }
-
-        // Lấy tất cả lịch hẹn hôm nay
-        List<Appointment> appointmentsTodayList = appointmentDAO.getAppointmentsByDate(today);
-        int appointmentsToday = appointmentsTodayList.size();
-
-        // In ra console hoặc dùng trong JSP
-        System.out.println("Số bác sĩ đang trực: " + doctorsOnShiftNow);
-        System.out.println("Số lịch hẹn hôm nay: " + appointmentsToday);
+        List<Appointment> appointmentsTodayList = (List<Appointment>) request.getAttribute("appointmentsTodayList");
+        
+        System.out.println("Số bác sĩ đang trực: " + (doctorsOnShiftNowCount != null ? doctorsOnShiftNowCount : 0));
+        System.out.println("Số lịch hẹn hôm nay: " + (appointmentsTodayCount != null ? appointmentsTodayCount : 0));
     %>
 
         <div class="container mt-4 mb-5">
@@ -173,32 +147,48 @@
                     </div>
 
                     <div class="row g-3 mb-4">
+                        <!-- Số bác sĩ đang trực -->
                         <div class="col-md-4">
-                            <a href="${pageContext.request.contextPath}/views/admin/admin_dashboard/working_doctors.jsp" class="action-btn shadow-sm">
+                            <a href="${pageContext.request.contextPath}/admin/working_doctors" class="action-btn shadow-sm">
                                 <div class="stat-card m-0 w-100">
                                     <div class="icon-box bg-icon-blue"><i class="fa-solid fa-user-doctor"></i></div>
-                                    <h3 class="fw-bold mb-1"><%= doctorsOnShiftNow %></h3>
-                                    <p class="text-muted small mb-0">Số bác sĩ có ca trực hiện tại</p>
+                                    <h3 class="fw-bold mb-1">
+                                        <%= request.getAttribute("doctorsOnShiftNowCount") != null 
+                                            ? request.getAttribute("doctorsOnShiftNowCount") 
+                                            : 0 %>
+                                    </h3>
+                                    <p class="text-muted small mb-0">Số bác sĩ có ca trực hiện tại</p>
                                 </div>
                             </a>        
                         </div>
+
+                        <!-- Số lịch hẹn hôm nay -->
                         <div class="col-md-4">
-                            <a href="${pageContext.request.contextPath}/views/admin/admin_dashboard/visiting_patients.jsp" class="action-btn shadow-sm">
+                            <a href="${pageContext.request.contextPath}/admin/visiting_patients" class="action-btn shadow-sm">
                                 <div class="stat-card m-0 w-100">
                                     <div class="icon-box bg-icon-green"><i class="fa-solid fa-calendar-days"></i></div>
-                                    <h3 class="fw-bold mb-1"><%= appointmentsToday %></h3> <p class="text-muted small mb-0">Số lịch hẹn hôm nay</p>
+                                    <h3 class="fw-bold mb-1">
+                                        <%= request.getAttribute("appointmentsTodayCount") != null 
+                                            ? request.getAttribute("appointmentsTodayCount") 
+                                            : 0 %>
+                                    </h3>
+                                    <p class="text-muted small mb-0">Số lịch hẹn hôm nay</p>
                                 </div>
                             </a>
                         </div>
+
+                        <!-- Link báo cáo -->
                         <div class="col-md-4">
-                            <a href="${pageContext.request.contextPath}/views/admin/admin_dashboard/report.jsp" class="action-btn shadow-sm">
-                                <div class="stat-card m-0 w-100">
+                            <a href="${pageContext.request.contextPath}/admin/report" class="action-btn shadow-sm">
+                                <div class="stat-card m-0 w-100 text-center" style="height: 188px;"> 
                                     <div class="icon-box bg-icon-orange"><i class="fa-solid fa-clipboard-list"></i></div>
-                                    <h3 class="fw-bold mb-1">--</h3> <p class="text-muted small mb-0">Thống kê</p>
+                                    <h6 class="fw-bold mb-1 text-success" style="margin: 0;">Xem thống kê</h6> 
+                                    <p class="text-muted small mb-0">Thống kê lịch hẹn trong tuần</p>
                                 </div>
                             </a>
                         </div>
                     </div>
+
 
                     <h5 class="fw-bold mb-3 text-secondary">Truy cập nhanh</h5>
                     <div class="row g-3">
