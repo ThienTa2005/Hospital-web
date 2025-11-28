@@ -1,13 +1,18 @@
 package model.entity;
 
-public class MedicalRecord
-{
+public class MedicalRecord {
     private int recordId;
-    private String diagnosis, notes, prescription;
+    private String diagnosis;
+    private String notes;
+    private String prescription;
     private int appointmentId;
     
-    public MedicalRecord(int recordId, String diagnosis, String notes, String prescription, int appointmentId)
-    {
+    // --- [QUAN TRỌNG] Constructor rỗng chuẩn (Không được có lệnh throw) ---
+    public MedicalRecord() {
+    }
+
+    // Constructor đầy đủ
+    public MedicalRecord(int recordId, String diagnosis, String notes, String prescription, int appointmentId) {
         this.recordId = recordId;
         this.diagnosis = diagnosis;
         this.notes = notes;
@@ -15,57 +20,44 @@ public class MedicalRecord
         this.appointmentId = appointmentId;
     }
 
-    public MedicalRecord() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    public int getRecordId()
-    {
+    // Getters and Setters
+    public int getRecordId() {
         return recordId;
     }
 
-    public String getDiagnosis()
-    {
-        return diagnosis;
-    }
-
-    public String getNotes()
-    {
-        return notes;
-    }
-
-    public String getPrescription()
-    {
-        return prescription;
-    }
-
-    public int getAppointmentId()
-    {
-        return appointmentId;
-    }
-
-    public void setRecordId(int recordId)
-    {
+    public void setRecordId(int recordId) {
         this.recordId = recordId;
     }
 
-    public void setDiagnosis(String diagnosis)
-    {
+    public String getDiagnosis() {
+        return diagnosis;
+    }
+
+    public void setDiagnosis(String diagnosis) {
         this.diagnosis = diagnosis;
     }
 
-    public void setNotes(String notes)
-    {
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
         this.notes = notes;
     }
 
-    public void setPrescription(String prescription)
-    {
+    public String getPrescription() {
+        return prescription;
+    }
+
+    public void setPrescription(String prescription) {
         this.prescription = prescription;
     }
 
-    public void setAppointmentId(int appointmentId)
-    {
+    public int getAppointmentId() {
+        return appointmentId;
+    }
+
+    public void setAppointmentId(int appointmentId) {
         this.appointmentId = appointmentId;
     }
 }

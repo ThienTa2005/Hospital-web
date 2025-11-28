@@ -12,16 +12,11 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/user_style.css">
     
     <style>
-        /* Layout Fix */
         body { background-color: #F3F6F8; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; min-height: 100vh; }
         .main { flex: 1; width: 100%; max-width: 1200px; margin: 0 auto; padding-bottom: 60px; }
         .content-wrapper { padding: 20px 0; }
-
-        /* Tabs Custom */
         .nav-pills .nav-link { color: #555; font-weight: 600; border-radius: 8px; padding: 10px 20px; margin-right: 10px; background: #fff; border: 1px solid #eee; }
         .nav-pills .nav-link.active { background-color: #40855E; color: white; border-color: #40855E; box-shadow: 0 4px 10px rgba(64, 133, 94, 0.3); }
-        
-        /* Card Style */
         .appt-card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 15px; border-left: 5px solid #ccc; box-shadow: 0 2px 5px rgba(0,0,0,0.03); transition: 0.2s; }
         .appt-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
         
@@ -31,6 +26,10 @@
         .border-cancelled { border-left-color: #dc3545; }
         
         .time-badge { background: #f0f2f5; padding: 5px 10px; border-radius: 6px; font-weight: 700; color: #333; font-size: 0.9rem; }
+        
+        /* Modal Form Style */
+        .modal-header { background: #40855E; color: white; }
+        .test-row { display: flex; gap: 5px; margin-bottom: 10px; align-items: center; }
     </style>
 </head>
 <body>
@@ -161,8 +160,7 @@
     </div>
 
     <div class="modal fade" id="examModal" tabindex="-1" data-bs-backdrop="static">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
+        <div class="modal-dialog modal-xl"> <div class="modal-content">
                 <form action="<%= request.getContextPath() %>/doctor/examine" method="post">
                     <div class="modal-header">
                         <h5 class="modal-title m-0"><i class="fa-solid fa-user-doctor me-2"></i>Thực hiện khám bệnh</h5>
@@ -171,40 +169,53 @@
                     <div class="modal-body">
                         <input type="hidden" name="appointment_id" id="modalAppId">
                         
-                        <div class="alert alert-success py-2 mb-3">
-                            Đang khám cho bệnh nhân: <strong id="modalPatientName" style="text-transform: uppercase;">...</strong>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">1. Chẩn đoán / Kết luận <span class="text-danger">*</span></label>
-                            <input type="text" name="diagnosis" class="form-control" required placeholder="Ví dụ: Viêm họng cấp...">
-                        </div>
-
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">2. Triệu chứng / Ghi chú</label>
-                                <textarea name="notes" class="form-control" rows="4" placeholder="Sốt, ho, đau họng..."></textarea>
+                            <div class="col-md-6 border-end">
+                                <div class="alert alert-success py-2 mb-3">
+                                    Bệnh nhân: <strong id="modalPatientName" style="text-transform: uppercase;">...</strong>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">1. Chẩn đoán / Kết luận <span class="text-danger">*</span></label>
+                                    <input type="text" name="diagnosis" class="form-control" required placeholder="Ví dụ: Viêm họng cấp...">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">2. Triệu chứng / Ghi chú</label>
+                                    <textarea name="notes" class="form-control" rows="3" placeholder="Sốt, ho, đau họng..."></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">3. Đơn thuốc / Điều trị</label>
+                                    <textarea name="prescription" class="form-control" rows="4" placeholder="Tên thuốc - Liều lượng..."></textarea>
+                                </div>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">3. Đơn thuốc / Điều trị</label>
-                                <textarea name="prescription" class="form-control" rows="4" placeholder="Tên thuốc - Liều lượng..."></textarea>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-primary mb-2"><i class="fa-solid fa-flask me-2"></i>4. Nhập kết quả Xét nghiệm (Nếu có)</label>
+                                
+                                <div class="bg-light p-3 rounded">
+                                    <div class="d-flex text-muted small fw-bold mb-2">
+                                        <div style="width: 30%">Tên XN</div>
+                                        <div style="width: 20%">Chỉ số</div>
+                                        <div style="width: 20%">Kết quả</div>
+                                        <div style="width: 20%">Đơn vị</div>
+                                        <div style="width: 10%"></div>
+                                    </div>
+
+                                    <div id="test-container">
+                                        </div>
+                                    
+                                    <button type="button" class="btn btn-sm btn-outline-primary mt-2 w-100" onclick="addTestRow()">
+                                        <i class="fa-solid fa-plus"></i> Thêm dòng kết quả
+                                    </button>
+                                </div>
                             </div>
                         </div>
-
-                        <hr>
-                        
-                        <label class="form-label fw-bold text-primary"><i class="fa-solid fa-flask me-2"></i>4. Chỉ định xét nghiệm (Nếu có)</label>
-                        <div id="test-container">
-                            </div>
-                        <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="addTestRow()">
-                            <i class="fa-solid fa-plus"></i> Thêm chỉ định
-                        </button>
-
                     </div>
                     <div class="modal-footer bg-light">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
                         <button type="submit" class="btn btn-success px-4 fw-bold">
-                            <i class="fa-solid fa-check me-2"></i>HOÀN TẤT KHÁM
+                            <i class="fa-solid fa-check me-2"></i>LƯU & HOÀN TẤT
                         </button>
                     </div>
                 </form>
@@ -219,6 +230,9 @@
         function openExamModal(id, name) {
             document.getElementById('modalAppId').value = id;
             document.getElementById('modalPatientName').textContent = name;
+            document.getElementById('test-container').innerHTML = '';
+            addTestRow();
+            
             var myModal = new bootstrap.Modal(document.getElementById('examModal'));
             myModal.show();
         }
@@ -226,11 +240,13 @@
         function addTestRow() {
             const container = document.getElementById('test-container');
             const div = document.createElement('div');
-            div.className = 'd-flex gap-2 mb-2';
+            div.className = 'test-row';
             div.innerHTML = `
-                <input type="text" name="test_name[]" class="form-control" placeholder="Tên xét nghiệm (VD: Công thức máu)">
-                <input type="text" name="test_param[]" class="form-control" placeholder="Chỉ số cần đo (nếu có)">
-                <button type="button" class="btn btn-outline-danger" onclick="this.parentElement.remove()"><i class="fa-solid fa-trash"></i></button>
+                <input type="text" name="test_name[]" class="form-control form-control-sm" placeholder="Tên" style="width: 30%">
+                <input type="text" name="test_param[]" class="form-control form-control-sm" placeholder="Chỉ số" style="width: 20%">
+                <input type="text" name="test_value[]" class="form-control form-control-sm fw-bold text-primary" placeholder="K quả" style="width: 20%">
+                <input type="text" name="test_unit[]" class="form-control form-control-sm" placeholder="Đơn vị" style="width: 20%">
+                <button type="button" class="btn btn-sm btn-outline-danger" style="width: 10%" onclick="this.parentElement.remove()"><i class="fa-solid fa-trash"></i></button>
             `;
             container.appendChild(div);
         }

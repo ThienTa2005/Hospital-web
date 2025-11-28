@@ -5,6 +5,7 @@ import static Utils.DBUtils.getConnection;
 import java.sql.*;
 import java.util.*;
 import model.entity.MedicalRecord;
+import model.entity.Test;
 
 public class MedicalRecordDAO
 {
@@ -66,74 +67,80 @@ public class MedicalRecordDAO
         } 
     }
     
-    public boolean saveExamination(MedicalRecord record, List<model.entity.Test> tests, int appointmentId) {
+    public boolean saveExamination(MedicalRecord record, List<Test> tests, int appointmentId) {
         Connection conn = null;
+        PreparedStatement psGetShift = null;
         PreparedStatement psRecord = null;
         PreparedStatement psTest = null;
         PreparedStatement psApp = null;
-
-        // SQL Lưu hồ sơ
-        String sqlRecord = "INSERT INTO MedicalRecord (diagnosis, notes, prescription, appointment_id) VALUES (?, ?, ?, ?)";
-        
-        // SQL Lưu xét nghiệm (Chỉ insert các trường cần thiết, shift_doctor_id để null)
-        String sqlTest = "INSERT INTO Test (test_name, test_time, appointment_id, parameter, parameter_value, unit, reference_range) VALUES (?, NOW(), ?, ?, ?, ?, ?)";
-        
-        // SQL Cập nhật trạng thái
-        String sqlUpdateApp = "UPDATE Appointment SET status = 'completed' WHERE appointment_id = ?";
+        ResultSet rs = null;
 
         try {
             conn = getConnection();
-            conn.setAutoCommit(false); // --- BẮT ĐẦU TRANSACTION ---
+            conn.setAutoCommit(false); 
 
-            // 1. Lưu MedicalRecord
+            int shiftDoctorId = 0;
+            String sqlGetShift = "SELECT shift_doctor_id FROM Appointment WHERE appointment_id = ?";
+            psGetShift = conn.prepareStatement(sqlGetShift);
+            psGetShift.setInt(1, appointmentId);
+            rs = psGetShift.executeQuery();
+            if (rs.next()) {
+                shiftDoctorId = rs.getInt("shift_doctor_id");
+            }
+
+            String sqlRecord = "INSERT INTO MedicalRecord (diagnosis, notes, prescription, appointment_id) VALUES (?, ?, ?, ?)";
             psRecord = conn.prepareStatement(sqlRecord);
             psRecord.setString(1, record.getDiagnosis());
             psRecord.setString(2, record.getNotes());
             psRecord.setString(3, record.getPrescription());
             psRecord.setInt(4, appointmentId);
-            int recResult = psRecord.executeUpdate();
-            System.out.println("DEBUG: Saved Record -> Rows: " + recResult);
+            psRecord.executeUpdate();
 
-            // 2. Lưu Tests (Nếu có)
             if (tests != null && !tests.isEmpty()) {
+                String sqlTest = "INSERT INTO Test (test_name, test_time, appointment_id, shift_doctor_id, parameter, parameter_value, unit, reference_range) VALUES (?, NOW(), ?, ?, ?, ?, ?, ?)";
                 psTest = conn.prepareStatement(sqlTest);
-                for (model.entity.Test t : tests) {
+                
+                for (Test t : tests) {
                     psTest.setString(1, t.getName());
                     psTest.setInt(2, appointmentId);
-                    psTest.setString(3, t.getParameter());
-                    psTest.setString(4, t.getParameterValue());
-                    psTest.setString(5, t.getUnit());
-                    psTest.setString(6, t.getReferenceRange());
+                    psTest.setInt(3, shiftDoctorId);
+                    psTest.setString(4, (t.getParameter() != null) ? t.getParameter() : "-");
+                    psTest.setString(5, (t.getParameterValue() != null) ? t.getParameterValue() : "Chờ kết quả");
+                    psTest.setString(6, (t.getUnit() != null) ? t.getUnit() : "-");
+                    psTest.setString(7, (t.getReferenceRange() != null) ? t.getReferenceRange() : "-");
                     psTest.addBatch();
                 }
-                int[] testResults = psTest.executeBatch();
-                System.out.println("DEBUG: Saved Tests -> Count: " + testResults.length);
+                psTest.executeBatch();
             }
 
+            String sqlUpdateApp = "UPDATE Appointment SET status = 'completed' WHERE appointment_id = ?";
             psApp = conn.prepareStatement(sqlUpdateApp);
             psApp.setInt(1, appointmentId);
-            int appResult = psApp.executeUpdate();
-            System.out.println("DEBUG: Updated Status -> Rows: " + appResult);
+            psApp.executeUpdate();
 
             conn.commit(); 
             return true;
 
         } catch (Exception e) {
-            System.out.println("!!! LỖI TRANSACTION !!! Đang Rollback...");
-            e.printStackTrace(); 
+            System.out.println("!!! LỖI TRANSACTION !!! Đang Rollback: " + e.getMessage());
+            e.printStackTrace();
             try {
-                if (conn != null) conn.rollback();
+                if (conn != null) conn.rollback(); // Gặp lỗi thì hoàn tác ngay
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
             return false;
         } finally {
             try {
-                if (conn != null) conn.setAutoCommit(true);
+                if (rs != null) rs.close();
+                if (psGetShift != null) psGetShift.close();
                 if (psRecord != null) psRecord.close();
                 if (psTest != null) psTest.close();
                 if (psApp != null) psApp.close();
-                if (conn != null) conn.close();
+                if (conn != null) {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                }
             } catch (Exception e) { e.printStackTrace(); }
         }
     }
