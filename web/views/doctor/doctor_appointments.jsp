@@ -119,7 +119,7 @@
                                     <form action="appointmentList" method="post" class="d-inline">
                                         <input type="hidden" name="id" value="<%= a.getAppointmentId() %>">
                                         <input type="hidden" name="action" value="confirm">
-                                        <button class="btn btn-primary btn-sm me-2"><i class="fa-solid fa-check me-1"></i>Duyệt</button>
+                                        <button class="btn btn-success btn-sm me-2"><i class="fa-solid fa-check me-1"></i>Duyệt</button>
                                     </form>
                                     <form action="appointmentList" method="post" class="d-inline">
                                         <input type="hidden" name="id" value="<%= a.getAppointmentId() %>">

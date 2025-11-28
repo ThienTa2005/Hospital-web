@@ -96,7 +96,7 @@
         <div class="container" style="margin-top: -5px; margin-bottom: 5px;">
             <div class="row">
                 <div class="col-5">
-                <form action="${pageContext.request.contextPath}/admin/user" method="get" class="d-flex">
+                <form action="${pageContext.request.contextPath}/admin/patient" method="get" class="d-flex">
                     <input type="hidden" name="action" value="search">
                     <input type="text" name="keyword" placeholder="Nhập họ tên" class="form-control me-2" style="width: 180px; height: 37px;">
                     <button class="search-button" >Tìm kiếm</button>
@@ -104,15 +104,14 @@
                 </div>
                 <div class="col-3"></div>
                 <div class="col-3 text-end"><a href="${pageContext.request.contextPath}/views/admin/add_user.jsp" class="add-button">
-                  <i class="fa-solid fa-user-plus" style="margin-right: 5px;"></i>  Thêm người dùng
+                  <i class="fa-solid fa-user-plus" style="margin-right: 5px;"></i>  Thêm bệnh nhân
                     </a> 
                 </div>
             </div>
-        </div>
+        </div>  
 
         <table class="table-1" border="1" cellpadding="5" cellspacing="0">
             <tr>
-                <!--HỒ SƠ ĐIỆN TỬ KO CẦN HIỆN MK-->
                 <th>STT</th>
                 <th>Tên đăng nhập</th>
                 <th>Họ tên</th>
@@ -193,11 +192,7 @@
           <div class="modal-body">
             Bạn có chắc chắn muốn xóa người dùng này không?
           </div>
-<!--        <div class="modal-footer"> 
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button> 
-                <a href="deleteUser?id=1" class="btn btn-danger" style="padding: 8px 12px;">Xóa</a>
-            </div>-->
-            
+
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
             <a id="confirmDeleteBtn" href="#" class="btn btn-danger" style="padding: 8px 12px;">Xóa</a>
@@ -216,9 +211,9 @@
           const userId = button.getAttribute('data-id');
 
           if (userId && userId.trim() !== "") {
-             confirmDeleteBtn.href = contextPath + "/admin/user?action=delete&id=" + userId;
+             confirmDeleteBtn.href = contextPath + "/admin/patient?action=delete&id=" + userId;
           } else {
-            console.error("⚠ ID người dùng bị rỗng!");
+            console.error("ID người dùng rỗng");
             confirmDeleteBtn.href = "#";
           }
         });
