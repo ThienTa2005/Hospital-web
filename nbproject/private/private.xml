@@ -54,20 +54,16 @@
             <file>file:/C:/Users/hocmo/Hospital-web/web/views/doctor/doctor_appointments.jsp</file>
             <file>file:/C:/Users/hocmo/Hospital-web/web/views/admin/appointment_detail.jsp</file>
             <file>file:/C:/Users/hocmo/Hospital-web/src/java/controller/admin/AppointmentDetailServlet.java</file>
-            <file>file:/C:/Users/hocmo/Hospital-web/web/views/admin/appointments.jsp</file>
             <file>file:/C:/Users/hocmo/Hospital-web/web/views/shared/header.jsp</file>
             <file>file:/C:/Users/hocmo/Hospital-web/web/views/admin/admin_dashboard/working_doctors.jsp</file>
             <file>file:/C:/Users/hocmo/Hospital-web/src/java/controller/admin/WorkingDoctorsServlet.java</file>
             <file>file:/C:/Users/hocmo/Hospital-web/src/java/controller/admin/VisitingPatientsServlet.java</file>
-            <file>file:/C:/Users/hocmo/Hospital-web/web/views/admin/doctor.jsp</file>
             <file>file:/C:/Users/hocmo/Hospital-web/web/views/admin/doctors.jsp</file>
             <file>file:/C:/Users/hocmo/Hospital-web/src/java/controller/admin/ReportServlet.java</file>
             <file>file:/C:/Users/hocmo/Hospital-web/web/views/admin/add_user.jsp</file>
             <file>file:/C:/Users/hocmo/Hospital-web/web/views/doctor/doctor_patient_history.jsp</file>
-            <file>file:/C:/Users/hocmo/Hospital-web/web/views/doctor/doctor_medical_record.jsp</file>
             <file>file:/C:/Users/hocmo/Hospital-web/web/views/doctor/doctor_change_password.jsp</file>
             <file>file:/C:/Users/hocmo/Hospital-web/web/views/doctor/appointment_detail.jsp</file>
-            <file>file:/C:/Users/hocmo/Hospital-web/web/views/doctor/appointment_list.jsp</file>
             <file>file:/C:/Users/hocmo/Hospital-web/web/views/patient/patient_booking.jsp</file>
             <file>file:/C:/Users/hocmo/Hospital-web/web/views/patient/patient_appointments.jsp</file>
             <file>file:/C:/Users/hocmo/Hospital-web/web/views/patient/patient_appointment.jsp</file>
@@ -78,6 +74,14 @@
             <file>file:/C:/Users/hocmo/Hospital-web/src/java/controller/auth/RegisterServlet.java</file>
             <file>file:/C:/Users/hocmo/Hospital-web/web/views/auth/register.jsp</file>
             <file>file:/C:/Users/hocmo/Hospital-web/src/java/controller/auth/AuthFilter.java</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/src/java/controller/admin/DoctorServlet.java</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/views/admin/department.jsp</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/src/java/controller/doctor/AppointmentDetailServlet.java</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/src/java/controller/doctor/AppointmentListServlet.java</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/src/java/controller/doctor/DoctorExaminationServlet.java</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/src/java/controller/doctor/DoctorDashboardServlet.java</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/views/doctor/doctor_menu.jsp</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/views/patient/patient_menu.jsp</file>
         </group>
     </open-files>
 </project-private>

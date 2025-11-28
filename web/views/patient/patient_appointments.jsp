@@ -27,7 +27,7 @@
 <%
     request.setAttribute("currentPage", "appointments.jsp");
 %>
-<jsp:include page="/views/shared/empty_header.jsp" />
+<jsp:include page="/views/shared/patient_header.jsp" />
 
 <main class="main-content">
     <div class="title-box"><h3> DANH SÁCH LỊCH HẸN</h3></div>

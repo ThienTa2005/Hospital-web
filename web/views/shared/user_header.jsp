@@ -26,36 +26,7 @@
                 Quản lý phòng khám
             </a>
         </div>
-
-
-        <!-- Menu điều hướng 
-        <div class="nav-menu">
-            <a href="${pageContext.request.contextPath}/admin/user"
-                class="${currentPage eq 'user' ? 'active' : ''}">
-                Người dùng
-            </a>
-
-            <a href="${pageContext.request.contextPath}/admin/shift"
-                class="${currentPage eq 'shift' ? 'active' : ''}">
-                Ca trực
-            </a>               
-
-            <a href="${pageContext.request.contextPath}/admin/department"
-                class="${currentPage eq 'doctor' ? 'active' : ''}">
-                Phòng ban
-            </a>
-
-            <a href="${pageContext.request.contextPath}/admin/patient"
-                class="${currentPage eq 'patient' ? 'active' : ''}">
-                Hồ sơ bệnh nhân
-            </a>
-        </div>
-        
-        <form action="${pageContext.request.contextPath}/logout" method="get" >
-            <button class="btn logout-btn">Đăng xuất</button>
-        </form>-->
-
-        
+      
         <div class="dropdown">
             <% User u = (User) session.getAttribute("user"); %>
             

@@ -14,7 +14,6 @@
         const bodyHeight = document.body.offsetHeight;
         const viewportHeight = window.innerHeight;
 
-        // Nếu nội dung thấp hơn chiều cao màn hình → đẩy footer xuống cuối
         if (bodyHeight < viewportHeight) {
             footer.style.position = 'absolute';
             footer.style.bottom = '0';

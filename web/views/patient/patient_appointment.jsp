@@ -17,18 +17,15 @@
     <style>
         :root { --primary: #40855E; --bg-light: #F3F6F8; }
         
-        /* --- FIX LỖI FOOTER KHÔNG DÍNH ĐÁY --- */
         body {
             background-color: var(--bg-light);
             font-family: 'Segoe UI', sans-serif;
-            /* Sử dụng Flex column để đẩy footer xuống */
             display: flex;
             flex-direction: column;
             min-height: 100vh;
         }
         
         .main-content {
-            /* flex: 1 sẽ chiếm toàn bộ khoảng trống còn lại, đẩy footer xuống cuối */
             flex: 1;
             width: 100%;
             max-width: 1200px;

@@ -12,15 +12,6 @@
             </a>
         </div>
 
-
-        <!-- Menu điều hướng -->
-       
-
-<!--         Đăng xuất 
-        <form action="${pageContext.request.contextPath}/logout" method="get" >
-            <button class="btn logout-btn">Đăng xuất</button>
-        </form>-->
-
         <div class="dropdown">
             <% User u = (User) session.getAttribute("user"); %>
             <button class="btn logout-btn" data-bs-toggle="dropdown" aria-expanded="false"> 
