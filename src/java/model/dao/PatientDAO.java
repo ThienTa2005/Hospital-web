@@ -170,4 +170,23 @@ public class PatientDAO {
         patient.setRole(rs.getString("role"));
         return patient;
     }
+    
+    public List<Patient> searchPatientsByName(String keyword) {
+        List<Patient> list = new ArrayList<>();
+        String sql = "SELECT u.* FROM Users u JOIN Patient p ON u.user_id = p.user_id WHERE u.role = 'patient' AND u.fullname LIKE ?";
+        try (Connection conn = DBUtils.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, "%" + (keyword != null ? keyword : "") + "%"); 
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Patient p = mapResultSetToPatient(rs);
+                    list.add(p);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
 }

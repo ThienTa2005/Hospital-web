@@ -49,6 +49,13 @@ public class PatientServlet extends HttpServlet {
                 case "delete": 
                     deletePatient(request, response);
                     break;
+                case "search":
+                    String keyword = request.getParameter("keyword");
+                    List<Patient> patients = patientDAO.searchPatientsByName(keyword);
+                    request.setAttribute("patients", patients);
+                    RequestDispatcher dispatcher = request.getRequestDispatcher("/views/admin/patient.jsp");
+                    dispatcher.forward(request, response);
+                    break;
                 default: 
                     listPatients(request, response);
                     break;

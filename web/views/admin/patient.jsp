@@ -97,9 +97,10 @@
             <div class="row">
                 <div class="col-5">
                 <form action="${pageContext.request.contextPath}/admin/patient" method="get" class="d-flex">
-                    <input type="hidden" name="action" value="search">
-                    <input type="text" name="keyword" placeholder="Nhập họ tên" class="form-control me-2" style="width: 180px; height: 37px;">
-                    <button class="search-button" >Tìm kiếm</button>
+                    <input type="hidden" name="action" value="search">  
+                    <input type="text" name="keyword" placeholder="Nhập họ tên" class="form-control me-2" style="width: 180px; height: 37px;"
+                           value="${param.keyword != null ? param.keyword : ''}">
+                    <button class="search-button">Tìm kiếm</button>
                 </form>
                 </div>
                 <div class="col-3"></div>
@@ -128,7 +129,7 @@
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
             if (patients != null && !patients.isEmpty()){
                 int STT = 1;
-                for (User u : patients) {
+                for (Patient u : patients) {
             %>
 
                 <tr>
@@ -144,14 +145,7 @@
                     %></td>
                     <td><%= u.getPhonenum() %></td>
                     <td><%= u.getAddress() %></td>
-                    <td>
-                        <%=
-                            u.getRole().equals("doctor") ? "Bác sĩ" :
-                            u.getRole().equals("admin") ? "Admin" :
-                            u.getRole().equals("patient") ? "Bệnh nhân":
-                            u.getRole()
-                        %>
-                    </td>
+                    <td>Bệnh nhân</td>
                   
                     <td style="white-space: nowrap; text-align: center;">
                         <a href="${pageContext.request.contextPath}/admin/patient?action=edit&id=<%=u.getUserId()%>" 
@@ -392,6 +386,7 @@
             }
         });
     </script>
+    
     
     <jsp:include page="/views/shared/user_footer.jsp" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
