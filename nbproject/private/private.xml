@@ -62,6 +62,22 @@
             <file>file:/C:/Users/hocmo/Hospital-web/web/views/admin/doctor.jsp</file>
             <file>file:/C:/Users/hocmo/Hospital-web/web/views/admin/doctors.jsp</file>
             <file>file:/C:/Users/hocmo/Hospital-web/src/java/controller/admin/ReportServlet.java</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/views/admin/add_user.jsp</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/views/doctor/doctor_patient_history.jsp</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/views/doctor/doctor_medical_record.jsp</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/views/doctor/doctor_change_password.jsp</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/views/doctor/appointment_detail.jsp</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/views/doctor/appointment_list.jsp</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/views/patient/patient_booking.jsp</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/views/patient/patient_appointments.jsp</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/views/patient/patient_appointment.jsp</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/views/patient/patient_change_password.jsp</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/views/patient/patient_medical_record.jsp</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/views/doctor/doctor_profile.jsp</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/views/patient/patient_profile.jsp</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/src/java/controller/auth/RegisterServlet.java</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/web/views/auth/register.jsp</file>
+            <file>file:/C:/Users/hocmo/Hospital-web/src/java/controller/auth/AuthFilter.java</file>
         </group>
     </open-files>
 </project-private>

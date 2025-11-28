@@ -1,4 +1,5 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<meta charset="UTF-8">
 <%@page import="model.entity.User"%>
 <!DOCTYPE html>
 <html lang="vi">

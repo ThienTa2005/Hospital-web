@@ -59,11 +59,11 @@ public class RegisterServlet extends HttpServlet {
         //Lấy dữ liệu từ form
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String password = request.getParameter("password");
-        String fullname = newString(request.getParameter("fullname"));
+        String fullname = request.getParameter("fullname");
         String dob = request.getParameter("dob");
         String gender = request.getParameter("gender");
         String phone = request.getParameter("phonenum");
-        String address = newString(request.getParameter("address"));
+        String address = request.getParameter("address");
         String role = "patient"; // Mặc định là patient
         
         java.sql.Date sqlDate = null;

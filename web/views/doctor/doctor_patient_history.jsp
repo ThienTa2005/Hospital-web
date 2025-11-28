@@ -70,7 +70,7 @@
                                 <td class="text-center">
                                     <% if ("completed".equalsIgnoreCase(a.getStatus())) { %>
                                         <a href="<%= request.getContextPath() %>/doctor/appointmentDetail?id=<%= a.getAppointmentId() %>" 
-                                           class="btn btn-sm btn-primary">
+                                           class="btn btn-sm btn-success">
                                             <i class="fa-solid fa-eye"></i> Xem chi tiết
                                         </a>
                                     <% } else { %>

@@ -8,7 +8,7 @@ import java.sql.ResultSet;
 
 public class DBUtils {
     // Thông tin kết nối
-    private static final String URL = "jdbc:mysql://localhost:3306/clinic_db";
+    private static final String URL = "jdbc:mysql://localhost:3306/clinic_db?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC";
     private static final String USER = "root";
     private static final String PASSWORD = "Conmeodeptraiphongdo"; // sửa thành mật khẩu của bạn
 

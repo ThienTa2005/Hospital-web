@@ -89,7 +89,7 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <span class="time-badge me-2"><i class="fa-regular fa-clock me-1"></i><%= timeSdf.format(a.getAppointmentDate()) %> - <%= sdf.format(a.getAppointmentDate()) %></span>
-                                    <h5 class="mt-2 mb-1 fw-bold text-primary"><%= a.getPatientName() %></h5>
+                                    <h5 class="mt-2 mb-1 fw-bold text-secondary"><%= a.getPatientName() %></h5>
                                     <small class="text-muted"><i class="fa-solid fa-file-medical me-1"></i> Mã: #<%= a.getAppointmentId() %></small>
                                 </div>
                                 <div>
@@ -159,11 +159,11 @@
         </div>
     </div>
 
-    <div class="modal fade" id="examModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal fade" id="examModal" tabindex="-1" data-bs-backdrop="static" style="margin-top: 60px;">
         <div class="modal-dialog modal-xl"> <div class="modal-content">
                 <form action="<%= request.getContextPath() %>/doctor/examine" method="post">
                     <div class="modal-header">
-                        <h5 class="modal-title m-0"><i class="fa-solid fa-user-doctor me-2"></i>Thực hiện khám bệnh</h5>
+                        <h5 class="modal-title m-0"><i class="fa-solid fa-user-doctor me-2"></i>Khám bệnh</h5>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
@@ -191,7 +191,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label fw-bold text-primary mb-2"><i class="fa-solid fa-flask me-2"></i>4. Nhập kết quả Xét nghiệm (Nếu có)</label>
+                                <label class="form-label fw-bold text-secondary mb-2"><i class="fa-solid fa-flask me-2"></i>4. Nhập kết quả Xét nghiệm (Nếu có)</label>
                                 
                                 <div class="bg-light p-3 rounded">
                                     <div class="d-flex text-muted small fw-bold mb-2">
@@ -205,8 +205,8 @@
                                     <div id="test-container">
                                         </div>
                                     
-                                    <button type="button" class="btn btn-sm btn-outline-primary mt-2 w-100" onclick="addTestRow()">
-                                        <i class="fa-solid fa-plus"></i> Thêm dòng kết quả
+                                    <button type="button" class="btn btn-sm btn-outline-success mt-2 w-100" onclick="addTestRow()">
+                                        <i class="fa-solid fa-secondary"></i> Thêm dòng kết quả
                                     </button>
                                 </div>
                             </div>
@@ -215,7 +215,7 @@
                     <div class="modal-footer bg-light">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
                         <button type="submit" class="btn btn-success px-4 fw-bold">
-                            <i class="fa-solid fa-check me-2"></i>LƯU & HOÀN TẤT
+                            <i class="fa-solid fa-check me-2"></i>Lưu & Hoàn tất
                         </button>
                     </div>
                 </form>
@@ -244,7 +244,7 @@
             div.innerHTML = `
                 <input type="text" name="test_name[]" class="form-control form-control-sm" placeholder="Tên" style="width: 30%">
                 <input type="text" name="test_param[]" class="form-control form-control-sm" placeholder="Chỉ số" style="width: 20%">
-                <input type="text" name="test_value[]" class="form-control form-control-sm fw-bold text-primary" placeholder="K quả" style="width: 20%">
+                <input type="text" name="test_value[]" class="form-control form-control-sm" placeholder="Kết quả" style="width: 20%">
                 <input type="text" name="test_unit[]" class="form-control form-control-sm" placeholder="Đơn vị" style="width: 20%">
                 <button type="button" class="btn btn-sm btn-outline-danger" style="width: 10%" onclick="this.parentElement.remove()"><i class="fa-solid fa-trash"></i></button>
             `;

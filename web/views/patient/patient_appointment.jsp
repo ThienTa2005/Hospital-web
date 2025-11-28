@@ -87,7 +87,7 @@
                 <option value="afternoon" <%= "afternoon".equals(request.getAttribute("selectedShift")) ? "selected" : ""%> >Chiều</option>
             </select>
             <button class="btn-search" type="submit"><i class="fa-solid fa-filter"></i> Lọc</button>
-            <a href="<%= request.getContextPath()%>/book-appointment" class="btn-add"><i class="fa-solid fa-plus"></i> Đặt Lịch Mới</a>
+            <a href="<%= request.getContextPath()%>/book-appointment" class="btn-add"><i class="fa-solid fa-plus"></i> Đặt lịch mới</a>
         </form>
 
         <% List<Appointment> appointments = (List<Appointment>) request.getAttribute("appointments");
@@ -122,7 +122,7 @@
                         <td><span class="status-<%= appt.getStatus().toLowerCase()%>"><%= appt.getStatus()%></span></td>
                         <td>
                             <% if ("completed".equalsIgnoreCase(appt.getStatus())) {%>
-                                <a href="<%= request.getContextPath()%>/record?appointment_id=<%= appt.getAppointmentId()%>" class="btn-detail"><i class="fa-solid fa-file-medical"></i> Xem hồ sơ</a>
+                                <a href="<%= request.getContextPath()%>/record?appointment_id=<%= appt.getAppointmentId()%>" class="btn-detail" style="background-color: #569571"><i class="fa-solid fa-file-medical"></i> Xem hồ sơ</a>
                             <% } else if ("pending".equalsIgnoreCase(appt.getStatus())) { %>
                                 <a href="<%= request.getContextPath()%>/appointment?action=cancel&id=<%= appt.getAppointmentId()%>" class="text-danger" style="text-decoration: none; font-size: 0.9rem;" onclick="return confirm('Hủy lịch này?')">Hủy</a>
                             <% } else { %> -- <% } %>
