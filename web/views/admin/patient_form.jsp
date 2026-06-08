@@ -1,0 +1,248 @@
+<%@page import="model.entity.Appointment"%>
+<%@page import="java.util.List"%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@page import="model.entity.Patient"%>
+<%@page import="model.entity.User"%>
+<%@page import="java.text.SimpleDateFormat"%>
+
+<%
+    Patient p = (Patient) request.getAttribute("patient");
+    boolean isEdit = (p != null);
+    User currentUser = (User) session.getAttribute("user");
+    boolean isDoctor = (currentUser != null && "doctor".equals(currentUser.getRole()));
+    String readOnlyAttr = isDoctor ? "disabled" : "";
+    String title = isDoctor ? "Hồ sơ chi tiết bệnh nhân" : (isEdit ? "Cập nhật bệnh nhân" : "Thêm bệnh nhân mới");
+    
+    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+%>
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" />
+    <style>
+        body { background-color: #f4f7f6; padding: 20px; }
+        .main-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .card-header-custom {
+            background: linear-gradient(to right, #569571, #3d7a5a);
+            color: white;
+            padding: 15px 20px;
+        }
+        .nav-tabs .nav-link.active {
+            font-weight: bold;
+            color: #569571;
+            border-bottom: 3px solid #569571 !important;
+        }
+        .nav-tabs .nav-link {
+            color: #555;
+            border: none;
+            border-bottom: 3px solid transparent;
+        }
+        .tab-content { padding: 20px; }
+        .avatar-placeholder {
+            width: 100px; height: 100px; background: #e9ecef; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 2rem; color: #adb5bd;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container main-card p-0">
+    <div class="card-header-custom d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 text-uppercase">
+            <i class="fa-solid fa-user-injured me-2"></i> <%= title %>
+        </h5>
+        <a href="javascript:history.back()" class="btn btn-sm btn-light text-success fw-bold">
+            <i class="fa-solid fa-arrow-left"></i> Quay lại
+        </a>
+    </div>
+
+    <div class="p-4 bg-white border-bottom">
+        <div class="row">
+            <div class="col-md-3 d-flex justify-content-center align-items-start">
+                <div class="avatar-placeholder">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+            </div>
+            <div class="col-md-9">
+                <form action="${pageContext.request.contextPath}/admin/patient" method="post">
+                    <input type="hidden" name="action" value="<%= isEdit ? "update" : "add" %>">
+                    <% if(isEdit) { %><input type="hidden" name="userId" value="<%= p.getUserId() %>"><% } %>
+
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <label class="form-label fw-bold">Họ và tên</label>
+                            <input type="text" name="fullname" class="form-control form-control-lg fw-bold text-success" 
+                                   value="<%= isEdit ? p.getFullname() : "" %>" <%= readOnlyAttr %> required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Giới tính</label>
+                            <select name="gender" class="form-select" <%= readOnlyAttr %>>
+                                <option value="M" <%= isEdit && "M".equals(p.getGender()) ? "selected" : "" %>>Nam</option>
+                                <option value="F" <%= isEdit && "F".equals(p.getGender()) ? "selected" : "" %>>Nữ</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Ngày sinh</label>
+                            <input type="date" name="dob" class="form-control" 
+                                   value="<%= isEdit ? p.getDob() : "" %>" <%= readOnlyAttr %> required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Số điện thoại</label>
+                            <input type="text" name="phonenum" class="form-control" 
+                                   value="<%= isEdit ? p.getPhonenum() : "" %>" <%= readOnlyAttr %> required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Địa chỉ</label>
+                            <input type="text" name="address" class="form-control" 
+                                   value="<%= isEdit ? p.getAddress() : "" %>" <%= readOnlyAttr %> required>
+                        </div>
+                        
+                        <% if(!isDoctor) { %>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted">Tên đăng nhập</label>
+                            <input type="text" name="username" class="form-control form-control-sm" 
+                                   value="<%= isEdit ? p.getUsername() : "" %>" <%= isEdit ? "readonly" : "required" %>>
+                        </div>
+                        <% if(!isEdit) { %>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted">Mật khẩu</label>
+                            <input type="password" name="password" class="form-control form-control-sm" required>
+                        </div>
+                        <% }} %>
+                    </div>
+
+                    <% if (!isDoctor) { %>
+                        <div class="text-end mt-3">
+                            <button type="submit" class="btn btn-success px-4">
+                                <i class="fa-solid fa-save"></i> Lưu thông tin hành chính
+                            </button>
+                        </div>
+                    <% } %>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <% if(isEdit) { %>
+    <div class="mt-3">
+        <ul class="nav nav-tabs nav-fill px-3" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active">
+                    <i class="fa-solid fa-calendar"></i> Lịch hẹn
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="appointment" role="tabpanel">
+
+                <div class="d-flex justify-content-between mb-3">
+                    <h6 class="fw-bold text-success">Lịch sử đặt hẹn</h6>
+                </div>
+
+                <table class="table table-striped table-hover text-center">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Ngày</th>
+                            <th>Giờ</th>
+                            <th>Bác sĩ</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <%
+                        List<Appointment> apps = (List<Appointment>) request.getAttribute("appointments");
+                        if (apps != null && !apps.isEmpty()) {
+                            for (Appointment a : apps) {
+                    %>
+                    <tr>
+                        <td><%= new java.text.SimpleDateFormat("dd/MM/yyyy").format(a.getShiftDate()) %></td>
+                        <td><%= a.getStartTime().toString().substring(0,5) %> - <%= a.getEndTime().toString().substring(0,5) %></td>
+                        <td><%= a.getDoctorName() %></td>
+                        <td>
+                            <% if ("pending".equals(a.getStatus())) { %>
+                                <span class="badge bg-warning text-dark">Sắp tới</span>
+                            <% } else if ("completed".equals(a.getStatus())) { %>
+                                <span class="badge bg-success">Đã khám</span>
+                            <% } else if ("cancelled".equals(a.getStatus())){ %>
+                                <span class="badge bg-secondary">Đã huỷ</span>
+                            <% } %>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-success btn-view-detail" 
+                                    data-id="<%= a.getAppointmentId() %>">Xem</button>
+                        </td>
+                    </tr>
+                    <%
+                            }
+                        } else { 
+                    %>
+                    <tr>
+                        <td colspan="5" class="text-muted fst-italic">Chưa có lịch hẹn nào.</td>
+                    </tr>
+                    <% } %>
+                    </tbody>
+                </table>
+                
+                <div class="modal fade" id="appointmentModal" tabindex="-1" aria-labelledby="appointmentModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                      <div class="modal-content">
+                        <div class="modal-header bg-success text-white">
+                          <h5 class="modal-title" id="appointmentModalLabel">Chi tiết lịch hẹn</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                        </div>
+                        <div class="modal-body" id="modal-detail-content">
+
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+            </div>
+        </div>
+    </div>
+    <% } %>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const buttons = document.querySelectorAll(".btn-view-detail");
+    const modalContent = document.getElementById("modal-detail-content");
+    const basePath = "<%= request.getContextPath() %>";
+
+    buttons.forEach(btn => {
+        btn.addEventListener("click", function() {
+            const appointmentId = this.dataset.id;
+
+            fetch(basePath + "/admin/appointmentDetail?id=" + appointmentId)
+            .then(response => response.text())
+            .then(html => {
+                modalContent.innerHTML = html;
+                const modal = new bootstrap.Modal(document.getElementById('appointmentModal'));
+                modal.show();
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Không tải được chi tiết!");
+            });
+        });
+    });
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,468 @@
+@import url("https://fonts.googleapis.com/css2?family=Chiron+GoRound+TC:wght@200..900&display=swap");
+
+/* Reset và font chung */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Chiron GoRound TC', sans-serif;
+}
+
+/* Typography */
+h1 {
+    font-size: 50px;
+    line-height: 64px;
+    color: black;
+}
+
+h2 {
+    font-size: 46px;
+    line-height: 64px;
+    color: black;
+}
+
+h4 {
+    font-size: 30px;
+    color: black;
+}
+
+h6 {
+    font-weight: 700;
+    font-size: 12px;
+}
+
+p {
+    font-size: 12px;
+    color: black;
+}
+
+/* Section spacing 
+.section-p1 {
+  padding: 40px 80px;
+}
+
+.section-m1 {
+  margin: 40px 0;
+}*/
+
+/* Button */
+button.normal {
+    font-size: 14px;
+    font-weight: 600;
+    padding: 15px 30px;
+    color: #000;
+    background-color: #fff;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    transition: 0.2s;
+}
+
+/* Header */
+#header {
+    height: 90px;
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 80px;
+    background: #a8d5ba;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    z-index: 999;
+    width: 100%;
+    left: 0;
+    top: 0;
+}
+
+/* Navbar */
+#navbar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#navbar li {
+    list-style: none;
+    padding: 0 20px;
+}
+
+#navbar li a {
+    top: -5px;
+    position: relative;
+    display: inline-block;
+    text-decoration: none;
+    font-size: 20px;
+    font-weight: 650;
+    color: #000000;
+    transition: 0.3s ease;
+}
+
+#navbar li a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    width: 100%;
+    height: 2px;
+    background: #004435;
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+#navbar li a:hover,
+#navbar li a.active {
+    color: #004435;
+}
+
+#navbar li a.active::after,
+#navbar li a:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+}
+
+/* Right Section */
+.right-section {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: 850px;
+    background: #1b5e3a;
+    border-radius: 0 0 0 120px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 60px;
+    overflow: hidden;
+}
+
+.right-section::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: -60px;
+    width: 800px;
+    background: #4b9b6e;
+    border-radius: 0 0 0 120px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 60px;
+    overflow: hidden;
+}
+
+/* Logo */
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    text-decoration: none;
+}
+
+.logo {
+    width: 50px;
+    height: auto;
+}
+
+.logo-text {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+/* Homepage */
+#bg-home {
+    background-image: url("homepage.jpg");
+    height: 120vh;
+    width: 100%;
+    background-size: cover;
+    background-position: top 25% right 0;
+    padding: 0 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+#bg-home h1 {
+    padding: 10px;
+    top: -60px;
+    justify-content: left;
+    width: 500px;
+    position: relative;
+    color: #1b5e3a;
+}
+
+#bg-home button {
+    justify-content: center;
+    position: relative;
+    background-color: white;
+    font-size: 30px;
+    color: #1b5e3a;
+    border-radius: 15px 15px 15px 15px;
+    padding: 6px 12px;
+    left: 10px;
+    top: -50px;
+    border: none;
+}
+
+#bg-home button:hover {
+    background-color: #1b5e3a;
+    color: white;
+    transition: ease-in-out 0.15s;
+    cursor: pointer;
+}
+
+/* Footer */
+#footer {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 60px;
+    padding: 20px 80px;
+    background: #dee5d4;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    z-index: 999;
+    width: 100%;
+    left: 0;
+    bottom: 0;
+    margin-top: auto;
+}
+
+.follow {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+#footer .col {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+/* icon */
+.icon {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    align-items: center;
+}
+
+.icon a {
+    color: black;
+    font-size: 20px;
+    transition: color 0.3s;
+    text-decoration: none;
+}
+
+.icon a:hover {
+    color: #1b5e3a;
+    cursor: pointer;
+}
+
+/* Form */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    scroll-behavior: smooth;
+}
+
+#wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding-top: 60px;
+}
+
+#content {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Login */
+#bg-login {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: url("homepage.jpg");
+    background-size: cover;
+    background-position: center;
+    padding: 180px 0;
+}
+
+#bg-login button{
+    border: none;
+}
+
+#form-login {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px;
+    background-color: rgba(255, 255, 255, 0.85);
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    min-width: 320px;
+    max-width: 400px;
+}
+
+.form-heading {
+    font-size: 36px;
+    color: #1b5e3a;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.form-group {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+.form-submit {
+    width: 50%;
+    padding: 12px;
+    font-size: 18px;
+    border-radius: 8px;
+    background-color: #f4f5f7;
+    color: #1b5e3a;
+    cursor: pointer;
+    transition: 0.3s ease;
+    border: 1px solid #000;
+}
+
+.form-submit:hover {
+    background-color: #14502c;
+    color: white;
+}
+
+.form-register p {
+    font-size: 16px;
+    color: #333;
+    text-align: center;
+    padding-top: 20px;
+}
+
+.form-register a {
+    color: #1b5e3a;         /* đồng bộ màu xanh với heading */
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.form-register a:hover {
+    text-decoration: underline;
+    color: #14502c;
+}
+
+
+/* Register */
+#bg-register {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: url("homepage.jpg");
+    background-size: cover;
+    background-position: center;
+    padding: 60px 0;
+}
+
+#form-register {
+    display: flex;
+    flex-direction: column; /* vẫn column để heading và sections xếp theo chiều dọc */
+    align-items: center;
+    padding: 40px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    min-width: 320px;
+    max-width: 1080px; /* tăng rộng để 2 section nằm cạnh nhau */
+    margin: 0 auto;
+}
+
+/* Container 2 section */
+.form-sections {
+    display: flex;
+    gap: 20px;            /* Khoảng cách giữa 2 section */
+    width: auto;
+    flex-wrap: wrap;       /* Cho phép xuống dòng trên màn hình nhỏ */
+    justify-content: space-between;
+}
+
+/* Mỗi section */
+.form-section {
+    flex: 2;               /* 2 section chia đều chiều rộng */
+    min-width: 280px;      /* Không quá nhỏ trên mobile */
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+.section-heading {
+    padding-bottom: 10px;
+}
+/* Responsive: khi màn hình < 600px, 2 section xếp dọc */
+@media screen and (max-width: 600px) {
+    .form-sections {
+        flex-direction: column;
+    }
+}
+
+.about-section {
+    width: 100%;        /* chiếm hết chiều ngang */
+    margin: 0;
+    padding-top: 5px; /* giảm khoảng trống phía trên */
+    padding-right: 20px;
+    padding-bottom: 20px;
+    padding-left: 20px;
+    height: auto;       /* co theo nội dung */
+    min-height: unset;  /* không ép chiều cao tối thiểu */
+    overflow: visible;  /* không cắt bớt nội dung */
+}
+
+.about-section h3 {
+    font-size: 28px;
+    margin-bottom: 16px;
+    text-align: left;
+}
+
+.about-row {
+    display: flex;
+    flex-direction: column;   /* xếp p theo chiều dọc */
+    align-items: flex-start;  /* căn về bên trái */
+}
+
+.about-row p {
+    font-size: 20px;
+    margin: 0 0 12px 0;  /* mỗi đoạn cách nhau 12px */
+    padding: 0;
+    text-align: left;
+}
+
+.about-image {
+    margin-top: 12px;        /* khoảng cách với đoạn văn */
+    width: 100%;             /* chiếm toàn chiều ngang của container */
+    max-width: 500px;        /* giới hạn chiều rộng tối đa */
+    height: 280px;           /* cố định chiều cao để tất cả bằng nhau */
+    object-fit: cover;       /* cắt hình nếu tỉ lệ khác, vẫn đầy khung */
+    border-radius: 8px;      /* bo góc nếu muốn */
+    display: block;          /* tránh khoảng trắng thừa */
+}
